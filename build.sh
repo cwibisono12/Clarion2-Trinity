@@ -7,3 +7,4 @@ gcc -c kinmat.c
 gcc -c pol.c
 gcc -c main.c
 gcc -c write.c
+gcc -c gaggpid.c

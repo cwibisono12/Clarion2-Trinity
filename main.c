@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include "global.h"
 #include "pol.h"
-
+#include "gaggpid.h"
 
 struct subevent subevt[MAX_ID]={0};
 int sevtmult=0;
