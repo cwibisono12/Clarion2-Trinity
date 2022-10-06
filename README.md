@@ -1,8 +1,8 @@
 # Clarion2-Trinity
-Clarion2-Trinity Data Processing Software and Visualization
+**Clarion2-Trinity Data Processing Software and Visualization**
 
 
-#Clarion2-Trinity Data Processing:
+**#Clarion2-Trinity Data Processing:**
 #How to Compile:
 ./build.sh
 
@@ -17,7 +17,7 @@ After all of the programs and their dependencies have been compiled, link the ob
 
 The output for the program will generate multiple files which are basically a histogram represented as 2D matrix. 
 
-#Visualization 
+**#Visualization[Very Beta version]** 
 In order to visualize the output files, one can use the program called vis.py
 
 #How to Run:
@@ -26,3 +26,5 @@ In order to visualize the output files, one can use the program called vis.py
 #Example:
 ./vis.py pid_qdc21.spn 4096 4096 0 4095 0 4095
 Follow the instruction on the screen to project on X or Y axis or to set the limit of the 2D histograms.
+
+Note that visualization program is far from perfection and is currently still under development. 
