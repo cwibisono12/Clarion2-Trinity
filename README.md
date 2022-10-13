@@ -33,10 +33,10 @@ Capabilities of visualization:
 
 1). Enabling the user to project on X or Y axis and set the width for the projection.
 
-2). User can also expand the projected region and set the lower and upper x limits to see the region of interest.
+2). User can also perform background subtraction if needed. (This feature is added to accomodate gamma-gamma coincidences analysis).
 
-3). User can also draw banana gates on the 2D histogram and get the coordinates.
+3). User can expand the projected region and set the lower and upper x limits to see the region of interest.
 
-Note that visualization program is far from perfection and is currently still under development. 
+4). User can also draw banana gates on the 2D histogram and get the coordinates.
 
-In the near future, the capability to perform background subtraction that is generally used for the analysis of gamma-gamma coincidences will be implemented along with the gaussian fit for the peak of interest.
+Note that visualization program is far from perfection and is currently still under development.
