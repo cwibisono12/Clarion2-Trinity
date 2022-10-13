@@ -29,4 +29,9 @@ In order to visualize the output files, one can use the program called vis.py
 ./vis.py pid_qdc21.spn 4096 4096 0 4095 0 4095
 Follow the instruction on the screen to project on X or Y axis or to set the limit of the 2D histograms.
 
+Capabilities of visualization:
+1). Enabling the user to project on X or Y axis and set the width for the projection.
+2). User can also expand the projected region and set the lower and upper x limits to see the region of interest.
+3). User can also draw banana gates on the 2D histogram and get the coordinates.
+
 Note that visualization program is far from perfection and is currently still under development. 
