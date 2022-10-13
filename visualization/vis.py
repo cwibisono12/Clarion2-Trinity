@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#./2Dvis.py file 5000 5000 0 4999 0 4999 
+#./vis.py file 5000 5000 0 4999 0 4999 
 #C. Wibisono
 
 
@@ -41,6 +41,13 @@ figp, axp=plt.subplots()
 #Prepared the array for y and x:
 yproj=np.zeros(int(sys.argv[2]),dtype=np.int32) #Project onto Y axis
 xproj=np.zeros(int(sys.argv[3]),dtype=np.int32) #Project onto X axis
+
+yprojb=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background
+xprojb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background
+
+yprojbs=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background subtracted
+xprojbs=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtracted
+
 xx=np.zeros(int(sys.argv[3]),dtype=np.int32)
 xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
 #x=np.arange(0,int(sys.argv[2]),1)
@@ -127,31 +134,68 @@ def onpress(event):
 	if event.key == 'g':
 		print("ProjectionX or ProjectionY 1 or 2:\n")
 		proj=input()
-		print("Enter the region to Project:\n")
+		print("Enter the region where you want to make gates:\n")
 		print("Enter the lower region:\n")
 		low=input()
 		print("Enter the higher region:\n")
 		high=input()
+		widthgate=int(high)-int(low)
 		#global axp
 		#Projection on X axis: Make a gate on Y axis then project on X axis:
 		axp.clear()
 		if int(proj) == 1:
 			#global x
 			xx=np.arange(0,int(sys.argv[3]),1)
-			for i in range(0,int(sys.argv[2]),1):
+			print("Perform Background Subtraction Yes or No hit 0 or 1:\n")
+			background=input()
+			
+			#Create X Projection from Y Gate:
+			for i in range(0,int(sys.argv[3]),1):
 				for j in range(int(low),int(high)+1,1):
-					xproj[i]=xproj[i]+ytrp[j,i]	
-			axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
-			axp.legend()
+					xproj[i]=xproj[i]+ytrp[j,i]
+			if int(background) == 0:	
+				axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+			if int(background) == 1:
+				print("Enter the left region for background")
+				backleft=input()
+				print("Enter the right region for background")
+				backright=input()
+				widthbackg=int(backright)-int(backleft)
+				for i in range(0,int(sys.argv[2]),1):
+					for j in range(int(backleft),int(backright)+1,1):
+						xprojb[i]=xprojb[i]+ytrp[j,i]
+					xprojbs[i]=(widthgate/(widthbackg+widthgate))*xproj[i]-(widthbackg/(widthbackg+widthgate))*xprojb[i]
+				axp.clear()
+				axp.plot(xx,xprojbs,linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+
 		#Projection on Y axis: Make a gate on X axis then project on Y axis:
 		if int(proj) == 2:
 			#global x
 			xy=np.arange(0,int(sys.argv[2]),1)
-			for i in range(int(low),int(high)+1,1):
+			print("Perform Background Subtraction Yes or No hit 0 or 1:\n")
+			background=input()
+			#Create Y Projection from X Gate:
+			for j in range(0,int(sys.argv[2]),1):
+				for i in range(int(low),int(high)+1,1):
+					yproj[j]=yproj[j]+ytrp[j,i]
+			if int(background) == 0:
+				axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+			if int(background) == 1:
+				print("Enter the left region for background")
+				backleft=input()
+				print("Enter the right region for background")
+				backright=input()
+				widthbackg=int(backright)-int(backleft)
 				for j in range(0,int(sys.argv[2]),1):
-					yproj[i]=yproj[i]+ytrp[i,j]
-			axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
-			axp.legend()
+					for i in range(int(backleft),int(backright)+1,1):
+						yprojb[j]=yprojb[j]+ytrp[j,i]
+					yprojbs[j]=(widthgate*yproj[j]-widthbackg*yprojb[j])/(widthgate+widthbackg)
+				axp.clear()
+				axp.plot(xy,yprojbs,linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
 	'''
 	if event.key == 'n':
 		plt.figure(2)
