@@ -13,12 +13,15 @@ import matplotlib.pyplot as plt
 import sys
 import os
 from matplotlib.colors import LogNorm
+from scipy.optimize import curve_fit as cvt
+
 
 print("2D visualization with the projection\n")
 print("Hit g to make Projection")
 print("Hit e to expand axis")
 print("Hit f to generate coordinates useful for making banana gates")
 print("click mouse to draw banana gates")
+print("Hit n to perform Gauss fit")
 print("Hit q to close figure")
 
 #Reading Matrix Files:
@@ -50,20 +53,17 @@ xprojbs=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtracte
 
 xx=np.zeros(int(sys.argv[3]),dtype=np.int32)
 xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
-#x=np.arange(0,int(sys.argv[2]),1)
-#x=np.zeros(100)
-#y=np.zeros(100)
-#for i in range(100):
-#	x[i]=i
-#	y[i]=2*x[i]
 
-#ax.plot(x,y)
+#Gaussian Function:
+def gauss(x,H,A,mu,sigma):
+	return H+A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))
 
 coordsx=[]
 coordsy=[]
 
 index=0
 proj=0
+
 
 def onclick(event):
 	global index
@@ -82,18 +82,20 @@ def onpress(event):
 	if event.key == 'e':
 		print("Enter Axes to Expand 1 or 2\n")
 		waxis=input()
-		global axp,xx,xy,proj
+		global axp,xx,xy,proj,background,xlow,xup
+		global xproj,yproj,xprojbs,yprojbs
+		global low,high,gate
 		if int(waxis) == 1:
 			print("Enter the lower xlim\n")
-			xlow=input()
+			xlow1=input()
 			print("Enter the upper xlim\n")
-			xup=input()
+			xup1=input()
 			print("Enter the lower ylim\n")
-			ylow=input()
+			ylow1=input()
 			print("Enter the upper ylim\n")
-			yup=input()
-			ax.set_xlim(int(xlow),int(xup))
-			ax.set_ylim(int(ylow),int(yup))
+			yup1=input()
+			ax.set_xlim(int(xlow1),int(xup1))
+			ax.set_ylim(int(ylow1),int(yup1))
 		if int(waxis) == 2: 
 			print("Enter the lower limit\n")
 			xlow=input()
@@ -101,13 +103,22 @@ def onpress(event):
 			xup=input()
 			axp.clear()
 			axp.set_xlim(int(xlow),int(xup))
-			if int(proj)==1:	
+			if int(proj)==1 and int(background)==0:	
 				axp.plot(xx[int(xlow):int(xup)],xproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
-			if int(proj)==2:
+				axp.set_title('Full Projection X')
+			if int(proj)==1 and int(background)==1:	
+				axp.plot(xx[int(xlow):int(xup)],xprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+				axp.set_title('Gate on '+str(gate)+' keV'+'ProjX')
+			if int(proj)==2 and int(background)==0:
 				axp.plot(xy[int(xlow):int(xup)],yproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
-			#axp.autoscale()
+				axp.set_title('Full Projection Y')
+			if int(proj)==2 and int(background)==1:
+				axp.plot(xy[int(xlow):int(xup)],yprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+				axp.set_title('Gate on '+str(gate)+' keV'+'ProjY')
 			plt.draw()
 	#Zoom out Histogram:
 	if event.key == 'o':
@@ -140,6 +151,7 @@ def onpress(event):
 		print("Enter the higher region:\n")
 		high=input()
 		widthgate=int(high)-int(low)
+		gate=int(int(low)+widthgate/2.)
 		#global axp
 		#Projection on X axis: Make a gate on Y axis then project on X axis:
 		axp.clear()
@@ -155,6 +167,7 @@ def onpress(event):
 					xproj[i]=xproj[i]+ytrp[j,i]
 			if int(background) == 0:	
 				axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
+				axp.set_title('Full Projection X')
 				axp.legend()
 			if int(background) == 1:
 				print("Enter the left region for background")
@@ -168,6 +181,7 @@ def onpress(event):
 					xprojbs[i]=(widthgate/(widthbackg+widthgate))*xproj[i]-(widthbackg/(widthbackg+widthgate))*xprojb[i]
 				axp.clear()
 				axp.plot(xx,xprojbs,linewidth=0.75,ls='steps',label='ProjX')
+				axp.set_title('Gate on '+str(gate)+' keV'+'ProjX')
 				axp.legend()
 
 		#Projection on Y axis: Make a gate on X axis then project on Y axis:
@@ -182,6 +196,7 @@ def onpress(event):
 					yproj[j]=yproj[j]+ytrp[j,i]
 			if int(background) == 0:
 				axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
+				axp.set_title('Full Projection Y')
 				axp.legend()
 			if int(background) == 1:
 				print("Enter the left region for background")
@@ -195,7 +210,62 @@ def onpress(event):
 					yprojbs[j]=(widthgate*yproj[j]-widthbackg*yprojb[j])/(widthgate+widthbackg)
 				axp.clear()
 				axp.plot(xy,yprojbs,linewidth=0.75,ls='steps',label='ProjY')
+				axp.set_title('Gate on '+str(gate)+' keV'+'ProjY')
 				axp.legend()
+	
+	
+	#Perform Gauss fit for a particular peak:
+	if event.key == 'n':
+		print("Perform Gauss Fit:\n")
+		print("Set the background height:\n")
+		backgfit=input()
+		print("Set the approximate peak height:\n")
+		height=input()
+		print("Set the approximate center position:\n")
+		center=input()
+		print("Set the approximate width:\n")
+		std=input()
+		print("Select the region of interest:\n")
+		print("select lower xlim:\n")
+		xlowg=input()
+		print("select the upper xlim:\n")
+		xupg=input()
+		p0=np.array([int(backgfit),int(height),int(center),int(std)])
+		axp.clear()
+		if int(proj) == 1:
+			if int(background) == 0:
+				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
+				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+			if int(background) == 1:	
+				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)	
+				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+			axp.plot(xx[int(xlowg):int(xupg)+1],gauss(xx[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
+			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
+			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
+
+		if int(proj) == 2:
+			if int(background) == 0:
+				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
+				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+			if int(background) == 1:	
+				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)	
+				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+
+			axp.plot(xy[int(xlowg):int(xupg)+1],gauss(xy[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
+			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
+			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
+
+
+
+
+
+
+
+
 	'''
 	if event.key == 'n':
 		plt.figure(2)
@@ -208,6 +278,9 @@ def onpress(event):
 		#axp.autoscale()
 		plt.draw()
 	'''
+
+
+
 fig.canvas.mpl_connect('button_press_event',onclick) 
 fig.canvas.mpl_connect('key_press_event',onpress)
 figp.canvas.mpl_connect('button_press_event',onclick)
