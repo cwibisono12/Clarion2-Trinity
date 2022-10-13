@@ -37,6 +37,8 @@ Capabilities of visualization:
 
 3). User can expand the projected region and set the lower and upper x limits to see the region of interest.
 
-4). User can also draw banana gates on the 2D histogram and get the coordinates.
+4). User can perform a Gauss fit for a peak, and get the mean, standard deviation, and area.
+
+5). User can also draw banana gates on the 2D histogram and get the coordinates.
 
 Note that visualization program is far from perfection and is currently still under development.
