@@ -10,6 +10,7 @@
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tck
 import sys
 import os
 from matplotlib.colors import LogNorm
@@ -40,6 +41,12 @@ plt.colorbar(pos,ax=ax)
 
 #1D-Matrix:
 figp, axp=plt.subplots()
+
+axp.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+axp.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+plt.rcParams['font.family']='serif'
+plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
+
 #axp=[]
 #Prepared the array for y and x:
 yproj=np.zeros(int(sys.argv[2]),dtype=np.int32) #Project onto Y axis
@@ -107,18 +114,22 @@ def onpress(event):
 				axp.plot(xx[int(xlow):int(xup)],xproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.set_title('Full Projection X')
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			if int(proj)==1 and int(background)==1:	
 				axp.plot(xx[int(xlow):int(xup)],xprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
-				axp.set_title('Gate on '+str(gate)+' keV'+'ProjX')
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Gate on '+str(gate)+' keV')
 			if int(proj)==2 and int(background)==0:
 				axp.plot(xy[int(xlow):int(xup)],yproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
 			if int(proj)==2 and int(background)==1:
 				axp.plot(xy[int(xlow):int(xup)],yprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
-				axp.set_title('Gate on '+str(gate)+' keV'+'ProjY')
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Gate on '+str(gate)+' keV')
 			plt.draw()
 	#Zoom out Histogram:
 	if event.key == 'o':
@@ -169,6 +180,7 @@ def onpress(event):
 				axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Full Projection X')
 				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			if int(background) == 1:
 				print("Enter the left region for background")
 				backleft=input()
@@ -181,8 +193,10 @@ def onpress(event):
 					xprojbs[i]=(widthgate/(widthbackg+widthgate))*xproj[i]-(widthbackg/(widthbackg+widthgate))*xprojb[i]
 				axp.clear()
 				axp.plot(xx,xprojbs,linewidth=0.75,ls='steps',label='ProjX')
-				axp.set_title('Gate on '+str(gate)+' keV'+'ProjX')
+				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+
 
 		#Projection on Y axis: Make a gate on X axis then project on Y axis:
 		if int(proj) == 2:
@@ -197,6 +211,7 @@ def onpress(event):
 			if int(background) == 0:
 				axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Full Projection Y')
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.legend()
 			if int(background) == 1:
 				print("Enter the left region for background")
@@ -210,9 +225,9 @@ def onpress(event):
 					yprojbs[j]=(widthgate*yproj[j]-widthbackg*yprojb[j])/(widthgate+widthbackg)
 				axp.clear()
 				axp.plot(xy,yprojbs,linewidth=0.75,ls='steps',label='ProjY')
-				axp.set_title('Gate on '+str(gate)+' keV'+'ProjY')
+				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
-	
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 	
 	#Perform Gauss fit for a particular peak:
 	if event.key == 'n':
@@ -234,27 +249,38 @@ def onpress(event):
 		axp.clear()
 		if int(proj) == 1:
 			if int(background) == 0:
-				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection X')
+				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
+
 			if int(background) == 1:	
-				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)	
 				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)
+	
 			axp.plot(xx[int(xlowg):int(xupg)+1],gauss(xx[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
 			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
 			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
 
 		if int(proj) == 2:
 			if int(background) == 0:
-				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
-			if int(background) == 1:	
-				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)	
-				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
-				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection Y')
+				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 
+			if int(background) == 1:	
+				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.set_title('Gate on '+str(gate)+' keV')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)	
+			
 			axp.plot(xy[int(xlowg):int(xupg)+1],gauss(xy[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
 			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
 			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
@@ -280,9 +306,11 @@ def onpress(event):
 	'''
 
 
-
+#plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
 fig.canvas.mpl_connect('key_press_event',onpress)
 figp.canvas.mpl_connect('button_press_event',onclick)
 figp.canvas.mpl_connect('key_press_event',onpress)
+axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+
 plt.show()
