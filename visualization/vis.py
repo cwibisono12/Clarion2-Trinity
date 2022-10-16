@@ -169,6 +169,9 @@ def onpress(event):
 		if int(proj) == 1:
 			#global x
 			xx=np.arange(0,int(sys.argv[3]),1)
+			xproj=np.zeros(int(sys.argv[3]),dtype=np.int32)
+			xprojb=np.zeros(int(sys.argv[3]),dtype=np.int32)
+			xprojbs=np.zeros(int(sys.argv[3]),dtype=np.int32)
 			print("Perform Background Subtraction Yes or No hit 0 or 1:\n")
 			background=input()
 			
@@ -202,6 +205,9 @@ def onpress(event):
 		if int(proj) == 2:
 			#global x
 			xy=np.arange(0,int(sys.argv[2]),1)
+			yproj=np.zeros(int(sys.argv[2]),dtype=np.int32)
+			yprojb=np.zeros(int(sys.argv[2]),dtype=np.int32)
+			yprojbs=np.zeros(int(sys.argv[2]),dtype=np.int32)
 			print("Perform Background Subtraction Yes or No hit 0 or 1:\n")
 			background=input()
 			#Create Y Projection from X Gate:
