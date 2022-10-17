@@ -3,8 +3,6 @@
 #./vis.py file 5000 5000 0 4999 0 4999 
 #C. Wibisono
 
-
-
 #Program for Displaying 2D Histogram + Drawing Banana Cuts + Making Basic Projections:
 
 import numpy as np
@@ -17,12 +15,14 @@ from matplotlib.colors import LogNorm
 from scipy.optimize import curve_fit as cvt
 
 
-print("2D visualization with the projection\n")
+print("Welcome to Clarion2-Trinity Portable Visualization Software from C.W\n")
+print("Here are the features of the Software:")
 print("Hit g to make Projection")
 print("Hit e to expand axis")
 print("Hit f to generate coordinates useful for making banana gates")
 print("click mouse to draw banana gates")
 print("Hit n to perform Gauss fit")
+print("Hit m to perform another type of Gauss fit")
 print("Hit q to close figure")
 
 #Reading Matrix Files:
@@ -64,6 +64,11 @@ xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
 #Gaussian Function:
 def gauss(x,H,A,mu,sigma):
 	return H+A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))
+
+
+backgheight=0
+def gauss2(x,A,mu,sigma,backgheight):
+	return A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))+backgheight
 
 coordsx=[]
 coordsy=[]
@@ -270,7 +275,7 @@ def onpress(event):
 	
 			axp.plot(xx[int(xlowg):int(xupg)+1],gauss(xx[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
 			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
-			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
+			print("mean:",popt[2],"sigma:",abs(popt[3]),"area:",area)
 
 		if int(proj) == 2:
 			if int(background) == 0:
@@ -289,8 +294,72 @@ def onpress(event):
 			
 			axp.plot(xy[int(xlowg):int(xupg)+1],gauss(xy[int(xlowg):int(xupg)+1],*popt),'r',linewidth=0.5)
 			area=(np.sqrt(2*(np.pi)))*popt[1]*abs(popt[3])
-			print("mean:",popt[2],"sigma:",popt[3],"area:",area)
+			print("mean:",popt[2],"sigma:",abs(popt[3]),"area:",area)
+	
+#Perform another type of Gauss fit:
+	if event.key == 'm':
+		print("Perform Gauss Fit:\n")
+		print("Set the background left:\n")
+		backgfitleft=input()
+		print("Set the background right:\n")
+		backgfitright=input()
+		print("Select the region of interest:\n")
+		print("select lower xlim:\n")
+		xlowg=input()
+		print("select the upper xlim:\n")
+		xupg=input()
+		backgfitcenter=int(backgfitleft)+int((int(backgfitright)-int(backgfitleft))/2)
+		meanfitcenter=int(xlowg)+int((int(xupg)-int(xlowg))/2)
+		axp.clear()
+		if int(proj) == 1:
+			if int(background) == 0:
+				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection X')
+				p0=np.array([xproj[int(meanfitcenter)],xx[int(meanfitcenter)],xx[2*(int(meanfitcenter)-int(xlowg))]])
+				backgheight=xproj[int(backgfitcenter)]
+				print(backgfitcenter,backgheight)
+				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
+			if int(background) == 1:	
+				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.set_title('Gate on '+str(gate)+' keV')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				p0=np.array([xprojbs[int(meanfitcenter)],xx[int(meanfitcenter)],xx[2*(int(meanfitcenter)-int(xlowg))]])
+				backgheight=xprojbs[int(backgfitcenter)]
+				print(backgfitcenter,backgheight)
+				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)
+	
+			axp.plot(xx[int(xlowg):int(xupg)+1],gauss2(xx[int(xlowg):int(xupg)+1],*popt,backgheight),'r',linewidth=0.5)
+			area=(np.sqrt(2*(np.pi)))*popt[0]*abs(popt[2])
+			print("mean:",popt[1],"sigma:",abs(popt[2]),"area:",area)
+
+		if int(proj) == 2:
+			if int(background) == 0:
+				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection Y')
+				p0=np.array([yproj[int(meanfitcenter)],xy[int(meanfitcenter)],xy[2*(int(meanfitcenter)-int(xlowg))]])
+				backgheight=yproj[int(backgfitcenter)]
+				print(backgfitcenter,backgheight)
+				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
+
+			if int(background) == 1:	
+				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.set_title('Gate on '+str(gate)+' keV')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				p0=np.array([yprojbs[int(meanfitcenter)],xy[int(meanfitcenter)],xy[2*(int(meanfitcenter)-int(xlowg))]])
+				backgheight=yprojbs[int(backgfitcenter)]
+				print(backgfitcenter,backgheight)
+				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)
+			
+			axp.plot(xy[int(xlowg):int(xupg)+1],gauss2(xy[int(xlowg):int(xupg)+1],*popt,backgheight),'r',linewidth=0.5)
+			area=(np.sqrt(2*(np.pi)))*popt[0]*abs(popt[2])
+			print("mean:",popt[1],"sigma:",abs(popt[2]),"area:",area)
 
 
 
