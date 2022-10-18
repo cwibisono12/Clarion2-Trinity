@@ -23,6 +23,7 @@ print("Hit f to generate coordinates useful for making banana gates")
 print("click mouse to draw banana gates")
 print("Hit n to perform Gauss fit")
 print("Hit m to perform another type of Gauss fit")
+print("Hit d to perform Double Gaussian")
 print("Hit q to close figure")
 
 #Reading Matrix Files:
@@ -65,10 +66,21 @@ xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
 def gauss(x,H,A,mu,sigma):
 	return H+A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))
 
-
 backgheight=0
 def gauss2(x,A,mu,sigma,backgheight):
 	return A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))+backgheight
+	
+def gausspure(x,A,mu,sigma):
+	return A*np.exp(-((x-mu)**2.)/(2*(sigma**2.)))
+
+#Double Gaussian Function:
+#def gaussdoub(x,H1,A1,mu1,sigma1,H2,A2,mu2,sigma2):
+#	return gauss(x,H1,A1,mu1,sigma1)+gauss(x,H2,A2,mu2,sigma2)
+
+backgheight2=0
+#Type2:
+def gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2):
+	return gausspure(x,A1,mu1,sigma1)+gausspure(x,A2,mu2,sigma2)+backgheight2
 
 coordsx=[]
 coordsy=[]
@@ -318,7 +330,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection X')
 				p0=np.array([xproj[int(meanfitcenter)],xx[int(meanfitcenter)],xx[2*(int(meanfitcenter)-int(xlowg))]])
-				backgheight=xproj[int(backgfitcenter)]
+				backgheight=np.average(xproj[int(backgfitleft):int(backgfitright)])
 				print(backgfitcenter,backgheight)
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
@@ -328,7 +340,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				p0=np.array([xprojbs[int(meanfitcenter)],xx[int(meanfitcenter)],xx[2*(int(meanfitcenter)-int(xlowg))]])
-				backgheight=xprojbs[int(backgfitcenter)]
+				backgheight=np.average(xprojbs[int(backgfitleft):int(backgfitright)])
 				print(backgfitcenter,backgheight)
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)
 	
@@ -343,7 +355,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
 				p0=np.array([yproj[int(meanfitcenter)],xy[int(meanfitcenter)],xy[2*(int(meanfitcenter)-int(xlowg))]])
-				backgheight=yproj[int(backgfitcenter)]
+				backgheight=np.average(yproj[int(backgfitleft):int(backgfitright)])
 				print(backgfitcenter,backgheight)
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 
@@ -353,7 +365,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				p0=np.array([yprojbs[int(meanfitcenter)],xy[int(meanfitcenter)],xy[2*(int(meanfitcenter)-int(xlowg))]])
-				backgheight=yprojbs[int(backgfitcenter)]
+				backgheight=np.average(yprojbs[int(backgfitleft):int(backgfitright)])
 				print(backgfitcenter,backgheight)
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)
 			
@@ -362,8 +374,92 @@ def onpress(event):
 			print("mean:",popt[1],"sigma:",abs(popt[2]),"area:",area)
 
 
+#Double Gauss Fit:
+	if event.key == 'd':
+		print("Perform Gauss Fit:\n")
+		print("Set the background left:\n")
+		backgfitleft=input()
+		print("Set the background right:\n")
+		backgfitright=input()
+		print("Select the region of interest:\n")
+		print("select lower xlim:\n")
+		xlowg=input()
+		print("select the upper xlim:\n")
+		xupg=input()
+		print("input the approximate width for first peak")
+		print("enter the height of the first peak")
+		height1=input()
+		print("enter the height of the second peak")
+		height2=input()
+		print("enter the center of the first peak")
+		center1=input()
+		print("enter the center of the second peak")
+		center2=input()
+		print("enter the width of the first peak")
+		width1=input()
+		print("enter the width of the second peak")
+		width2=input()
+		backgfitcenter=int(backgfitleft)+int((int(backgfitright)-int(backgfitleft))/2)
+		#meanfitcenter=int(xlowg)+int((int(xupg)-int(xlowg))/2)
+		axp.clear()
+		if int(proj) == 1:
+			if int(background) == 0:
+				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection X')
+				#Background Height Average:
+				backgheight2=np.average(xproj[int(backgfitleft):int(backgfitright)])	
+				p0=np.array([int(height1),int(center1),int(width1),int(height2),int(center2),int(width2)])
+				print(backgfitcenter,backgheight2)
+				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
+			if int(background) == 1:	
+				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				axp.set_title('Gate on '+str(gate)+' keV')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				backgheight2=np.average(xprojbs[int(backgfitleft):int(backgfitright)])	
+				p0=np.array([int(height1),int(center1),int(width1),int(height2),int(center2),int(width2)])
+				print(backgfitcenter,backgheight2)
+				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xx[int(xlowg):int(xupg)+1],xprojbs[int(xlowg):int(xupg)+1],p0)
 
+#Gauss Fit Results:
+			axp.plot(xx[int(xlowg):int(xupg)+1],gaussdoub(xx[int(xlowg):int(xupg)+1],*popt,backgheight2),'r',linewidth=0.5)
+			axp.plot(xx[int(xlowg):int(xupg)+1],gausspure(xx[int(xlowg):int(xupg)+1],popt[0],popt[1],popt[2])+backgheight2,'g',linewidth=0.5)
+			axp.plot(xx[int(xlowg):int(xupg)+1],gausspure(xx[int(xlowg):int(xupg)+1],popt[3],popt[4],popt[5])+backgheight2,'k',linewidth=0.5)
+			area1=(np.sqrt(2*(np.pi)))*popt[0]*abs(popt[2])
+			area2=(np.sqrt(2*(np.pi)))*popt[3]*abs(popt[5])
+			print("mean1:",popt[1],"sigma1:",abs(popt[2]),"area1:",area1,"mean2:",popt[4],"sigma2:",abs(popt[5]),"area2:",area2)
+
+		if int(proj) == 2:
+			if int(background) == 0:
+				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				axp.set_title('Full Projection Y')
+				backgheight2=np.average(yproj[int(backgfitleft):int(backgfitright)])	
+				p0=np.array([int(height1),int(center1),int(width1),int(height2),int(center2),int(width2)])
+				print(backgfitcenter,backgheight2)
+				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
+
+			if int(background) == 1:	
+				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				axp.set_title('Gate on '+str(gate)+' keV')
+				axp.legend()
+				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				backgheight2=np.average(yprojbs[int(backgfitleft):int(backgfitright)])	
+				p0=np.array([int(height1),int(center1),int(width1),int(height2),int(center2),int(width2)])
+				print(backgfitcenter,backgheight2)
+				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xy[int(xlowg):int(xupg)+1],yprojbs[int(xlowg):int(xupg)+1],p0)
+			
+
+			axp.plot(xy[int(xlowg):int(xupg)+1],gaussdoub(xy[int(xlowg):int(xupg)+1],*popt,backgheight2),'r',linewidth=0.5)
+			axp.plot(xy[int(xlowg):int(xupg)+1],gausspure(xy[int(xlowg):int(xupg)+1],popt[0],popt[1],popt[2])+backgheight2,'g',linewidth=0.5)
+			axp.plot(xy[int(xlowg):int(xupg)+1],gausspure(xy[int(xlowg):int(xupg)+1],popt[3],popt[4],popt[5])+backgheight2,'k',linewidth=0.5)
+			area1=(np.sqrt(2*(np.pi)))*popt[0]*abs(popt[2])
+			area2=(np.sqrt(2*(np.pi)))*popt[3]*abs(popt[5])
+			print("mean1:",popt[1],"sigma1:",abs(popt[2]),"area1:",area1,"mean2:",popt[4],"sigma2:",abs(popt[5]),"area2:",area2)
 
 
 
@@ -384,7 +480,7 @@ def onpress(event):
 #plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
 fig.canvas.mpl_connect('key_press_event',onpress)
-figp.canvas.mpl_connect('button_press_event',onclick)
+#figp.canvas.mpl_connect('button_press_event',onclick)
 figp.canvas.mpl_connect('key_press_event',onpress)
 axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 
