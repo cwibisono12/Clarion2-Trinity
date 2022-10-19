@@ -1,0 +1,7 @@
+#Notes######
+#Intended for user(s) who are familiar with Python OOP
+#Directory contains Python classes that I made for the purpose of Histogram Projection and Fitting
+
+
+
+---C.W 10/19/2022
