@@ -36,7 +36,7 @@ class clarion:
 		widthbackg=int(backright)-int(backleft)	
 		if int(proj) == 1:
 			for i in range(0,int(self.xdim),1):
-				for j in range(int(self.widthleft),int(self.widthright)+1,1):
+				for j in range(int(widthleft),int(widthright)+1,1):
 					xproj[i]=xproj[i]+ytrp[j,i]
 			return xproj
 			if int(background)==1:
@@ -54,7 +54,7 @@ class clarion:
 			return yproj
 			if int(background)==1:
 				for j in range(0,int(self.ydim),1):
-					for i in range(int(self.widthleft),int(self.widthright)+1,1):
+					for i in range(int(widthleft),int(widthright)+1,1):
 						yprojb[j]=yproj[j]+ytrp[j,i]
 		
 				yprojbs[j]=(widthgate/(widthgate+widthbackg))*yproj[j]-(widthbackg/(widthgate+widthbackg))*yprojb[j]
