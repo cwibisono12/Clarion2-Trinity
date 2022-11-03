@@ -186,14 +186,17 @@ struct sidetector
 
 
 void detmaps(int sevtmult, struct subevent *subevt, struct gdetector *ge, struct sidetector *si);
-int gaggproc(struct sidetector *si);
+
+int gaggproc(struct sidetector *si,int parttype);
+
 int gamproc(struct gdetector *ge, int ge_spe_xtl[MAX_GE_XTL*MAX_GE][8192], int ge_spe[MAX_GE][8192], int ge_bgo_tdif[MAX_GE][4096]);
 void doppcorrect(int gaggvalid, int gmult, struct sidetector *si, struct gdetector *ge, int option, float ml, float mbeam, float mh, float vbz, float betascale);
-//void pol(int gaggvalid, int gmult, struct gdetector *ge, int pol_para[5000][5000], int pol_perp[5000][5000]);
-//void doppcorrect(int gaggvalid, int gmult, struct sidetector *si, struct gdetector *ge, int option, int betascale);
+
 void gammagagg1Dspectra(int gaggvalid, int gmult, struct sidetector *si, struct gdetector *ge, int gagg_gamma_tdiff_ring2[4096][4096], int gagg_gamma_tdiff_ring4[4096][4096], int gagg_gamma_tdiff2[5000][5000],int gated_gamma[1][5000], int gated_gammatrue[1][5000], int gated_gamma_np[1][5000], int gated_gamma_nptrue[1][5000]);
+
 void parthit(int gaggvalid, int gmult, struct gdetector *ge, struct sidetector *si, int e_lit2[MAX_SI][4096], int e_lit4[MAX_SI][4096], int theta_res2[MAX_SI][4096], int theta_res4[MAX_SI][4096], int gagghist[1][4096]);
 
+void ggmat(int gaggvalid, int gmult, struct gdetector *ge, int gg_tdif1[4096][4096], int gg_tdif2[4096][4096], int gg_prompt[5000][5000], int gg_nprompt[5000][5000], int gg_nprompt_nddopp[5000][5000], int gg_nprompt_ddopp[5000][5000], int gg_prompt_nddopp[5000][5000], int gg_prompt_ddopp[5000][5000], int gg_nprompt1[5000][5000], int gg_nprompt2[5000][5000], int gg_prompt_nddopp1[5000][5000], int gg_prompt_nddopp2[5000][5000], int gg_nprompt_nddopp1[5000][5000], int gg_nprompt_nddopp2[5000][5000], int gg_prompt_ddopp1[5000][5000], int gg_prompt_ddopp2[5000][5000], int gg_nprompt_ddopp1[5000][5000], int gg_nprompt_ddopp2[5000][5000]);
 
 
 

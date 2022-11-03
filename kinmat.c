@@ -47,7 +47,7 @@ if (gaggvalid == 1 && gmult > 0){
 //Angle of Residual with respect to the beam axis:
 						}			
 
-printf("%s , energy: %d, etrue: %d\n","doppcorrect",ge[0].energy,(int)ge[0].etrue);
+//printf("%s , energy: %d, etrue: %d\n","doppcorrect",ge[0].energy,(int)ge[0].etrue);
 
 					}
 }

@@ -9,3 +9,5 @@ gcc -c main.c
 gcc -c write.c
 gcc -c gaggpid.c
 gcc -c ggmat.c
+gcc -c dco.c
+gcc -c dcokinmat.c

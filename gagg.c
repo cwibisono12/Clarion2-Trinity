@@ -5,8 +5,8 @@
 #include <math.h>
 #include <stdbool.h>
 
-int gaggproc(struct sidetector *si){
-
+int gaggproc(struct sidetector *si, int parttype){
+//printf("%d\n",parttype);
 int gaggvalid=0;
 int sicount;
 int i;
@@ -28,9 +28,13 @@ si[i].id = i;
 si[i].valid = 1;
 
 if (si[i].id == gaid[i-1]){
+if (parttype==1){
 si[i].energy=100.*(gaggslope[i-1]*si[i].traceint+gaggintercept[i-1]);
 }
-
+if (parttype==2){
+si[i].energy=si[i].energy=100.*(gaggquad[i-1]*pow(si[i].traceint,2.0)+gaggslope[i-1]*si[i].traceint+gaggintercept[i-1]);
+}
+}
 
 //SiPM angle assignment:
 for (sicount=0;sicount<3;sicount++){

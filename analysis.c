@@ -10,7 +10,7 @@ int gem;
 int gaggi;
 //1 Dimensional Histogram //C. W
 if (gaggvalid == 1  && gmult > 0){
-	printf("energy: %d, etrue: %d\n",ge[0].energy, (int)ge[0].etrue);
+	//printf("energy: %d, etrue: %d\n",ge[0].energy, (int)ge[0].etrue);
         for (gem=0;gem<gmult;gem++){
            for (gaggi=0;gaggi<gaggvalid;gaggi++){
 //put condition below if we want to have only one peak for the timediff spectra     

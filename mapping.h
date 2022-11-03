@@ -23,7 +23,7 @@ extern float mapangles2[][2];//theta and phi
 extern int gaid[];
 extern float gaggslope[];
 extern float gaggintercept[];
-
+extern float gaggquad[];
 //INPUT BANANA GATE/////////////////////////////////////////////////////////////////////////////////////// //C. W
 extern float polyX21[],polyY21[],polyX22[],polyY22[],
 polyX23[],polyY23[],polyX24[],polyY24[],

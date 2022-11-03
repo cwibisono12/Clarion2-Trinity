@@ -11,6 +11,7 @@
 #include "global.h"
 #include "pol.h"
 #include "gaggpid.h"
+#include "dco.h"
 
 struct subevent subevt[MAX_ID]={0};
 int sevtmult=0;
@@ -42,7 +43,7 @@ float mapangles2[MAX_ID][2]={0};//theta and phi
 int gaid[28]={0};
 float gaggslope[28]={0};
 float gaggintercept[28]={0};
-
+float gaggquad[28]={0};
 //INPUT BANANA GATE/////////////////////////////////////////////////////////////////////////////////////// //C. W
 float polyX21[LINE_LENGTH]={0},polyY21[LINE_LENGTH]={0},polyX22[LINE_LENGTH]={0},polyY22[LINE_LENGTH]={0},
 polyX23[LINE_LENGTH]={0},polyY23[LINE_LENGTH]={0},polyX24[LINE_LENGTH]={0},polyY24[LINE_LENGTH]={0},
@@ -255,6 +256,44 @@ int pol_para[5000][5000]={0};
 
 #define POL_PERP "pol_perp.spn2"
 int pol_perp[5000][5000]={0};
+
+
+
+#define GG_PROMPT_PUREF "gg_prompt_puref.spn2"
+int gg_prompt_puref[5000][5000]={0};
+
+#define GG_PROMPT_PUREFP "gg_prompt_purefp.spn2"
+int gg_prompt_purefp[5000][5000]={0};
+
+#define GG_PROMPT_PUREFPKIN "gg_prompt_purefpkin.spn2"
+int gg_prompt_purefpkin[5000][5000]={0};
+
+#define GG_PROMPT_PUREB "gg_prompt_pureb.spn2"
+int gg_prompt_pureb[5000][5000]={0};
+
+#define GG_PROMPT_PUREBPKIN "gg_prompt_purebpkin.spn2"
+int gg_prompt_purebpkin[5000][5000]={0};
+
+#define GG_PROMPT_PUREBP "gg_prompt_purebp.spn2"
+int gg_prompt_purebp[5000][5000]={0};
+
+#define GG_NPROMPT_PUREF "gg_nprompt_puref.spn2"
+int gg_nprompt_puref[5000][5000]={0};
+
+#define GG_NPROMPT_PUREFP "gg_nprompt_purefp.spn2"
+int gg_nprompt_purefp[5000][5000]={0};
+
+#define GG_NPROMPT_PUREFPKIN "gg_nprompt_purefpkin.spn2"
+int gg_nprompt_purefpkin[5000][5000]={0};
+
+#define GG_NPROMPT_PUREB "gg_nprompt_pureb.spn2"
+int gg_nprompt_pureb[5000][5000]={0};
+
+#define GG_NPROMPT_PUREBP "gg_nprompt_purebp.spn2"
+int gg_nprompt_purebp[5000][5000]={0};
+
+#define GG_NPROMPT_PUREBPKIN "gg_nprompt_purebpkin.spn2"
+int gg_nprompt_purebpkin[5000][5000]={0};
 ///////////////////////////////////
 // START OF MAIN FUNCTION        //
 ///////////////////////////////////
@@ -269,13 +308,15 @@ int main(int argc, char **argv) {
   div_t e_div;
   lldiv_t lle_div;
 //Parameter of kinematics Correction:
-  float Ebeam,mbeam,ml,mh,amu;
+  float Ebeam,mb,mbeam,ml0,ml,mh0,mh,amu,vbz;
+  int parttype=0;
   amu=931.5;
+ /*
   Ebeam=30;
   mbeam=16*amu;
   ml=1*amu;
   mh=33*amu;
-  float vbz=pow(2*Ebeam/mbeam,0.5);
+*/
   float betascale=atof(argv[7]);
   int option=atoi(argv[8]); //use 1 to use doppler corection with kinmat or 2 to use old doppler
 //  int Emin=atoi(argv[6]); //C.W
@@ -485,15 +526,36 @@ int main(int argc, char **argv) {
 
 
 if (argc >=6){
-FILE *fgagg;
+FILE *fgagg, *fparticle;
 fgagg=fopen(argv[5],"r");
 int idgagg;
 int n;
-float slopegagg,interceptgagg;
+float quadgagg,slopegagg,interceptgagg;
+//int parttype; //define particle type
+char type[20];
+
+fparticle=fopen(argv[9],"r");
+
+if (fparticle == NULL){
+fprintf(stderr,"Error, cannot open input file %s\n",argv[9]);
+}
+
+while(fgets(line,LINE_LENGTH,fparticle) !=NULL){
+        if(strchr(line,'#') ==NULL)
+                sscanf(line,"%f\t%f\t%f\t%f\t%s\t%d\n",&Ebeam,&mb,&ml0,&mh0,type,&parttype);
+                        }
+memset(line,0,LINE_LENGTH);
+mbeam=mb*amu; //conversion to amu
+ml=ml0*amu;
+mh=mh0*amu;
+vbz=pow(2*Ebeam/mbeam,0.5);
 
 if (fgagg == NULL){
 fprintf(stderr,"Error, cannot open input file %s\n",argv[5]);
 }
+
+//Protons:
+if (parttype == 1){
 while (fgets(line,LINE_LENGTH,fgagg) != NULL){
 sscanf(line,"%d\t%f\t%f\n",&idgagg,&slopegagg,&interceptgagg);
 gaid[n]=idgagg;
@@ -501,8 +563,26 @@ gaggslope[n]=slopegagg;
 gaggintercept[n]=interceptgagg;
 n++;
 memset(line,0,LINE_LENGTH);
+	}
 }
+
+
+//Alphas:
+if (parttype == 2){
+while (fgets(line,LINE_LENGTH,fgagg) != NULL){
+sscanf(line,"%d\t%f\t%f\t%f\n",&idgagg,&interceptgagg,&slopegagg,&quadgagg);
+gaid[n]=idgagg;
+gaggquad[n]=quadgagg;
+gaggslope[n]=slopegagg;
+gaggintercept[n]=interceptgagg;
+n++;
+memset(line,0,LINE_LENGTH);
+}
+}
+
+
 fclose(fgagg);
+fclose(fparticle);
 }
   
   
@@ -914,9 +994,9 @@ for (km=0;km<gmult;km++){
 /////////////////////////
 // Si Detector Type /////
 /////////////////////////    //C. W
-
+//printf("%d\n",parttype);
 //Checking Gagg and Germanium Multiplicities:
-int gaggvalid=gaggproc(si);
+int gaggvalid=gaggproc(si,parttype);
 gmult=gamproc(ge, ge_spe_xtl, ge_spe, ge_bgo_tdif);
 
 //Checking the energy of GAGG thas fire more than twices for a given events:
@@ -977,11 +1057,14 @@ if (gaggvalid > 0 && gmult > 0){
       // FINAL USER SPECTRA //
       ////////////////////////
 
-      
+//Perform Polarization Analysis:      
 pol(gaggvalid, gmult,ge,pol_para, pol_perp);
 
+//Perform DCO Ratio:
+dco(gmult,gaggvalid,ge);
 
-
+//Perform DCO Kinmat:
+dcokinmat(gmult,gaggvalid,ge);
       ////////////////////////////
       // END FINAL USER SPECTRA //
       ////////////////////////////
@@ -1121,6 +1204,19 @@ pol(gaggvalid, gmult,ge,pol_para, pol_perp);
   write_data4(E_LIT4, *e_lit4, 4096, 28, overwrite);
   write_data4(POL_PARA,*pol_para, 5000, 5000, overwrite);
   write_data4(POL_PERP, *pol_perp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREF, *gg_prompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFP, *gg_prompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFPKIN, *gg_prompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREB, *gg_prompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBP, *gg_prompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBPKIN, *gg_prompt_purebpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREF, *gg_nprompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFP, *gg_nprompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFPKIN, *gg_nprompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREB, *gg_nprompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBP, *gg_nprompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBPKIN, *gg_nprompt_purebpkin, 5000, 5000, overwrite);
+
 /*
   write_data4(GG_TDIF, *gg_tdif, 4096, 4096, overwrite);
   write_data4(GG_TDIF1, *gg_tdif1, 4096, 4096, overwrite);

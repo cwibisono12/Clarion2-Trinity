@@ -20,7 +20,7 @@ for(b=0;b<gmult;b++){
                   if((ge[a].xidvalid[0] == 1 && ge[a].xidvalid[1] == 4) || (ge[a].xidvalid[0] == 4 && ge[a].xidvalid[1] == 1)
                     || (ge[a].xidvalid[0] == 2 && ge[a].xidvalid[1] == 3) || (ge[a].xidvalid[0] == 3 && ge[a].xidvalid[1] == 2)){
                       ge[a].epol=ge[a].xevalid[0]+ge[a].xevalid[1];
-                      printf("%f %d %d %d  %d\n",ge[a].theta[0],ge[a].xidvalid[0],ge[a].xidvalid[1],ge[a].xvalid,ge[a].epol);
+                     // printf("%f %d %d %d  %d\n",ge[a].theta[0],ge[a].xidvalid[0],ge[a].xidvalid[1],ge[a].xvalid,ge[a].epol);
                   //Histogram 1D spectra:
                    if((ge[a].epol > 0 && ge[a].epol < 5000) && (ge[b].energy > 0 && ge[b].energy < 5000))
                       pol_para[ge[b].energy][ge[a].epol]++;
@@ -31,7 +31,7 @@ for(b=0;b<gmult;b++){
                     || (ge[a].xidvalid[0] == 3 && ge[a].xidvalid[1] == 4) || (ge[a].xidvalid[0] == 4 && ge[a].xidvalid[1] == 3)){
                       ge[a].epol=ge[a].xevalid[0]+ge[a].xevalid[1];
                   //Histogram 1D spectra:
-                      printf("%f %d %d %d  %d\n",ge[a].theta[0],ge[a].xidvalid[0],ge[a].xidvalid[1],ge[a].xvalid,ge[a].epol);
+                     // printf("%f %d %d %d  %d\n",ge[a].theta[0],ge[a].xidvalid[0],ge[a].xidvalid[1],ge[a].xvalid,ge[a].epol);
                    if((ge[a].epol > 0 && ge[a].epol <5000) && (ge[b].energy > 0 && ge[b].energy < 5000))
                       pol_perp[ge[b].energy][ge[a].epol]++;
                                                                   }
