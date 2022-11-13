@@ -14,7 +14,6 @@ import os
 from matplotlib.colors import LogNorm
 from scipy.optimize import curve_fit as cvt
 
-
 print("Welcome to Clarion2-Trinity Portable Visualization Software from C.W\n")
 print("Here are the features of the Software:")
 print("Hit g to make Projection")
@@ -24,7 +23,9 @@ print("click mouse to draw banana gates")
 print("Hit n to perform Gauss fit")
 print("Hit m to perform another type of Gauss fit")
 print("Hit d to perform Double Gaussian")
+print("Hit r to rebin the Histogram")
 print("Hit q to close figure")
+
 
 #Reading Matrix Files:
 y=np.fromfile(sys.argv[1],dtype=np.int32,sep="",count=-1)
@@ -43,6 +44,37 @@ plt.colorbar(pos,ax=ax)
 #1D-Matrix:
 figp, axp=plt.subplots()
 
+#Full-Projection-Matrix:
+figc, axc=plt.subplots(2,1)
+
+xfull=np.zeros(int(sys.argv[3]),dtype=np.int32)
+yfull=np.zeros(int(sys.argv[2]),dtype=np.int32)
+xprojfull=np.zeros(int(sys.argv[3]),dtype=np.int32)
+yprojfull=np.zeros(int(sys.argv[2]),dtype=np.int32)
+
+for i in range(0,int(sys.argv[3]),1):
+	for j in range(0,int(sys.argv[2]),1):
+		xprojfull[i]=xprojfull[i]+ytrp[j,i]
+
+xfull=np.arange(0,int(sys.argv[3]),1)
+yfull=np.arange(0,int(sys.argv[2]),1)
+
+for j in range(0,int(sys.argv[2]),1):
+	for i in range(0,int(sys.argv[3]),1):
+		yprojfull[j]=yprojfull[j]+ytrp[j,i]
+
+axc[0].plot(xfull,xprojfull,ls='steps',linewidth=0.75,label="Full X")
+axc[1].plot(yfull,yprojfull,ls='steps',linewidth=0.75,label="Full Y")
+axc[0].legend()
+axc[1].legend()
+
+
+'''
+#Create slider axes:
+slider_x=fig.add_axes([0.20, 0.1, 0.60, 0.03])
+sliderx=rsd(slider_x,"X-Range",0,float(sys.argv[3]))
+'''
+
 axp.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
 axp.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
 plt.rcParams['font.family']='serif'
@@ -53,14 +85,34 @@ plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
 yproj=np.zeros(int(sys.argv[2]),dtype=np.int32) #Project onto Y axis
 xproj=np.zeros(int(sys.argv[3]),dtype=np.int32) #Project onto X axis
 
+yprojreb=np.zeros(int(sys.argv[2]),dtype=np.int32) #Project onto Y axis after rebin
+xprojreb=np.zeros(int(sys.argv[3]),dtype=np.int32) #Project onto X axis after rebin
+
 yprojb=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background
 xprojb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background
+
+yprojbreb=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background after rebin
+xprojbreb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background after rebin
 
 yprojbs=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background subtracted
 xprojbs=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtracted
 
+yprojbsreb=np.zeros(int(sys.argv[2]),dtype=np.int32) #yarr for background subtracted after rebin
+xprojbsreb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtracted after rebin
+
 xx=np.zeros(int(sys.argv[3]),dtype=np.int32)
 xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
+
+'''
+def update(val):
+	for i in range(0,int(sys.argv[3]),1):
+		for j in range(int(slider.val[0]),int(slider.val[1])+1,1):
+			xproj[i]=xproj[i]+ytrp[j,i]
+	xx=np.arange(0,int(sys.argv[3]),1)
+	axc.plot(xx,xproj,ls='steps',linewidth=0.75)
+
+slider.on_changed(update)
+'''
 
 #Gaussian Function:
 def gauss(x,H,A,mu,sigma):
@@ -461,6 +513,72 @@ def onpress(event):
 			area2=(np.sqrt(2*(np.pi)))*popt[3]*abs(popt[5])
 			print("mean1:",popt[1],"sigma1:",abs(popt[2]),"area1:",area1,"mean2:",popt[4],"sigma2:",abs(popt[5]),"area2:",area2)
 
+
+
+	if event.key == 'r':
+		print("Enter rebin factor per keV\n")
+		rebin=input()
+		axp.clear()
+		xprojreb=np.zeros(int(sys.argv[3]),dtype=np.int32)
+		xprojbsreb=np.zeros(int(sys.argv[3]),dtype=np.int32)
+		yprojreb=np.zeros(int(sys.argv[2]),dtype=np.int32)
+		yprojbsreb=np.zeros(int(sys.argv[2]),dtype=np.int32)
+
+		if int(proj)==1 and int(background)==0:
+			for i in range(0,int(sys.argv[3]),int(rebin)):
+        			for k in range(0,int(rebin),1):
+                			if i <= (int(sys.argv[3])-int(rebin)):
+                        			xprojreb[i]=xprojreb[i]+xproj[i+k]
+        			for m in range(0,int(rebin),1):
+                			if i <= (int(sys.argv[3])-int(rebin)):
+                        			xprojreb[i+m]=xprojreb[i]
+			
+			axp.plot(xx[int(xlow):int(xup)],xprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+			axp.legend()
+			axp.set_title('Full Projection X')
+			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+	
+		if int(proj)==1 and int(background)==1:
+			for i in range(0,int(sys.argv[3]),int(rebin)):
+				for k in range(0,int(rebin),1):
+					if i <= (int(sys.argv[3])-int(rebin)):
+						xprojbsreb[i]=xprojbsreb[i]+xprojbs[i+k]
+				for m in range(0,int(rebin),1):
+					if i <= (int(sys.argv[3])-int(rebin)):
+						xprojbsreb[i+m]=xprojbsreb[i]
+
+			axp.plot(xx[int(xlow):int(xup)],xprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+			axp.legend()
+			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+			axp.set_title('Gate on '+str(gate)+' keV')
+        
+		if int(proj)==2 and int(background)==0:
+			for i in range(0,int(sys.argv[2]),int(rebin)):
+				for k in range(0,int(rebin),1):
+					if i <= int(sys.argv[2])-int(rebin):
+						yprojreb[i]=yprojreb[i]+yproj[i+k]
+				for m in range(0,int(rebin),1):
+					if i <= int(sys.argv[2])-int(rebin):
+						yprojreb[i+m]=yprojreb[i]
+			axp.plot(xy[int(xlow):int(xup)],yprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+			axp.legend()
+			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+			axp.set_title('Full Projection Y')
+
+		if int(proj)==2 and int(background)==1:
+			for i in range(0,int(sys.argv[2]),int(rebin)):
+				for k in range(0,int(rebin),1):
+					if i <= int(sys.argv[2])-int(rebin):
+						yprojbsreb[i]=yprojbsreb[i]+yproj[i+k]
+				for m in range(0,int(rebin),1):
+					if i <= int(sys.argv[2])-int(rebin):
+						yprojbsreb[i+m]=yprojbsreb[i]
+			axp.plot(xy[int(xlow):int(xup)],yprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+			axp.legend()
+			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+			axp.set_title('Gate on '+str(gate)+' keV')
+
+		plt.draw()
 
 
 	'''
