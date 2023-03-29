@@ -766,7 +766,7 @@ if (gaggvalid > 0 && gmult > 0){
 */
   //Detector Processed Spectra
   //Ge
- /*
+ 
   write_data4(GE_BGO_TDIF, *ge_bgo_tdif, MAX_GE, 4096, overwrite);
   write_data4(GE_XTL_TDIF, *ge_xtl_tdif, MAX_GE, 4096, overwrite);
   write_data4(GE_XTL_TDIF_ETHRESH, *ge_xtl_tdif_ethresh, MAX_GE, 4096, overwrite);
@@ -774,7 +774,9 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(GE_SPE, *ge_spe, MAX_GE, 8192, overwrite);
   write_data4(GE_SPE_DOPP, *ge_spe_dopp, MAX_GE, 8192, overwrite); //C.W
   write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 8192, overwrite);
-  //trinity
+
+/* 
+ //trinity
   write_data4(PID, *pid, 4096, 4096, overwrite);
   write_data4(PID_EVSP, *pid_evsp, 4096, 4096, overwrite);
   write_data4(PID_EVST, *pid_evst, 4096, 4096, overwrite);
@@ -783,17 +785,17 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(PID_TAUVSR, *pid_tauvsr, 4096, 4096, overwrite);
   write_data4(GAGGDT, *gaggdt, 4096, 4096, overwrite);
 */
-/*
-     write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 4096, overwrite);  
-    write_data4(PID_Gamma_R, *ge_gagg_spe_r, MAX_GE, 4096, overwrite);
-    write_data4(PID_Gammaa, *gagg_gamma_tdiff_ring2, 4096, 4096, overwrite);
-    write_data4(PID_Gammab, *gagg_gamma_tdiff_ring4, 4096, 4096, overwrite);
-    write_data4(PID_Gamma2, *gagg_gamma_tdiff2, 5000, 5000, overwrite);
-    write_data4(PID_Gamma_1Dp, *gated_gamma, 1, 5000, overwrite);
-    write_data4(PID_Gamma_1Dptrue, *gated_gammatrue,1,5000,overwrite);
-    write_data4(PID_Gamma_1Dnp, *gated_gamma_np, 1, 5000, overwrite);
-    write_data4(PID_Gamma_1Dnptrue, *gated_gamma_nptrue, 1, 5000, overwrite);
-*/
+
+    //write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 4096, overwrite);  
+   // write_data4(PID_Gamma_R, *ge_gagg_spe_r, MAX_GE, 4096, overwrite);
+    write_data4(GAGG_GAMMA_TDIFF_RING2, *gagg_gamma_tdiff_ring2, 4096, 4096, overwrite);
+    write_data4(GAGG_GAMMA_TDIFF_RING4, *gagg_gamma_tdiff_ring4, 4096, 4096, overwrite);
+    write_data4(GAGG_GAMMA_TDIFF2, *gagg_gamma_tdiff2, 5000, 5000, overwrite);
+    write_data4(GATED_GAMMA, *gated_gamma, 1, 5000, overwrite);
+    write_data4(GATED_GAMMATRUE, *gated_gammatrue,1,5000,overwrite);
+    write_data4(GATED_GAMMA_NP, *gated_gamma_np, 1, 5000, overwrite);
+    write_data4(GATED_GAMMA_NPTRUE, *gated_gamma_nptrue, 1, 5000, overwrite);
+
 /*
   for (int i=0; i<26; ++i) {
     char name[128];
@@ -840,25 +842,25 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(GG_NPROMPT_PUREBP, *gg_nprompt_purebp, 5000, 5000, overwrite);
   write_data4(GG_NPROMPT_PUREBPKIN, *gg_nprompt_purebpkin, 5000, 5000, overwrite);
 */
-/*
-  write_data4(GG_TDIF, *gg_tdif, 4096, 4096, overwrite);
-  write_data4(GG_TDIF1, *gg_tdif1, 4096, 4096, overwrite);
-  write_data4(GG_TDIF2, *gg_tdif2, 4096, 4096, overwrite);
-  write_data4(GG_PROMPT, *gg_prompt, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PURE, *gg_prompt_pure, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PURE, *gg_nprompt_pure, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT, *gg_nprompt, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT1, *gg_nprompt1, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT2, *gg_nprompt2, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_NDDOPP, *gg_prompt_nddopp, 5000, 5000, overwrite); //C.W
-  write_data4(GG_PROMPT_DDOPP, *gg_prompt_ddopp, 5000, 5000, overwrite); //C. W
-  write_data4(GG_NPROMPT_NDDOPP, *gg_nprompt_nddopp, 5000,5000, overwrite); //C.W
-  write_data4(GG_NPROMPT_NDDOPP1, *gg_nprompt_nddopp1, 5000,5000, overwrite); //C.W
-  write_data4(GG_NPROMPT_DDOPP1, *gg_nprompt_ddopp1, 5000, 5000, overwrite); //C.W
-  write_data4(GG_NPROMPT_NDDOPP2, *gg_nprompt_nddopp2, 5000,5000, overwrite); //C.W
-  write_data4(GG_NPROMPT_DDOPP2, *gg_nprompt_ddopp2, 5000, 5000, overwrite); //C.W
-  write_data4(GG_NPROMPT_DDOPP, *gg_nprompt_ddopp, 5000, 5000, overwrite);//C.W
- */
+
+ // write_data4dyn(GG_TDIF, gg_tdif, 4096, 4096, overwrite);
+  write_data4dyn(GG_TDIF1, gg_tdif1, 4096, 4096, overwrite);
+  write_data4dyn(GG_TDIF2, gg_tdif2, 4096, 4096, overwrite);
+  write_data4dyn(GG_PROMPT, gg_prompt, 5000, 5000, overwrite);
+ // write_data4dyn(GG_PROMPT_PURE, gg_prompt_pure, 5000, 5000, overwrite);
+ // write_data4dyn(GG_NPROMPT_PURE, gg_nprompt_pure, 5000, 5000, overwrite);
+  write_data4dyn(GG_NPROMPT, gg_nprompt, 5000, 5000, overwrite);
+  write_data4dyn(GG_NPROMPT1, gg_nprompt1, 5000, 5000, overwrite);
+  write_data4dyn(GG_NPROMPT2, gg_nprompt2, 5000, 5000, overwrite);
+  write_data4dyn(GG_PROMPT_NDDOPP, gg_prompt_nddopp, 5000, 5000, overwrite); //C.W
+  write_data4dyn(GG_PROMPT_DDOPP, gg_prompt_ddopp, 5000, 5000, overwrite); //C. W
+  write_data4dyn(GG_NPROMPT_NDDOPP, gg_nprompt_nddopp, 5000,5000, overwrite); //C.W
+  write_data4dyn(GG_NPROMPT_NDDOPP1, gg_nprompt_nddopp1, 5000,5000, overwrite); //C.W
+  write_data4dyn(GG_NPROMPT_DDOPP1, gg_nprompt_ddopp1, 5000, 5000, overwrite); //C.W
+  write_data4dyn(GG_NPROMPT_NDDOPP2, gg_nprompt_nddopp2, 5000,5000, overwrite); //C.W
+  write_data4dyn(GG_NPROMPT_DDOPP2,gg_nprompt_ddopp2, 5000, 5000, overwrite); //C.W
+  write_data4dyn(GG_NPROMPT_DDOPP,gg_nprompt_ddopp, 5000, 5000, overwrite);//C.W
+ 
   fclose(fpr);
   fclose(debugfile);
   
