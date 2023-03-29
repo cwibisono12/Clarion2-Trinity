@@ -14,7 +14,7 @@ After all of the programs and their dependencies have been compiled, link the ob
 ./clarion -up [time-order-file] [calibration file] [detector mapping file] [gagg calibration file] [banana cut file] [scaling factor for doppler correction] [option of doppler correction;1 for kinematic correction;everything else can be made 2] [reaction channel information]
 
 #Example of how to run the program:
-./clarion -up data.evt.to cal_fsu.ca3 id_fsu_Jun9.map gagg_calib_proton.txt 2d_all_p.banx 0.8 1 particle.txt
+./clarion -up data.evt.to cal_fsu.ca3 id_fsu_Jun9.map gagg_calib_proton.txt 2d_all_p.banx 0.8 1 proton.txt
 
 The output for the program will generate multiple files which are basically a histogram represented as 2D matrix. 
 
