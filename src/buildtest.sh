@@ -1,0 +1,13 @@
+gcc -c analysis.c
+gcc -c bangate.c
+gcc -c detmap.c
+gcc -c gagg.c
+gcc -c germanium.c
+gcc -c kinmat.c
+gcc -c pol.c
+gcc -c maintest.c
+gcc -c write.c
+gcc -c gaggpid.c
+gcc -c ggmat.c
+gcc -c dco.c
+gcc -c dcokinmat.c
