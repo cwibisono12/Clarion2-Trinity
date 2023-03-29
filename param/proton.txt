@@ -1,0 +1,2 @@
+#Ebeam mbeam ml mh type partype
+30 16 1 33 proton 1

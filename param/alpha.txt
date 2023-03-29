@@ -1,0 +1,2 @@
+#Ebeam mbeam ml mh type partype
+30 16 4 30 alpha 2
