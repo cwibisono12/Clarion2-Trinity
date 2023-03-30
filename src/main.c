@@ -753,8 +753,10 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(HIT, *hit, 4096, 2, overwrite);
   write_data4(MULT, *mult, 4096, 1, overwrite);
   write_data4(TDIFID, *tdifid, MAX_ID, 8192, overwrite);
+  */
   write_data4(E_RAW, *e_raw, MAX_ID, 8192, overwrite);
   write_data4(E_CAL, *e_cal, MAX_ID, 8192, overwrite);
+/*
   write_data4(TEVT_RAW, *tevt_raw, MAX_ID, 8192, overwrite);
   write_data4(TEVT_CAL, *tevt_cal, MAX_ID, 8192, overwrite);
   write_data4(TCFD_RAW, *tcfd_raw, MAX_ID, 8192, overwrite);
@@ -821,27 +823,6 @@ if (gaggvalid > 0 && gmult > 0){
 */
   //Final User Spectra
   //gamma-gamma
- /*
-  write_data4(GAGG_HIST, *gagghist, 4096, 1, overwrite);
-  write_data4(THETA_RES2, *theta_res2, 4096, 28, overwrite);
-  write_data4(THETA_RES4, *theta_res4, 4096, 28, overwrite);
-  write_data4(E_LIT2, *e_lit2, 4096, 28, overwrite);
-  write_data4(E_LIT4, *e_lit4, 4096, 28, overwrite);
-  write_data4(POL_PARA,*pol_para, 5000, 5000, overwrite);
-  write_data4(POL_PERP, *pol_perp, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREF, *gg_prompt_puref, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREFP, *gg_prompt_purefp, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREFPKIN, *gg_prompt_purefpkin, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREB, *gg_prompt_pureb, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREBP, *gg_prompt_purebp, 5000, 5000, overwrite);
-  write_data4(GG_PROMPT_PUREBPKIN, *gg_prompt_purebpkin, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREF, *gg_nprompt_puref, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREFP, *gg_nprompt_purefp, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREFPKIN, *gg_nprompt_purefpkin, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREB, *gg_nprompt_pureb, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREBP, *gg_nprompt_purebp, 5000, 5000, overwrite);
-  write_data4(GG_NPROMPT_PUREBPKIN, *gg_nprompt_purebpkin, 5000, 5000, overwrite);
-*/
 
  // write_data4dyn(GG_TDIF, gg_tdif, 4096, 4096, overwrite);
   write_data4dyn(GG_TDIF1, gg_tdif1, 4096, 4096, overwrite);
