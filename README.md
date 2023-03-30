@@ -52,6 +52,8 @@ Capabilities of visualization:
 
 5). User can also draw banana gates on the 2D histogram and get the coordinates.
 
+6). User can rebin the histogram. 
+
 Note that visualization program is far from perfection and is currently still under development.
 
 **Visualization[Scripted Version]**
