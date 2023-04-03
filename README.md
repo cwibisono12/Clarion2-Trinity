@@ -16,7 +16,10 @@ After all of the programs and their dependencies have been compiled, link the ob
 #Example of how to run the program:
 ./clarion -up data.evt.to cal_fsu.ca3 id_fsu_Jun9.map gagg_calib_proton.txt 2d_all_p.banx 0.8 1 proton.txt
 
-The output for the program will generate multiple files which are basically a histogram represented as 2D matrix. 
+Note about scaling factor flag:
+It is used as an empirical factor needed for kinematic corrections. For the use of simple Doppler correction replace the scaling factor with an empirical beta value.
+
+The output for the programs will generate multiple files which are basically a histogram represented as a 2D matrix. Please see sort/Clarion2_SpectraFiles.xlsx to see the lists of the files along with the notes about dimensions and descriptions.
 
 #Note for the PID:
 PIDs for Clarion2-Trinity are made separately for each GAGG. In order to produce the PIDs, one needs to compile differently with the one previously mentioned. To get the PIDs do the following:
@@ -27,7 +30,7 @@ PIDs for Clarion2-Trinity are made separately for each GAGG. In order to produce
 #Linking:
 ./link_pid.sh
 
-The procedure for running the program is the same except that now the executable name is clarion_pid.
+The procedure for running the program is the same except that now the executable name is clarion_pid. The default dimensions for each PID is 4096 x 4096.
 
 **Visualization[Very Basic version]** 
 
