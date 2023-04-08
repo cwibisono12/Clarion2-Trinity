@@ -448,7 +448,7 @@ while (fgets(line,LINE_LENGTH,fprbangate) !=NULL){
           }
     if (gaggid == GID[5] && gaggnmpts == GNMPTS[5]){
         polyX26[g6]=banx;
-        polyX26[g6]=bany;
+        polyY26[g6]=bany;
         printf("%f %f\n",polyX26[g6],polyY26[g6]);
         g6++;
           }
@@ -478,7 +478,7 @@ while (fgets(line,LINE_LENGTH,fprbangate) !=NULL){
           }
     if (gaggid == GID[10] && gaggnmpts == GNMPTS[10]){
         polyX41[g11]=banx;
-        polyY42[g11]=bany;
+        polyY41[g11]=bany;
         printf("%f %f\n",polyX41[g11],polyY41[g11]);
         g11++;
           }
