@@ -24,8 +24,9 @@ print("Hit n to perform Gauss fit")
 print("Hit m to perform another type of Gauss fit")
 print("Hit d to perform Double Gaussian")
 print("Hit r to rebin the Histogram")
+print("Hit o to zoom out")
 print("Hit q to close figure")
-
+print("Hit b to open banana gate file")
 
 #Reading Matrix Files:
 y=np.fromfile(sys.argv[1],dtype=np.int32,sep="",count=-1)
@@ -35,8 +36,15 @@ ytrp=np.reshape(y,(int(sys.argv[2]),int(sys.argv[3])))
 
 #2D-Matrix:
 fig, ax=plt.subplots()
+#ytrpnew=(ytrp-np.min(ytrp))/(np.max(ytrp)-np.min(ytrp)) #Min-Max Normalization
+#cutoff=-np.min(ytrp)/(np.max(ytrp)-np.min(ytrp))
+masked=np.ma.masked_where(ytrp <= 0, ytrp)
+cmap=mpl.cm.rainbow
+cmap.set_bad(color='white')
+
 
 pos=ax.imshow(ytrp,cmap="gist_ncar",origin="lower",extent=[int(sys.argv[4]),int(sys.argv[5]),int(sys.argv[6]),int(sys.argv[7])],aspect="auto",norm=LogNorm())
+#pos=ax.imshow(masked,cmap=cmap,origin="lower",extent=[int(sys.argv[4]),int(sys.argv[5]),int(sys.argv[6]),int(sys.argv[7])],aspect="auto")
 
 plt.colorbar(pos,ax=ax)
 
@@ -569,7 +577,7 @@ def onpress(event):
 			for i in range(0,int(sys.argv[2]),int(rebin)):
 				for k in range(0,int(rebin),1):
 					if i <= int(sys.argv[2])-int(rebin):
-						yprojbsreb[i]=yprojbsreb[i]+yproj[i+k]
+						yprojbsreb[i]=yprojbsreb[i]+yprojbs[i+k]
 				for m in range(0,int(rebin),1):
 					if i <= int(sys.argv[2])-int(rebin):
 						yprojbsreb[i+m]=yprojbsreb[i]
@@ -593,8 +601,32 @@ def onpress(event):
 		#axp.autoscale()
 		plt.draw()
 	'''
-
-
+	if event.key == 'b':
+		print("Enter File:\n")
+		with open(input(),'r') as input_file:
+			banfile=input_file
+			print("file sucessfully open:\n")
+			print("enter banana gate ID:\n")
+			banidr=input()
+			#print("proton (1) or alpha (2):\n")
+			#ptype=input()
+			lines=banfile.readlines()
+			liner=[None]*52
+			xban=[]
+			yban=[]
+			count=0
+			for line in lines:
+				if line.find('#') != -1:
+					liner[count]=line.split()
+					print(liner[count][0], liner[count][1])
+					count=count+1
+				else:
+					if liner[count-1][0] == banidr:
+						liner2=line.split()
+						print(liner2[2],liner2[3])
+						xban.append(int(liner2[2]))
+						yban.append(int(liner2[3]))
+						ax.plot(xban,yban,'ro-')		
 #plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
 fig.canvas.mpl_connect('key_press_event',onpress)
