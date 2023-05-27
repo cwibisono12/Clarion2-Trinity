@@ -10,6 +10,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 import sys
+sys.path.append('custome')
+from custome import fitgui as f
 import os
 from matplotlib.colors import LogNorm
 from scipy.optimize import curve_fit as cvt
@@ -18,11 +20,11 @@ print("Welcome to Clarion2-Trinity Portable Visualization Software from C.W\n")
 print("Here are the features of the Software:")
 print("Hit g to make Projection")
 print("Hit e to expand axis")
-print("Hit f to generate coordinates useful for making banana gates")
+print("Hit y to generate coordinates useful for making banana gates")
 print("click mouse to draw banana gates")
-print("Hit n to perform Gauss fit")
-print("Hit m to perform another type of Gauss fit")
-print("Hit d to perform Double Gaussian")
+#print("Hit n to perform Gauss fit")
+#print("Hit m to perform another type of Gauss fit")
+#print("Hit d to perform Double Gaussian")
 print("Hit r to rebin the Histogram")
 print("Hit o to zoom out")
 print("Hit q to close figure")
@@ -111,6 +113,9 @@ xprojbsreb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtra
 xx=np.zeros(int(sys.argv[3]),dtype=np.int32)
 xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
 
+#lineplot = None
+#p = None
+global cid
 '''
 def update(val):
 	for i in range(0,int(sys.argv[3]),1):
@@ -162,13 +167,15 @@ def onclick(event):
 	print(index,xcoords,ycoords,xpix,ypix)
 
 def onpress(event):
+	global lineplot
+	global p
+	global axp,xx,xy,proj,background,xlow,xup
+	global xproj,yproj,xprojbs,yprojbs
+	global low,high,gate
 	##Zoom in and Zoom out Histogram:
 	if event.key == 'e':
-		print("Enter Axes to Expand 1 or 2\n")
+		print("Enter Figure to Expand 1 or 2\n")
 		waxis=input()
-		global axp,xx,xy,proj,background,xlow,xup
-		global xproj,yproj,xprojbs,yprojbs
-		global low,high,gate
 		if int(waxis) == 1:
 			print("Enter the lower xlim\n")
 			xlow1=input()
@@ -188,25 +195,38 @@ def onpress(event):
 			axp.clear()
 			axp.set_xlim(int(xlow),int(xup))
 			if int(proj)==1 and int(background)==0:	
-				axp.plot(xx[int(xlow):int(xup)],xproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,= axp.plot(xx[int(xlow):int(xup)],xproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.set_title('Full Projection X')
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				#Object Instantiation
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			if int(proj)==1 and int(background)==1:	
-				axp.plot(xx[int(xlow):int(xup)],xprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)],xprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			if int(proj)==2 and int(background)==0:
-				axp.plot(xy[int(xlow):int(xup)],yproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)],yproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			if int(proj)==2 and int(background)==1:
-				axp.plot(xy[int(xlow):int(xup)],yprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)],yprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			plt.draw()
 	#Zoom out Histogram:
 	if event.key == 'o':
@@ -214,11 +234,17 @@ def onpress(event):
 		ax.set_ylim(0,int(sys.argv[2]))
 		if int(proj)==1:
 			axp.set_xlim(0,int(sys.argv[3]))
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
 		if int(proj)==2:
 			axp.set_xlim(0,int(sys.argv[2]))
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
 	
 	#Saving Coordinates File for Banana Gates:
-	if event.key == 'f':
+	if event.key == 'y':
 		print("Print Ban Coords to the Screen:\n")
 		print("Input Banana ID:\n")
 		banid=input()
@@ -257,10 +283,13 @@ def onpress(event):
 				for j in range(int(low),int(high)+1,1):
 					xproj[i]=xproj[i]+ytrp[j,i]
 			if int(background) == 0:	
-				axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx,xproj,linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Full Projection X')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			if int(background) == 1:
 				print("Enter the left region for background")
 				backleft=input()
@@ -272,10 +301,13 @@ def onpress(event):
 						xprojb[i]=xprojb[i]+ytrp[j,i]
 					xprojbs[i]=(widthgate/(widthbackg+widthgate))*xproj[i]-(widthbackg/(widthbackg+widthgate))*xprojb[i]
 				axp.clear()
-				axp.plot(xx,xprojbs,linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx,xprojbs,linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 
 
 		#Projection on Y axis: Make a gate on X axis then project on Y axis:
@@ -292,10 +324,13 @@ def onpress(event):
 				for i in range(int(low),int(high)+1,1):
 					yproj[j]=yproj[j]+ytrp[j,i]
 			if int(background) == 0:
-				axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy,yproj,linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Full Projection Y')
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.legend()
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
 			if int(background) == 1:
 				print("Enter the left region for background")
 				backleft=input()
@@ -307,11 +342,14 @@ def onpress(event):
 						yprojb[j]=yprojb[j]+ytrp[j,i]
 					yprojbs[j]=(widthgate*yproj[j]-widthbackg*yprojb[j])/(widthgate+widthbackg)
 				axp.clear()
-				axp.plot(xy,yprojbs,linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy,yprojbs,linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
-	
+				p=f.gui(lineplot)
+				fig.canvas.mpl_disconnect(cid)
+				p.connect()
+	'''
 	#Perform Gauss fit for a particular peak:
 	if event.key == 'n':
 		print("Perform Gauss Fit:\n")
@@ -332,14 +370,14 @@ def onpress(event):
 		axp.clear()
 		if int(proj) == 1:
 			if int(background) == 0:
-				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection X')
 				popt,pcov=cvt(gauss,xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -351,14 +389,14 @@ def onpress(event):
 
 		if int(proj) == 2:
 			if int(background) == 0:
-				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
 				popt,pcov=cvt(gauss,xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -385,7 +423,7 @@ def onpress(event):
 		axp.clear()
 		if int(proj) == 1:
 			if int(background) == 0:
-				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection X')
@@ -395,7 +433,7 @@ def onpress(event):
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -410,7 +448,7 @@ def onpress(event):
 
 		if int(proj) == 2:
 			if int(background) == 0:
-				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
@@ -420,7 +458,7 @@ def onpress(event):
 				popt,pcov=cvt(lambda x, A, mu, sigma: gauss2(x,A,mu,sigma,backgheight),xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -464,7 +502,7 @@ def onpress(event):
 		axp.clear()
 		if int(proj) == 1:
 			if int(background) == 0:
-				axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection X')
@@ -475,7 +513,7 @@ def onpress(event):
 				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xx[int(xlowg):int(xupg)+1],xproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
+				lineplot,=axp.plot(xx[int(xlow):int(xup)+1],xprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjX')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -494,7 +532,7 @@ def onpress(event):
 
 		if int(proj) == 2:
 			if int(background) == 0:
-				axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yproj[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
@@ -504,7 +542,7 @@ def onpress(event):
 				popt,pcov=cvt(lambda x, A1, mu1, sigma1, A2, mu2, sigma2: gaussdoub(x,A1,mu1,sigma1,A2,mu2,sigma2,backgheight2),xy[int(xlowg):int(xupg)+1],yproj[int(xlowg):int(xupg)+1],p0)
 
 			if int(background) == 1:	
-				axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
+				lineplot,=axp.plot(xy[int(xlow):int(xup)+1],yprojbs[int(xlow):int(xup)+1],linewidth=0.75,ls='steps',label='ProjY')
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
@@ -520,7 +558,7 @@ def onpress(event):
 			area1=(np.sqrt(2*(np.pi)))*popt[0]*abs(popt[2])
 			area2=(np.sqrt(2*(np.pi)))*popt[3]*abs(popt[5])
 			print("mean1:",popt[1],"sigma1:",abs(popt[2]),"area1:",area1,"mean2:",popt[4],"sigma2:",abs(popt[5]),"area2:",area2)
-
+	'''
 
 
 	if event.key == 'r':
@@ -541,10 +579,13 @@ def onpress(event):
                 			if i <= (int(sys.argv[3])-int(rebin)):
                         			xprojreb[i+m]=xprojreb[i]
 			
-			axp.plot(xx[int(xlow):int(xup)],xprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+			lineplot,=axp.plot(xx[int(xlow):int(xup)],xprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 			axp.legend()
 			axp.set_title('Full Projection X')
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
 	
 		if int(proj)==1 and int(background)==1:
 			for i in range(0,int(sys.argv[3]),int(rebin)):
@@ -555,10 +596,13 @@ def onpress(event):
 					if i <= (int(sys.argv[3])-int(rebin)):
 						xprojbsreb[i+m]=xprojbsreb[i]
 
-			axp.plot(xx[int(xlow):int(xup)],xprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
+			lineplot,=axp.plot(xx[int(xlow):int(xup)],xprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
         
 		if int(proj)==2 and int(background)==0:
 			for i in range(0,int(sys.argv[2]),int(rebin)):
@@ -568,10 +612,13 @@ def onpress(event):
 				for m in range(0,int(rebin),1):
 					if i <= int(sys.argv[2])-int(rebin):
 						yprojreb[i+m]=yprojreb[i]
-			axp.plot(xy[int(xlow):int(xup)],yprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+			lineplot,=axp.plot(xy[int(xlow):int(xup)],yprojreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Full Projection Y')
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
 
 		if int(proj)==2 and int(background)==1:
 			for i in range(0,int(sys.argv[2]),int(rebin)):
@@ -581,10 +628,13 @@ def onpress(event):
 				for m in range(0,int(rebin),1):
 					if i <= int(sys.argv[2])-int(rebin):
 						yprojbsreb[i+m]=yprojbsreb[i]
-			axp.plot(xy[int(xlow):int(xup)],yprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
+			lineplot,=axp.plot(xy[int(xlow):int(xup)],yprojbsreb[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
+			p=f.gui(lineplot)
+			fig.canvas.mpl_disconnect(cid)
+			p.connect()
 
 		plt.draw()
 
@@ -629,9 +679,11 @@ def onpress(event):
 						ax.plot(xban,yban,'ro-')		
 #plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
-fig.canvas.mpl_connect('key_press_event',onpress)
+cid=fig.canvas.mpl_connect('key_press_event',onpress)
 #figp.canvas.mpl_connect('button_press_event',onclick)
 figp.canvas.mpl_connect('key_press_event',onpress)
 axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
+
+#p.connect()
 
 plt.show()

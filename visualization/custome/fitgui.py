@@ -118,7 +118,7 @@ class fitgui:
 		popt,pcov=cvt(lambda x, A, mu, sigma: fitgui.gaussfunc(x,A,mu,sigma,backgheight),self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],self.y[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],p0)
 		#return popt,backgheight
 		area=popt[0]*np.sqrt(2.0*np.pi)*abs(popt[2])
-		print('axes:',self.line.axes,'mean:',popt[1],'sigma:',abs(popt[2]),'FWHM:',abs(popt[2]*fitgui.FWHMc),'area:',area)
+		print('mean:',popt[1],'sigma:',abs(popt[2]),'FWHM:',abs(popt[2]*fitgui.FWHMc),'area:',area)
 		self.gfit=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],*popt,backgheight),'m',linewidth=1.5)
 		for i in range(0,4,1):
 			abc2=self.vertical.pop(0)
@@ -147,7 +147,8 @@ class fitgui:
 		area1=popt[0]*np.sqrt(2.0*np.pi)*abs(popt[2])
 		area2=popt[3]*np.sqrt(2.0*np.pi)*abs(popt[5])
 		areasum=area1+area2
-		print('mean1:',popt[1],'sigma1:',abs(popt[2]),'FWHM1:',abs(popt[2]*fitgui.FWHMc),'area1:',area1,'mean2:',popt[4],'sigma2:',abs(popt[5]),'FWHM2:',abs(popt[5]*fitgui.FWHMc),'area2:',area2,'areasum:',areasum)
+		print('mean1:',popt[1],'sigma1:',abs(popt[2]),'FWHM1:',abs(popt[2]*fitgui.FWHMc),'area1:',area1)
+		print('mean2:',popt[4],'sigma2:',abs(popt[5]),'FWHM2:',abs(popt[5]*fitgui.FWHMc),'area2:',area2,'areasum:',areasum)
 		
 		for i in range(0,4,1):
 			abc2=self.vertical.pop(0)
