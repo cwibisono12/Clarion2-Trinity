@@ -5,10 +5,10 @@
 
 
 #How to Run:
-#./readsecpxi16.py .secfile .calfile dimy dimx xlow xup
+#./readsecpxi16.py .secfile .calfile dimy dimx xlow xup ylow yup
 #Example:
-#./readsecpxi16.py Co60.sec /home/clarion/Clarion2-Trinity/param/cal_fsu.ca3 144 8192 100 3000
-#Above command would display Ge spectra from E=100 to E=3000
+#./readsecpxi16.py Co60.sec /home/clarion/Clarion2-Trinity/param/cal_fsu.ca3 144 8192 100 3000 0 5000
+#Above command would display Ge spectra from E=100 to E=3000 with y range starts from 0 to 5000
 
 
 import numpy as np
@@ -28,6 +28,8 @@ dimy=int(sys.argv[3])
 dimx=int(sys.argv[4])
 xlow=int(sys.argv[5])
 xup=int(sys.argv[6])
+ylow=int(sys.argv[7])
+yup=int(sys.argv[8])
 
 linecal=filecal.readlines()
 plt.rcParams['font.family']='serif'
@@ -346,27 +348,34 @@ line94,=ax9[3].plot(x104,J10_4,linewidth=0.85,ls='steps-post',label='J10-Red')
 for i in range(0,4,1):
 	ax[i].legend()
 	ax[i].set_xlim(left=xlow,right=xup,auto=False)
-	#ax[i].autoscale()
+	ax[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax2[i].legend()
 	ax2[i].set_xlim(left=xlow,right=xup,auto=False)
-	#ax2[i].autoscale()
+	ax2[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax3[i].legend()
 	ax3[i].set_xlim(left=xlow,right=xup,auto=False)
-	#ax3[i].autoscale()
+	ax3[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax4[i].legend()
 	ax4[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax4[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax5[i].legend()
 	ax5[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax5[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax6[i].legend()
 	ax6[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax6[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax7[i].legend()
 	ax7[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax7[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax8[i].legend()
 	ax8[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax8[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax9[i].legend()
 	ax9[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax9[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax10[i].legend()
 	ax10[i].set_xlim(left=xlow,right=xup,auto=False)
+	ax10[i].set_ylim(bottom=ylow,top=yup,auto=False)
 	ax[i].set_ylabel('counts/keV',style='normal',fontweight='bold')
 	ax2[i].set_ylabel('counts/keV',style='normal',fontweight='bold')
 	ax3[i].set_ylabel('counts/keV',style='normal',fontweight='bold')
