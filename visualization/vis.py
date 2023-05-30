@@ -200,7 +200,7 @@ def onpress(event):
 				axp.set_title('Full Projection X')
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				#Object Instantiation
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==1 and int(background)==1:	
@@ -208,7 +208,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==2 and int(background)==0:
@@ -216,7 +216,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==2 and int(background)==1:
@@ -224,7 +224,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			plt.draw()
@@ -234,12 +234,12 @@ def onpress(event):
 		ax.set_ylim(0,int(sys.argv[2]))
 		if int(proj)==1:
 			axp.set_xlim(0,int(sys.argv[3]))
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
 		if int(proj)==2:
 			axp.set_xlim(0,int(sys.argv[2]))
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
 	
@@ -287,7 +287,7 @@ def onpress(event):
 				axp.set_title('Full Projection X')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(background) == 1:
@@ -305,7 +305,7 @@ def onpress(event):
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 
@@ -328,7 +328,7 @@ def onpress(event):
 				axp.set_title('Full Projection Y')
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.legend()
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(background) == 1:
@@ -346,7 +346,7 @@ def onpress(event):
 				axp.set_title('Gate on '+str(gate)+' keV')
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
-				p=f.gui(lineplot)
+				p=f.fitgui(lineplot)
 				fig.canvas.mpl_disconnect(cid)
 				p.connect()
 	'''
@@ -583,7 +583,7 @@ def onpress(event):
 			axp.legend()
 			axp.set_title('Full Projection X')
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
 	
@@ -600,7 +600,7 @@ def onpress(event):
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
         
@@ -616,7 +616,7 @@ def onpress(event):
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Full Projection Y')
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
 
@@ -632,7 +632,7 @@ def onpress(event):
 			axp.legend()
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
-			p=f.gui(lineplot)
+			p=f.fitgui(lineplot)
 			fig.canvas.mpl_disconnect(cid)
 			p.connect()
 
