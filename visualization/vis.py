@@ -674,8 +674,8 @@ def onpress(event):
 					if liner[count-1][0] == banidr:
 						liner2=line.split()
 						print(liner2[2],liner2[3])
-						xban.append(int(liner2[2]))
-						yban.append(int(liner2[3]))
+						xban.append(float(liner2[2]))
+						yban.append(float(liner2[3]))
 						ax.plot(xban,yban,'ro-')		
 #plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
