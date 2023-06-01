@@ -25,5 +25,5 @@ extern int* pid_qdc414[4096];
 extern int* pid_qdc415[4096];
 extern int* pid_qdc416[4096];
 
-void gaggpid(struct sidetector *si, int parttype);
+void gaggpid(struct gdetector *ge, struct sidetector *si, int parttype, int gmult, int Egammin, int Egammax);
 

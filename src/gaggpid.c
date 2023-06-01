@@ -6,10 +6,19 @@
 #include <stdbool.h>
 #include "gaggpid.h"
 
-void gaggpid(struct sidetector *si, int parttype){
+void gaggpid(struct gdetector *ge, struct sidetector *si, int parttype,int gmult,int Egammin, int Egammax){
 int gaggvalid=0;
 int sicount;
-int i;
+int i,k;
+int gemvalid=0;
+
+//Checking whether an event is within a gamma gate window:
+for(k=0;k<gmult;k++){
+if(ge[k].energy >= Egammin && ge[k].energy <= Egammax)
+gemvalid++;
+}
+//======================================================
+
 for (i=1;i<MAX_SI;i++){
 	
   if (si[i].simult == 2 && (((si[i].siid[0] == 1 && si[i].siid[1] == 2)) || (si[i].siid[0] == 2 && si[i].siid[1] == 1)) && si[i].sipileup[0] == 0 && si[i].sipileup[1] == 0
@@ -41,11 +50,14 @@ si[i].phi[sicount]=si[i].siphi[0][sicount];
 //printf("theta: %f phi: %f\n",si[i].theta[sicount],si[i].phi[sicount]);
 }
 
+
+
 //Generating PID:
 if ((si[i].peak > 0. && si[i].peak < 4096.) && (si[i].tail > 0. && si[i].tail < 4096.) &&
     (si[i].traceint > 0. && si[i].traceint < 4096.) && (si[i].tpratio > 0. && si[i].tpratio < 4096.)
     && (si[i].energy > 0. && si[i].energy < 4096.)
-     ){
+    && gemvalid > 0
+	 ){
     if (i == 1){pid_qdc21[(int)si[1].energy][(int)si[i].tpratio]++;} 
     if (i == 2){pid_qdc22[(int)si[2].energy][(int)si[i].tpratio]++;} 
     if (i == 3){pid_qdc23[(int)si[3].energy][(int)si[i].tpratio]++;} 

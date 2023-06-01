@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
 */
   float betascale=atof(argv[7]);
   int option=atoi(argv[8]); //use 1 to use doppler corection with kinmat or 2 to use old doppler
-//  int Emin=atoi(argv[6]); //C.W
-//  int Emax=atof(argv[7]); //C.W
+  int Egammin; 
+  int Egammax;
   int overwrite = 1;    
  
 
@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
 
 
 if (argc >=6){
-FILE *fgagg, *fparticle;
+FILE *fgagg, *fparticle, *fgamgate;
 fgagg=fopen(argv[5],"r");
 int idgagg;
 int n;
@@ -380,6 +380,8 @@ float quadgagg,slopegagg,interceptgagg;
 char type[20];
 
 fparticle=fopen(argv[9],"r");
+
+fgamgate=fopen(argv[10],"r");
 
 if (fparticle == NULL){
 fprintf(stderr,"Error, cannot open input file %s\n",argv[9]);
@@ -394,6 +396,7 @@ mbeam=mb*amu; //conversion to amu
 ml=ml0*amu;
 mh=mh0*amu;
 vbz=pow(2*Ebeam/mbeam,0.5);
+
 
 if (fgagg == NULL){
 fprintf(stderr,"Error, cannot open input file %s\n",argv[5]);
@@ -425,9 +428,20 @@ memset(line,0,LINE_LENGTH);
 }
 }
 
+//Reading The lower and upper limit of Gamma Energy for making Banana Gate
+if (fgamgate == NULL){
+fprintf(stderr,"Error, cannot open input file %s\n",argv[5]);
+}
+
+while(fgets(line,LINE_LENGTH,fgamgate) !=NULL){
+        if(strchr(line,'#') ==NULL)
+                sscanf(line,"%d\t%d\n",&Egammin,&Egammax);
+                        }
+memset(line,0,LINE_LENGTH);
 
 fclose(fgagg);
 fclose(fparticle);
+fclose(fgamgate);
 }
   
   
@@ -682,15 +696,17 @@ for (km=0;km<gmult;km++){
 /////////////////////////    //C. W
 //printf("%d\n",parttype);
 
-//Create the PID:
-gaggpid(si,parttype);
-/*
+
 //Checking Gagg and Germanium Multiplicities:
-int gaggvalid=gaggproc(si,parttype);
+//int gaggvalid=gaggproc(si,parttype);
+//Process Germanium Detector:
 gmult=gamproc(ge);
 
+//Create the PID:
+//Gamma-Gated Incorporated PID:
+gaggpid(ge,si,parttype,gmult,Egammin,Egammax);
 
-
+/*
 //Checking the energy of GAGG thas fire more than twices for a given events:
 int p;
 if (gaggvalid > 0  && gmult>0){

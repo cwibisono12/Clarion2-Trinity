@@ -6,3 +6,4 @@ gcc -c detmap.c
 gcc -c main_pid.c
 gcc -c write.c
 gcc -c gaggpid.c
+gcc -c germanium.c
