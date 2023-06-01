@@ -101,7 +101,7 @@ class fitgui:
 	def gauss(self,event):
 		if event.inaxes != self.line.axes:
 			return
-		if event.key != 'f':
+		if event.key != 'm':
 			return		
 		sys.stdout.flush()
 		if self.gfit != None:
