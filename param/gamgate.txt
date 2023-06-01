@@ -1,0 +1,2 @@
+#Egammin Egammax
+1600 1800
