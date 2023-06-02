@@ -14,6 +14,7 @@ After all of the programs and their dependencies have been compiled, link the ob
 ./clarion -up [time-order-file] [calibration file] [detector mapping file] [gagg calibration file] [banana cut file] [scaling factor for doppler correction] [option of doppler correction;1 for kinematic correction;everything else can be made 2] [reaction channel information]
 
 #Example of how to run the program:
+
 ./clarion -up data.evt.to cal_fsu.ca3 id_fsu_Jun9.map gagg_calib_proton.txt 2d_all_p.banx 0.8 1 proton.txt
 
 Note about scaling factor flag:
@@ -22,7 +23,7 @@ It is used as an empirical factor needed for kinematic corrections. For the use 
 The output for the programs will generate multiple files which are basically a histogram represented as a 2D matrix. Please see sort/Clarion2_SpectraFiles.xlsx to see the lists of the files along with the notes about dimensions and descriptions.
 
 #Note for the PID:
-PIDs for Clarion2-Trinity are made separately for each GAGG. In order to produce the PIDs, one needs to compile differently with the one previously mentioned. To get the PIDs do the following:
+PIDs for Clarion2-Trinity are made separately for each GAGG. Gamma gate condition can also be made to give more restrictive requirement so that the separation between charged particles are more distinct. In order to produce the PIDs, one needs to compile differently with the one previously mentioned. To get the PIDs do the following:
 
 #Compile:
 ./build_pid.sh
@@ -30,7 +31,13 @@ PIDs for Clarion2-Trinity are made separately for each GAGG. In order to produce
 #Linking:
 ./link_pid.sh
 
-The procedure for running the program is the same except that now the executable name is clarion_pid. The default dimensions for each PID is 4096 x 4096.
+The procedure for running the program is the same except that now the executable name is clarion_pid. Also, there is an additional argument next to reaction channel parameter that is the information about the gamma gate energy window that we want to put to create gamma-gated pid. 
+
+#Example of how to generate PID:
+
+./clarion_pid -up data.evt.to cal_fsu.ca3 id_fsu_Jun9.map gagg_calib_proton.txt 2d_all_p.banx 0.8 1 proton.txt gamgatefile.txt
+
+The default dimensions for each PID is 4096 x 4096.
 
 **Visualization[Very Basic version]** 
 
