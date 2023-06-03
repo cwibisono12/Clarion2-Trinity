@@ -31,7 +31,7 @@ for ((j=initial;j<=final;j++));
 	if [ -f  "$directoryinitial/Dec$daterun-$dateseg-0$j.evt.to" ]
 	then
 	#ls -l $directoryinitial/Dec$daterun-$dateseg-$j.evt.to;
-	.././clarion -up $directoryinitial/Dec$daterun-$dateseg-0$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1;  
+	.././clarion -up $directoryinitial/Dec$daterun-$dateseg-0$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1 proton.txt;  
   fi
 	done
 elif [ $initial -lt 10 ]
@@ -40,7 +40,7 @@ for ((j=initial;j<=final;j++));
   do
   if [ -f "$directoryinitial/Dec$daterun-$dateseg-00$j.evt.to" ]
   then
-  .././clarion -up $directoryinitial/Dec$daterun-$dateseg-00$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1;
+  .././clarion -up $directoryinitial/Dec$daterun-$dateseg-00$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1 proton.txt;
   fi
   done
 else
@@ -48,7 +48,7 @@ for ((j=initial;j<=final;j++));
   do
   if [ -f "$directoryinitial/Dec$daterun-$dateseg-$j.evt.to" ]
   then
-  .././clarion -up $directoryinitial/Dec$daterun-$dateseg-$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1;
+  .././clarion -up $directoryinitial/Dec$daterun-$dateseg-$j.evt.to ../../cal_fsu.ca3 ../../id_fsu_Jun9.map gagg_calib_proton.txt $bangate 0.8 1 proton.txt;
   fi
   done
 fi
