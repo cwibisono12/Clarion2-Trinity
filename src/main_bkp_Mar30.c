@@ -136,30 +136,6 @@ int main(int argc, char **argv) {
 	printf("\nError,memory not allocated\n");
 	exit(1);
 	}   
-	if((gg_prompt_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_nddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_ddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_nddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
 	}//end iteration for malloc
    
   // Check that the corrent number of arguments were provided.
@@ -472,7 +448,7 @@ while (fgets(line,LINE_LENGTH,fprbangate) !=NULL){
           }
     if (gaggid == GID[5] && gaggnmpts == GNMPTS[5]){
         polyX26[g6]=banx;
-        polyY26[g6]=bany;
+        polyX26[g6]=bany;
         printf("%f %f\n",polyX26[g6],polyY26[g6]);
         g6++;
           }
@@ -502,7 +478,7 @@ while (fgets(line,LINE_LENGTH,fprbangate) !=NULL){
           }
     if (gaggid == GID[10] && gaggnmpts == GNMPTS[10]){
         polyX41[g11]=banx;
-        polyY41[g11]=bany;
+        polyY42[g11]=bany;
         printf("%f %f\n",polyX41[g11],polyY41[g11]);
         g11++;
           }
@@ -847,6 +823,27 @@ if (gaggvalid > 0 && gmult > 0){
 */
   //Final User Spectra
   //gamma-gamma
+ /*
+  write_data4(GAGG_HIST, *gagghist, 4096, 1, overwrite);
+  write_data4(THETA_RES2, *theta_res2, 4096, 28, overwrite);
+  write_data4(THETA_RES4, *theta_res4, 4096, 28, overwrite);
+  write_data4(E_LIT2, *e_lit2, 4096, 28, overwrite);
+  write_data4(E_LIT4, *e_lit4, 4096, 28, overwrite);
+  write_data4(POL_PARA,*pol_para, 5000, 5000, overwrite);
+  write_data4(POL_PERP, *pol_perp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREF, *gg_prompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFP, *gg_prompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFPKIN, *gg_prompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREB, *gg_prompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBP, *gg_prompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBPKIN, *gg_prompt_purebpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREF, *gg_nprompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFP, *gg_nprompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFPKIN, *gg_nprompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREB, *gg_nprompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBP, *gg_nprompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBPKIN, *gg_nprompt_purebpkin, 5000, 5000, overwrite);
+*/
 
  // write_data4dyn(GG_TDIF, gg_tdif, 4096, 4096, overwrite);
   write_data4dyn(GG_TDIF1, gg_tdif1, 4096, 4096, overwrite);
@@ -865,12 +862,6 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4dyn(GG_NPROMPT_NDDOPP2, gg_nprompt_nddopp2, 5000,5000, overwrite); //C.W
   write_data4dyn(GG_NPROMPT_DDOPP2,gg_nprompt_ddopp2, 5000, 5000, overwrite); //C.W
   write_data4dyn(GG_NPROMPT_DDOPP,gg_nprompt_ddopp, 5000, 5000, overwrite);//C.W
-  write_data4dyn(GG_PROMPT_NG, gg_prompt_ng, 5000, 5000, overwrite);
-  write_data4dyn(GG_PROMPT_NDDOPP_NG, gg_prompt_nddopp_ng, 5000, 5000, overwrite); //C.W
-  write_data4dyn(GG_PROMPT_DDOPP_NG, gg_prompt_ddopp_ng, 5000, 5000, overwrite); //C. W
-  write_data4dyn(GG_NPROMPT_NG, gg_nprompt_ng, 5000, 5000, overwrite);
-  write_data4dyn(GG_NPROMPT_NDDOPP_NG, gg_nprompt_nddopp_ng, 5000,5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_DDOPP_NG,gg_nprompt_ddopp_ng, 5000, 5000, overwrite);//C.W
  
   fclose(fpr);
   fclose(debugfile);

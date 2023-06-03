@@ -10,8 +10,8 @@
 #include "param.h"
 #include "spec.h"
 #include "spec_dec.h"
-#include "ggmat.h"
-#include "ggmatglobal.h"
+#include "gaggpid.h"
+#include "gaggpid_dec.h"
 
 struct subevent subevt[MAX_ID]={0};
 int sevtmult=0;
@@ -74,93 +74,114 @@ int main(int argc, char **argv) {
   //Reference time and difference for event building
   long long int etime, tdif, idtime[MAX_ID]={0}, temptime;
   //Allocate Memory for PID making:
-  int ab,bc;
-  
+  int ab;
   for(ab=0;ab<4096;ab++){
-	if((gg_tdif1[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	if((pid_qdc21[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
 	printf("\nError,memory not allocated\n");
 	exit(1);
-	}   
-	if((gg_tdif2[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	}
+	if((pid_qdc22[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
 	printf("\nError,memory not allocated\n");
 	exit(1);
-	}   
-	}//end iteration for malloc
+	}
+	if((pid_qdc23[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc24[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc25[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc26[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc27[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc28[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc29[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc210[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc41[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc42[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc43[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc44[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc45[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc46[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc47[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc48[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc49[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc410[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc411[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc412[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc413[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc414[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc415[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+	if((pid_qdc416[ab]=(int*)malloc(4096*sizeof(int))) == NULL){
+	printf("\nError,memory not allocated\n");
+	exit(1);
+	}
+   }//end iteration for malloc
  
-  for(bc=0;bc<5000;bc++){
-	if((gg_prompt[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_nddopp[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_ddopp[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt1[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_nddopp1[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ddopp1[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt2[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_nddopp2[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ddopp2[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_nddopp[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ddopp[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_nddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_prompt_ddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_nddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	if((gg_nprompt_ddopp_ng[bc]=(int*)malloc(5000*sizeof(int))) == NULL){
-	printf("\nError,memory not allocated\n");
-	exit(1);
-	}   
-	}//end iteration for malloc
    
   // Check that the corrent number of arguments were provided.
   if (argc<3)    {
@@ -662,8 +683,8 @@ for (km=0;km<gmult;km++){
 //printf("%d\n",parttype);
 
 //Create the PID:
-//gaggpid(si,parttype);
-
+gaggpid(si,parttype);
+/*
 //Checking Gagg and Germanium Multiplicities:
 int gaggvalid=gaggproc(si,parttype);
 gmult=gamproc(ge);
@@ -685,14 +706,13 @@ doppcorrect(gaggvalid, gmult, si, ge, option, ml, mbeam, mh, vbz, betascale);
 
 
 //Record Particle Hits:
-parthit(gaggvalid, gmult, ge, si);
+parthit(gaggvalid, gmult, ge, si, e_lit2, e_lit4, theta_res2, theta_res4, gagghist);
 
 
 //Perform 1D gagg-Gamma Histogram:
-gammagagg1Dspectra(gaggvalid, gmult, si, ge);
+gammagagg1Dspectra(gaggvalid, gmult, si, ge, gagg_gamma_tdiff_ring2, gagg_gamma_tdiff_ring4, gagg_gamma_tdiff2,gated_gamma, gated_gammatrue,  gated_gamma_np, gated_gamma_nptrue);
 
-//Make gg matrix:
-ggmat(gaggvalid,gmult,ge);
+*/
 
 /*
 
@@ -777,10 +797,8 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(HIT, *hit, 4096, 2, overwrite);
   write_data4(MULT, *mult, 4096, 1, overwrite);
   write_data4(TDIFID, *tdifid, MAX_ID, 8192, overwrite);
-  */
   write_data4(E_RAW, *e_raw, MAX_ID, 8192, overwrite);
   write_data4(E_CAL, *e_cal, MAX_ID, 8192, overwrite);
-/*
   write_data4(TEVT_RAW, *tevt_raw, MAX_ID, 8192, overwrite);
   write_data4(TEVT_CAL, *tevt_cal, MAX_ID, 8192, overwrite);
   write_data4(TCFD_RAW, *tcfd_raw, MAX_ID, 8192, overwrite);
@@ -792,7 +810,7 @@ if (gaggvalid > 0 && gmult > 0){
 */
   //Detector Processed Spectra
   //Ge
- 
+ /*
   write_data4(GE_BGO_TDIF, *ge_bgo_tdif, MAX_GE, 4096, overwrite);
   write_data4(GE_XTL_TDIF, *ge_xtl_tdif, MAX_GE, 4096, overwrite);
   write_data4(GE_XTL_TDIF_ETHRESH, *ge_xtl_tdif_ethresh, MAX_GE, 4096, overwrite);
@@ -800,9 +818,7 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(GE_SPE, *ge_spe, MAX_GE, 8192, overwrite);
   write_data4(GE_SPE_DOPP, *ge_spe_dopp, MAX_GE, 8192, overwrite); //C.W
   write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 8192, overwrite);
-
-/* 
- //trinity
+  //trinity
   write_data4(PID, *pid, 4096, 4096, overwrite);
   write_data4(PID_EVSP, *pid_evsp, 4096, 4096, overwrite);
   write_data4(PID_EVST, *pid_evst, 4096, 4096, overwrite);
@@ -811,17 +827,17 @@ if (gaggvalid > 0 && gmult > 0){
   write_data4(PID_TAUVSR, *pid_tauvsr, 4096, 4096, overwrite);
   write_data4(GAGGDT, *gaggdt, 4096, 4096, overwrite);
 */
-
-    //write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 4096, overwrite);  
-   // write_data4(PID_Gamma_R, *ge_gagg_spe_r, MAX_GE, 4096, overwrite);
-    write_data4(GAGG_GAMMA_TDIFF_RING2, *gagg_gamma_tdiff_ring2, 4096, 4096, overwrite);
-    write_data4(GAGG_GAMMA_TDIFF_RING4, *gagg_gamma_tdiff_ring4, 4096, 4096, overwrite);
-    write_data4(GAGG_GAMMA_TDIFF2, *gagg_gamma_tdiff2, 5000, 5000, overwrite);
-    write_data4(GATED_GAMMA, *gated_gamma, 1, 5000, overwrite);
-    write_data4(GATED_GAMMATRUE, *gated_gammatrue,1,5000,overwrite);
-    write_data4(GATED_GAMMA_NP, *gated_gamma_np, 1, 5000, overwrite);
-    write_data4(GATED_GAMMA_NPTRUE, *gated_gamma_nptrue, 1, 5000, overwrite);
-
+/*
+     write_data4(GE_SPE_CLEAN, *ge_spe_clean, MAX_GE, 4096, overwrite);  
+    write_data4(PID_Gamma_R, *ge_gagg_spe_r, MAX_GE, 4096, overwrite);
+    write_data4(PID_Gammaa, *gagg_gamma_tdiff_ring2, 4096, 4096, overwrite);
+    write_data4(PID_Gammab, *gagg_gamma_tdiff_ring4, 4096, 4096, overwrite);
+    write_data4(PID_Gamma2, *gagg_gamma_tdiff2, 5000, 5000, overwrite);
+    write_data4(PID_Gamma_1Dp, *gated_gamma, 1, 5000, overwrite);
+    write_data4(PID_Gamma_1Dptrue, *gated_gammatrue,1,5000,overwrite);
+    write_data4(PID_Gamma_1Dnp, *gated_gamma_np, 1, 5000, overwrite);
+    write_data4(PID_Gamma_1Dnptrue, *gated_gamma_nptrue, 1, 5000, overwrite);
+*/
 /*
   for (int i=0; i<26; ++i) {
     char name[128];
@@ -832,6 +848,32 @@ if (gaggvalid > 0 && gmult > 0){
 */
  
  
+ write_data4dyn(PID_QDC21, pid_qdc21, 4096,4096, overwrite);
+ write_data4dyn(PID_QDC22, pid_qdc22, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC23, pid_qdc23, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC24,pid_qdc24, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC25, pid_qdc25, 4096,4096, overwrite); 
+ write_data4dyn(PID_QDC26, pid_qdc26, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC27, pid_qdc27, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC28,pid_qdc28, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC29, pid_qdc29, 4096,4096, overwrite);
+ write_data4dyn(PID_QDC210, pid_qdc210, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC41, pid_qdc41, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC42,pid_qdc42, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC43, pid_qdc43, 4096,4096, overwrite);
+ write_data4dyn(PID_QDC44, pid_qdc44, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC45, pid_qdc45, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC46,pid_qdc46, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC47, pid_qdc47, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC48, pid_qdc48, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC49, pid_qdc49, 4096,4096, overwrite);
+ write_data4dyn(PID_QDC410, pid_qdc410, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC411, pid_qdc411, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC412, pid_qdc412, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC413, pid_qdc413, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC414, pid_qdc414, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC415, pid_qdc415, 4096, 4096, overwrite);
+ write_data4dyn(PID_QDC416, pid_qdc416, 4096, 4096, overwrite);
 
 // write_data4(GAGG_GE_TDIFF, *gagg_ge_tdiff, 4096, 4096, overwrite);
 
@@ -847,31 +889,46 @@ if (gaggvalid > 0 && gmult > 0){
 */
   //Final User Spectra
   //gamma-gamma
-
- // write_data4dyn(GG_TDIF, gg_tdif, 4096, 4096, overwrite);
-  write_data4dyn(GG_TDIF1, gg_tdif1, 4096, 4096, overwrite);
-  write_data4dyn(GG_TDIF2, gg_tdif2, 4096, 4096, overwrite);
-  write_data4dyn(GG_PROMPT, gg_prompt, 5000, 5000, overwrite);
- // write_data4dyn(GG_PROMPT_PURE, gg_prompt_pure, 5000, 5000, overwrite);
- // write_data4dyn(GG_NPROMPT_PURE, gg_nprompt_pure, 5000, 5000, overwrite);
-  write_data4dyn(GG_NPROMPT, gg_nprompt, 5000, 5000, overwrite);
-  write_data4dyn(GG_NPROMPT1, gg_nprompt1, 5000, 5000, overwrite);
-  write_data4dyn(GG_NPROMPT2, gg_nprompt2, 5000, 5000, overwrite);
-  write_data4dyn(GG_PROMPT_NDDOPP, gg_prompt_nddopp, 5000, 5000, overwrite); //C.W
-  write_data4dyn(GG_PROMPT_DDOPP, gg_prompt_ddopp, 5000, 5000, overwrite); //C. W
-  write_data4dyn(GG_NPROMPT_NDDOPP, gg_nprompt_nddopp, 5000,5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_NDDOPP1, gg_nprompt_nddopp1, 5000,5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_DDOPP1, gg_nprompt_ddopp1, 5000, 5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_NDDOPP2, gg_nprompt_nddopp2, 5000,5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_DDOPP2,gg_nprompt_ddopp2, 5000, 5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_DDOPP,gg_nprompt_ddopp, 5000, 5000, overwrite);//C.W
-  write_data4dyn(GG_PROMPT_NG, gg_prompt_ng, 5000, 5000, overwrite);
-  write_data4dyn(GG_PROMPT_NDDOPP_NG, gg_prompt_nddopp_ng, 5000, 5000, overwrite); //C.W
-  write_data4dyn(GG_PROMPT_DDOPP_NG, gg_prompt_ddopp_ng, 5000, 5000, overwrite); //C. W
-  write_data4dyn(GG_NPROMPT_NG, gg_nprompt_ng, 5000, 5000, overwrite);
-  write_data4dyn(GG_NPROMPT_NDDOPP_NG, gg_nprompt_nddopp_ng, 5000,5000, overwrite); //C.W
-  write_data4dyn(GG_NPROMPT_DDOPP_NG,gg_nprompt_ddopp_ng, 5000, 5000, overwrite);//C.W
- 
+ /*
+  write_data4(GAGG_HIST, *gagghist, 4096, 1, overwrite);
+  write_data4(THETA_RES2, *theta_res2, 4096, 28, overwrite);
+  write_data4(THETA_RES4, *theta_res4, 4096, 28, overwrite);
+  write_data4(E_LIT2, *e_lit2, 4096, 28, overwrite);
+  write_data4(E_LIT4, *e_lit4, 4096, 28, overwrite);
+  write_data4(POL_PARA,*pol_para, 5000, 5000, overwrite);
+  write_data4(POL_PERP, *pol_perp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREF, *gg_prompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFP, *gg_prompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREFPKIN, *gg_prompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREB, *gg_prompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBP, *gg_prompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PUREBPKIN, *gg_prompt_purebpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREF, *gg_nprompt_puref, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFP, *gg_nprompt_purefp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREFPKIN, *gg_nprompt_purefpkin, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREB, *gg_nprompt_pureb, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBP, *gg_nprompt_purebp, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PUREBPKIN, *gg_nprompt_purebpkin, 5000, 5000, overwrite);
+*/
+/*
+  write_data4(GG_TDIF, *gg_tdif, 4096, 4096, overwrite);
+  write_data4(GG_TDIF1, *gg_tdif1, 4096, 4096, overwrite);
+  write_data4(GG_TDIF2, *gg_tdif2, 4096, 4096, overwrite);
+  write_data4(GG_PROMPT, *gg_prompt, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_PURE, *gg_prompt_pure, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT_PURE, *gg_nprompt_pure, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT, *gg_nprompt, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT1, *gg_nprompt1, 5000, 5000, overwrite);
+  write_data4(GG_NPROMPT2, *gg_nprompt2, 5000, 5000, overwrite);
+  write_data4(GG_PROMPT_nddopp, *gg_prompt_nddopp, 5000, 5000, overwrite); //C.W
+  write_data4(GG_PROMPT_ddopp, *gg_prompt_ddopp, 5000, 5000, overwrite); //C. W
+  write_data4(GG_NPROMPT_nddopp, *gg_nprompt_nddopp, 5000,5000, overwrite); //C.W
+  write_data4(GG_NPROMPT_nddopp1, *gg_nprompt_nddopp1, 5000,5000, overwrite); //C.W
+  write_data4(GG_NPROMPT_ddopp1, *gg_nprompt_ddopp1, 5000, 5000, overwrite); //C.W
+  write_data4(GG_NPROMPT_nddopp2, *gg_nprompt_nddopp2, 5000,5000, overwrite); //C.W
+  write_data4(GG_NPROMPT_ddopp2, *gg_nprompt_ddopp2, 5000, 5000, overwrite); //C.W
+  write_data4(GG_NPROMPT_ddopp, *gg_nprompt_ddopp, 5000, 5000, overwrite);//C.W
+ */
   fclose(fpr);
   fclose(debugfile);
   

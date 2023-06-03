@@ -16,3 +16,11 @@ int* gg_nprompt_ddopp2[5000];
 int* gg_nprompt[5000];
 int* gg_nprompt_nddopp[5000];
 int* gg_nprompt_ddopp[5000];
+
+int* gg_prompt_ng[5000];
+int* gg_prompt_nddopp_ng[5000];
+int* gg_prompt_ddopp_ng[5000];
+
+int* gg_nprompt_ng[5000];
+int* gg_nprompt_nddopp_ng[5000];
+int* gg_nprompt_ddopp_ng[5000];
