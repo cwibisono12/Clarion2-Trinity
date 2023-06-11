@@ -409,7 +409,7 @@ fig7.suptitle("H8")
 fig8.suptitle("I9")
 fig9.suptitle("J10")
 fig10.suptitle("K11")
-'''
+
 p11=f.fitgui(line11)
 p12=f.fitgui(line12)
 p13=f.fitgui(line13)
@@ -510,7 +510,7 @@ p101.connect()
 p102.connect()
 p103.connect()
 p104.connect()
-'''
+
 
 
 plt.show()
