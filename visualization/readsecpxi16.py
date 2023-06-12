@@ -16,11 +16,11 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 import sys 
 import os
+from scipy.optimize import curve_fit as cvt
 #sys.path.insert(1,'/home/clarion/Clarion2-Trinity/visualization/custome')
 sys.path.append('custome')
-from scipy.optimize import curve_fit as cvt
-import projmod as p
-import fitgui2 as f
+from custome import projmod as p
+from custome import fitgui2 as f
 
 filesec=open(sys.argv[1])
 filecal=open(sys.argv[2])
