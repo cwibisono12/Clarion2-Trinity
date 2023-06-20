@@ -29,7 +29,7 @@ class fitgui:
 		self.y = line.get_ydata()
 		self.xdim = len(self.x)
 		self.ydim = len(self.y) 
-		print(self.xdim,self.ydim)
+		#print(self.xdim,self.ydim)
 		self.xlow=0
 		self.xup=0
 		self.bkgleft=0

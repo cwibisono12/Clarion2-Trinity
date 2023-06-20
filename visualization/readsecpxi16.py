@@ -441,6 +441,18 @@ def layout():
 
 
 def refresh():
+	for i in range(0,4,1):
+		ax[i].clear()
+		ax2[i].clear()
+		ax3[i].clear()
+		ax4[i].clear()
+		ax5[i].clear()
+		ax6[i].clear()
+		ax7[i].clear()
+		ax8[i].clear()
+		ax9[i].clear()
+		ax10[i].clear()
+	'''
 	fig.canvas.draw()
 	fig2.canvas.draw()
 	fig3.canvas.draw()
@@ -462,7 +474,7 @@ def refresh():
 	fig8.canvas.flush_events()
 	fig9.canvas.flush_events()
 	fig10.canvas.flush_events()
-	
+	'''
 def fitconnect():
 	global p11,p12,p13,p14,p21,p22,p23,p24
 	global p31,p32,p33,p34,p41,p42,p43,p44
@@ -576,17 +588,19 @@ def main():
 	initiate()
 	loadcal()
 	graphics()
-	while(True):
+	while True:
+		print("loading...",time.ctime())
 		loadfile()
 		filesec.close()
 		project()
 		transform()
+		print("updating...",time.ctime())
+		refresh()
 		plot()
 		layout()
-		#refresh()
 		fitconnect()
-		plt.show()
-		time.sleep(120)
-
+		print("update completed",time.ctime())
+		plt.show(block=False)
+		plt.pause(5)
 if __name__ == "__main__":
 	main()
