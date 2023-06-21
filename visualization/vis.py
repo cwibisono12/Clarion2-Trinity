@@ -12,9 +12,9 @@ import matplotlib.ticker as tck
 import sys
 sys.path.append('custome')
 from custome import fitgui as f
+from custome import rebin2d as r
 import os
 from matplotlib.colors import LogNorm
-from scipy.optimize import curve_fit as cvt
 
 print("Welcome to Clarion2-Trinity Portable Visualization Software from C.W\n")
 print("Here are the features of the Software:")
@@ -22,10 +22,11 @@ print("Hit g to make Projection")
 print("Hit e to expand axis")
 print("Hit y to generate coordinates useful for making banana gates")
 print("click mouse to draw banana gates")
+print("Hit l to rebin 2D histogram")
 #print("Hit n to perform Gauss fit")
 #print("Hit m to perform another type of Gauss fit")
 #print("Hit d to perform Double Gaussian")
-print("Hit r to rebin the Histogram")
+print("Hit r to rebin 1D Histogram")
 print("Hit o to zoom out")
 print("Hit q to close figure")
 print("Hit b to open banana gate file")
@@ -113,9 +114,6 @@ xprojbsreb=np.zeros(int(sys.argv[3]),dtype=np.int32) #xarr for background subtra
 xx=np.zeros(int(sys.argv[3]),dtype=np.int32)
 xy=np.zeros(int(sys.argv[2]),dtype=np.int32)
 
-#lineplot = None
-#p = None
-global cid
 '''
 def update(val):
 	for i in range(0,int(sys.argv[3]),1):
@@ -167,8 +165,9 @@ def onclick(event):
 	print(index,xcoords,ycoords,xpix,ypix)
 
 def onpress(event):
-	global lineplot
-	global p
+	global lineplot,lineplot21,lineplot22
+	global ytrp, pos
+	global p,cid,cid2,p21,p22
 	global axp,xx,xy,proj,background,xlow,xup
 	global xproj,yproj,xprojbs,yprojbs
 	global low,high,gate
@@ -201,7 +200,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				#Object Instantiation
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==1 and int(background)==1:	
 				lineplot,=axp.plot(xx[int(xlow):int(xup)],xprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjX')
@@ -209,7 +208,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==2 and int(background)==0:
 				lineplot,=axp.plot(xy[int(xlow):int(xup)],yproj[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
@@ -217,7 +216,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Full Projection Y')
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(proj)==2 and int(background)==1:
 				lineplot,=axp.plot(xy[int(xlow):int(xup)],yprojbs[int(xlow):int(xup)],linewidth=0.75,ls='steps',label='ProjY')
@@ -225,9 +224,32 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.set_title('Gate on '+str(gate)+' keV')
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			plt.draw()
+		if int(waxis) == 3: 
+			print("Enter the lower limit\n")
+			xlow3=input()
+			print("Enter the upper limit\n")
+			xup3=input()
+			axc[0].clear()
+			axc[0].set_xlim(int(xlow3),int(xup3))
+			axc[1].clear()
+			axc[1].set_xlim(int(xlow3),int(xup3))
+			lineplot21,= axc[0].plot(xfull[int(xlow3):int(xup3)],xprojfull[int(xlow3):int(xup3)],linewidth=0.75,ls='steps',label='Full X')
+			lineplot22,= axc[1].plot(yfull[int(xlow3):int(xup3)],yprojfull[int(xlow3):int(xup3)],linewidth=0.75,ls='steps',label='Full Y')
+			axc[0].legend()
+			axc[0].xaxis.set_minor_locator(tck.AutoMinorLocator())
+			axc[1].legend()
+			axc[1].xaxis.set_minor_locator(tck.AutoMinorLocator())
+			#Object Instantiation
+			#figc.canvas.mpl_disconnect(cid2)
+			p21=f.fitgui(lineplot21)
+			p21.connect()
+			p22=f.fitgui(lineplot22)
+			p22.connect()
+			plt.draw()
+
 	#Zoom out Histogram:
 	if event.key == 'o':
 		ax.set_xlim(0,int(sys.argv[3]))
@@ -235,14 +257,24 @@ def onpress(event):
 		if int(proj)==1:
 			axp.set_xlim(0,int(sys.argv[3]))
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
 		if int(proj)==2:
 			axp.set_xlim(0,int(sys.argv[2]))
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
-	
+
+	if event.key == 'l':
+		print("Enter rebin factor for y axis:\n")
+		rebiny=input()
+		print("Enter rebin factor for x axis:\n")
+		rebinx=input()
+		ax.clear()
+		ytrprebin=r.rebin2d(ytrp,int(sys.argv[2]),int(sys.argv[3]),int(rebiny),int(rebinx))
+		pos=ax.imshow(ytrprebin.rebin(),cmap="gist_ncar",origin="lower",extent=[int(sys.argv[4]),int(sys.argv[5]),int(sys.argv[6]),int(sys.argv[7])],aspect="auto",norm=LogNorm())
+		plt.draw()
+
 	#Saving Coordinates File for Banana Gates:
 	if event.key == 'y':
 		print("Print Ban Coords to the Screen:\n")
@@ -288,7 +320,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(background) == 1:
 				print("Enter the left region for background")
@@ -306,7 +338,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 
 
@@ -329,7 +361,7 @@ def onpress(event):
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				axp.legend()
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 			if int(background) == 1:
 				print("Enter the left region for background")
@@ -347,7 +379,7 @@ def onpress(event):
 				axp.legend()
 				axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 				p=f.fitgui(lineplot)
-				fig.canvas.mpl_disconnect(cid)
+				#figp.canvas.mpl_disconnect(cid)
 				p.connect()
 	'''
 	#Perform Gauss fit for a particular peak:
@@ -584,7 +616,7 @@ def onpress(event):
 			axp.set_title('Full Projection X')
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
 	
 		if int(proj)==1 and int(background)==1:
@@ -601,7 +633,7 @@ def onpress(event):
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
         
 		if int(proj)==2 and int(background)==0:
@@ -617,7 +649,7 @@ def onpress(event):
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Full Projection Y')
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
 
 		if int(proj)==2 and int(background)==1:
@@ -633,7 +665,7 @@ def onpress(event):
 			axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
 			axp.set_title('Gate on '+str(gate)+' keV')
 			p=f.fitgui(lineplot)
-			fig.canvas.mpl_disconnect(cid)
+			#figp.canvas.mpl_disconnect(cid)
 			p.connect()
 
 		plt.draw()
@@ -676,10 +708,13 @@ def onpress(event):
 						print(liner2[2],liner2[3])
 						xban.append(float(liner2[2]))
 						yban.append(float(liner2[3]))
-						ax.plot(xban,yban,'ro-')		
+						axp.plot(xban,yban,'ro-')		
 #plt.ion()
 fig.canvas.mpl_connect('button_press_event',onclick) 
-cid=fig.canvas.mpl_connect('key_press_event',onpress)
+fig.canvas.mpl_connect('key_press_event',onpress) 
+figc.canvas.mpl_connect('key_press_event',onpress) 
+cid=figp.canvas.mpl_connect('key_press_event',onpress)
+cid2=figc.canvas.mpl_connect('key_press_event',onpress)
 #figp.canvas.mpl_connect('button_press_event',onclick)
 figp.canvas.mpl_connect('key_press_event',onpress)
 axp.xaxis.set_minor_locator(tck.AutoMinorLocator())
