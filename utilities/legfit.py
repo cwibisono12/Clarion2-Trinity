@@ -53,11 +53,12 @@ def legendrefunc(x,A0,a2,a4):
 	return A0*(P0+a2*P2+a4*P4)
 '''
 def legendrefit():
-	global popt,pcov
+	global popt,pcov,perr
 	p0=np.array([float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4])])
-	popt,pcov=cvt(legendrefunc,angle,intensity)
+	popt,pcov=cvt(legendrefunc,angle,intensity,p0)
+	perr=np.sqrt(np.diag(pcov))
 	print('A0:',popt[0],'a2:',popt[1],'a4:',popt[2])
-	print('A0cov:',pcov[0],'a2cov:',pcov[1],'a4cov:',pcov[2])
+	print('A0sderr:',perr[0],'a2sderr:',perr[1],'a4sderr:',perr[2])
 
 def plot():
 	x=np.arange(0,181,0.01)
