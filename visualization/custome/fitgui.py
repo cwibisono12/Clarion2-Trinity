@@ -115,11 +115,12 @@ class fitgui:
 		A0=self.y[meanfitcenter-min(self.x)]-backgheight
 		p0=np.array([A0,mu0,width])
 		#print(mu0,A0,p0)
+		xfit=np.arange(int(self.xlow),int(self.xup)+1,0.01)
 		popt,pcov=cvt(lambda x, A, mu, sigma: fitgui.gaussfunc(x,A,mu,sigma,backgheight),self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],self.y[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],p0)
 		#return popt,backgheight
 		area=popt[0]*np.sqrt(2.0*np.pi)*abs(popt[2])
 		print('mean:',popt[1],'sigma:',abs(popt[2]),'FWHM:',abs(popt[2]*fitgui.FWHMc),'area:',area)
-		self.gfit=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],*popt,backgheight),'m',linewidth=1.5)
+		self.gfit=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,*popt,backgheight),'m',linewidth=1.5)
 		for i in range(0,4,1):
 			abc2=self.vertical.pop(0)
 			abc2.remove()
@@ -150,6 +151,7 @@ class fitgui:
 		print('mean1:',popt[1],'sigma1:',abs(popt[2]),'FWHM1:',abs(popt[2]*fitgui.FWHMc),'area1:',area1)
 		print('mean2:',popt[4],'sigma2:',abs(popt[5]),'FWHM2:',abs(popt[5]*fitgui.FWHMc),'area2:',area2,'areasum:',areasum)
 		
+		xfit=np.arange(int(self.xlow),int(self.xup)+1,0.01)
 		for i in range(0,4,1):
 			abc2=self.vertical.pop(0)
 			abc2.remove()
@@ -162,9 +164,9 @@ class fitgui:
 		if self.curv3 != None:
 			abc6=self.curv3.pop(0)
 			abc6.remove()
-		self.curv1=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussdoub(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],*popt,backgheight),'m',linewidth=1.5)
-		self.curv2=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],popt[0],popt[1],popt[2],backgheight),'k',linewidth=1.0)
-		self.curv3=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],popt[3],popt[4],popt[5],backgheight),'k',linewidth=1.0)
+		self.curv1=self.line.axes.plot(xfit,fitgui.gaussdoub(xfit,*popt,backgheight),'m',linewidth=1.5)
+		self.curv2=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,popt[0],popt[1],popt[2],backgheight),'k',linewidth=1.0)
+		self.curv3=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,popt[3],popt[4],popt[5],backgheight),'k',linewidth=1.0)
 		self.line.figure.canvas.draw()
 	
 	def tripgauss(self,event):	
@@ -198,6 +200,7 @@ class fitgui:
 		print('mean1:',popt[1],'sigma1:',abs(popt[2]),'FWHM1:',abs(popt[2]*fitgui.FWHMc),'area1:',area1)
 		print('mean2:',popt[4],'sigma2:',abs(popt[5]),'FWHM2:',abs(popt[5]*fitgui.FWHMc),'area2:',area2)
 		print('mean3:',popt[7],'sigma3:',abs(popt[8]),'FWHM2:',abs(popt[8]*fitgui.FWHMc),'area3:',area3)
+		xfit=np.arange(int(self.xlow),int(self.xup)+1,0.01)
 		
 		for i in range(0,4,1):
 			abc2=self.vertical.pop(0)
@@ -216,9 +219,9 @@ class fitgui:
 			abc6=self.tripg4.pop(0)
 			abc6.remove()
 		
-		self.tripg1=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gausstrip(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],*popt,backgheight),'m',linewidth=1.5)
-		self.tripg2=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],popt[0],popt[1],popt[2],backgheight),'k',linewidth=1.0)
-		self.tripg3=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],popt[3],popt[4],popt[5],backgheight),'k',linewidth=1.0)
-		self.tripg4=self.line.axes.plot(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],fitgui.gaussfunc(self.x[int(self.xlow)-min(self.x):int(self.xup)-min(self.x)],popt[6],popt[7],popt[8],backgheight),'k',linewidth=1.0)
+		self.tripg1=self.line.axes.plot(xfit,fitgui.gausstrip(xfit,*popt,backgheight),'m',linewidth=1.5)
+		self.tripg2=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,popt[0],popt[1],popt[2],backgheight),'k',linewidth=1.0)
+		self.tripg3=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,popt[3],popt[4],popt[5],backgheight),'k',linewidth=1.0)
+		self.tripg4=self.line.axes.plot(xfit,fitgui.gaussfunc(xfit,popt[6],popt[7],popt[8],backgheight),'k',linewidth=1.0)
 		self.line.figure.canvas.draw()
 	
