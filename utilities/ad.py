@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 #Legendre Fit for Angular Distribution as a Function of Angle
+#Compare Theoretical Angular Distribution vs Mixing Ratio 
 #C. Wibisono 
 #06/29/'23
+#07/11/'23 v2 with chisquare vs mixing ratio
 
 #How to Use:
-#./legfit [addata] A0_initial a2_initial a4_initial
+#./ad	[addata] A0_initial a2_initial a4_initial Ji Jf sigma
 
 import numpy as np
 from scipy.optimize import curve_fit as cvt
@@ -13,12 +15,13 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 import sys
 import os
+import adlib as ad
 
 plt.rcParams['font.family']='serif'
 plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
 
 def loaddata():
-	global angle,intensity,gamma
+	global angle,intensity,gamma,dim
 	FILE=open(sys.argv[1])
 	linefile=FILE.readlines()
 	dim=len(linefile)
@@ -75,12 +78,60 @@ def plot():
 	ax.set_ylabel('Intensity(normalized)',style='normal',fontweight='bold')
 	ax.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	fig.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
-	plt.show()	
+	#plt.show()	
+
+
+#Theoretical Intensity:
+def theo(x,delta):
+	global Ji,Jf,sigma
+	Ji=int(sys.argv[5])
+	Jf=int(sys.argv[6])
+	sigma=float(sys.argv[7])
+	B0=ad.Bk(Ji,0,sigma)
+	B2=ad.Bk(Ji,2,sigma)
+	B4=ad.Bk(Ji,4,sigma)
+	R00=ad.Rk(0,Ji-Jf,Ji-Jf,Ji,Jf)
+	R01=ad.Rk(0,Ji-Jf,Ji-Jf+1,Ji,Jf)
+	R02=ad.Rk(0,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
+	R20=ad.Rk(2,Ji-Jf,Ji-Jf,Ji,Jf)
+	R21=ad.Rk(2,Ji-Jf,Ji-Jf+1,Ji,Jf)
+	R22=ad.Rk(2,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
+	R40=ad.Rk(4,Ji-Jf,Ji-Jf,Ji,Jf)
+	R41=ad.Rk(4,Ji-Jf,Ji-Jf+1,Ji,Jf)
+	R42=ad.Rk(4,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
+	Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
+	Y2=B2*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
+	Y4=B4*legpoly(np.cos(x),[0,0,0,0,1])*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
+	return Y0+Y2+Y4
+
+
+def chisq(delta):
+	chi=0.
+	for l in range(0,dim-1,1):
+		chi=chi+np.power(theo(angle[l],delta)-intensity[l],2.0)
+	return chi
+
+def plotchi():
+	delta=np.arange(-3,3,0.001)
+	mixratio=np.rad2deg(np.arctan(delta))
+	fig2,ax2=plt.subplots()
+	ax2.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+	ax2.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+	ax2.xaxis.set_minor_locator(tck.AutoMinorLocator())
+	ax2.plot(mixratio,chisq(delta),label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf))
+	ax2.legend()
+	ax2.set_xlabel(r'$arctan(\delta)$',style='normal',fontweight='bold')
+	ax2.set_ylabel('chisq',style='normal',fontweight='bold')
+	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
+	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	#plt.show()	
 
 def main():
 	loaddata()
 	legendrefit()
 	plot()
+	plotchi()
+	plt.show()
 
 if __name__ == "__main__":
 	main()
