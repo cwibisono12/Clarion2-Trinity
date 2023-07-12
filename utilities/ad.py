@@ -6,7 +6,7 @@
 #07/11/'23 v2 with chisquare vs mixing ratio
 
 #How to Use:
-#./ad	[addata] A0_initial a2_initial a4_initial Ji Jf sigma
+#./ad [addata] [list of Ji] A0_initial a2_initial a4_initial Jf sigma
 
 import numpy as np
 from scipy.optimize import curve_fit as cvt
@@ -41,6 +41,22 @@ def loaddata():
 			print('Gamma Energy (keV):',gamma)
 	FILE.close()
 
+def loadparam():
+	global Jinitial,num
+	FILEparam=open(sys.argv[2])
+	linefileparam=FILEparam.readlines()
+	dimparam=len(linefileparam)
+	Jinitial=np.zeros(dimparam-1)	
+	num=np.zeros(dimparam-1)
+	i=0
+	for line in linefileparam:
+		if line.find('#') == -1:
+			liner=line.split()
+			Jinitial[i]=np.float32(liner[1])
+			num[i]=np.float32(liner[0])
+			print(num[i],Jinitial[i])
+			i=i+1
+	FILEparam.close()
 
 def legendrefunc(x,A0,a2,a4):
 	P0=legpoly(np.cos(x),[1,0,0,0,0])
@@ -48,21 +64,16 @@ def legendrefunc(x,A0,a2,a4):
 	P4=legpoly(np.cos(x),[0,0,0,0,1])
 	return A0*(P0+a2*P2+a4*P4)
 
-'''
-def legendrefunc(x,A0,a2,a4):
-	P0=1.
-	P2=0.5*(3.*((np.cos(x))**2.)-1)
-	P4=1./8.*(35.*((np.cos(x))**4.)-30.*((np.cos(x))**2.)+3.)
-	return A0*(P0+a2*P2+a4*P4)
-'''
+#Get Coefficient of Legendre Fit from Experimental Intensity
 def legendrefit():
 	global popt,pcov,perr
-	p0=np.array([float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4])])
+	p0=np.array([float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5])])
 	popt,pcov=cvt(legendrefunc,angle,intensity,p0)
 	perr=np.sqrt(np.diag(pcov))
 	print('A0:',popt[0],'a2:',popt[1],'a4:',popt[2])
 	print('A0sderr:',perr[0],'a2sderr:',perr[1],'a4sderr:',perr[2])
 
+#Experimental Intensity
 def plot():
 	x=np.arange(0,181,0.01)
 	xtrf=np.deg2rad(x)
@@ -82,9 +93,9 @@ def plot():
 
 
 #Theoretical Intensity:
-def theo(x,delta):
-	global Ji,Jf,sigma
-	Ji=int(sys.argv[5])
+def theo(x,delta,Ji):
+	global Jf,sigma
+	#Ji=int(sys.argv[5])
 	Jf=int(sys.argv[6])
 	sigma=float(sys.argv[7])
 	B0=ad.Bk(Ji,0,sigma)
@@ -105,32 +116,36 @@ def theo(x,delta):
 	return Y0+Y2+Y4
 
 
-def chisq(delta):
+def chisq(delta,Ji):
 	chi=0.
 	for l in range(0,dim-1,1):
-		chi=chi+np.power(theo(angle[l],delta)-intensity[l],2.0)
+		chi=chi+np.power(theo(angle[l],delta,Ji)-intensity[l],2.0)
 	return chi
 
 def plotchi():
-	delta=np.arange(-3,3,0.001)
+	delta=np.arange(-100,100,0.01)
 	mixratio=np.rad2deg(np.arctan(delta))
 	fig2,ax2=plt.subplots()
 	ax2.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
 	ax2.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
 	ax2.xaxis.set_minor_locator(tck.AutoMinorLocator())
-	ax2.plot(mixratio,chisq(delta),label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf))
+	ax2.plot(mixratio,chisq(delta,int(Jinitial[0])),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf))
+	ax2.plot(mixratio,chisq(delta,int(Jinitial[1])),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf))
+	ax2.plot(mixratio,chisq(delta,int(Jinitial[2])),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf))
 	ax2.legend()
 	ax2.set_xlabel(r'$arctan(\delta)$',style='normal',fontweight='bold')
 	ax2.set_ylabel('chisq',style='normal',fontweight='bold')
 	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
-	#plt.show()	
 
 def main():
 	loaddata()
+	loadparam()
 	legendrefit()
 	plot()
+	print('J0:',Jinitial[0])
 	plotchi()
+	print('Jf:',Jf)
 	plt.show()
 
 if __name__ == "__main__":
