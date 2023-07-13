@@ -6,7 +6,9 @@
 #07/11/'23 v2 with chisquare vs mixing ratio
 
 #How to Use:
-#./ad [addata] [list of Ji] A0_initial a2_initial a4_initial Jf sigma
+#./ad [addata] [list of Ji/list of m] A0_initial a2_initial a4_initial Jf [option] Ji/m
+#option == 1 for vary Ji fix m
+#option == 2 for vary m fix Ji
 
 import numpy as np
 from scipy.optimize import curve_fit as cvt
@@ -19,6 +21,9 @@ import adlib as ad
 
 plt.rcParams['font.family']='serif'
 plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
+
+
+option = int(sys.argv[7])
 
 def loaddata():
 	global angle,intensity,gamma,dim
@@ -41,7 +46,7 @@ def loaddata():
 			print('Gamma Energy (keV):',gamma)
 	FILE.close()
 
-def loadparam():
+def loadJi():
 	global Jinitial,num
 	FILEparam=open(sys.argv[2])
 	linefileparam=FILEparam.readlines()
@@ -57,6 +62,23 @@ def loadparam():
 			print(num[i],Jinitial[i])
 			i=i+1
 	FILEparam.close()
+
+def loadm():
+	global m0,num2
+	FILEparam2=open(sys.argv[2])
+	linefileparam=FILEparam2.readlines()
+	dimparam=len(linefileparam)
+	m0=np.zeros(dimparam-1)	
+	num2=np.zeros(dimparam-1)
+	i=0
+	for line in linefileparam:
+		if line.find('#') == -1:
+			liner=line.split()
+			m0[i]=np.float32(liner[1])
+			num2[i]=np.float32(liner[0])
+			print(num2[i],m0[i])
+			i=i+1
+	FILEparam2.close()
 
 def legendrefunc(x,A0,a2,a4):
 	P0=legpoly(np.cos(x),[1,0,0,0,0])
@@ -93,59 +115,90 @@ def plot():
 
 
 #Theoretical Intensity:
-def theo(x,delta,Ji):
-	global Jf,sigma
+def theo(x,delta,Ji,sigma):
+	global Jf
 	#Ji=int(sys.argv[5])
 	Jf=int(sys.argv[6])
-	sigma=float(sys.argv[7])
+	#sigma=float(sys.argv[7])
 	B0=ad.Bk(Ji,0,sigma)
 	B2=ad.Bk(Ji,2,sigma)
 	B4=ad.Bk(Ji,4,sigma)
-	R00=ad.Rk(0,Ji-Jf,Ji-Jf,Ji,Jf)
-	R01=ad.Rk(0,Ji-Jf,Ji-Jf+1,Ji,Jf)
-	R02=ad.Rk(0,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
-	R20=ad.Rk(2,Ji-Jf,Ji-Jf,Ji,Jf)
-	R21=ad.Rk(2,Ji-Jf,Ji-Jf+1,Ji,Jf)
-	R22=ad.Rk(2,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
-	R40=ad.Rk(4,Ji-Jf,Ji-Jf,Ji,Jf)
-	R41=ad.Rk(4,Ji-Jf,Ji-Jf+1,Ji,Jf)
-	R42=ad.Rk(4,Ji-Jf+1,Ji-Jf+1,Ji,Jf)
+	R00=ad.Rk(0,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
+	R01=ad.Rk(0,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
+	R02=ad.Rk(0,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
+	R20=ad.Rk(2,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
+	R21=ad.Rk(2,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
+	R22=ad.Rk(2,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
+	R40=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
+	R41=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
+	R42=ad.Rk(4,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
 	Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
 	Y2=B2*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
 	Y4=B4*legpoly(np.cos(x),[0,0,0,0,1])*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
 	return Y0+Y2+Y4
 
+#Normalized Experimental Intensity w.r.t Experimental Intensity such that Yth(theta)=Yexp(theta):
+def theonormmint(delta,Ji,sigma):
+	numnorm=0.
+	denumnorm=0.
+	for l in range(0,dim-1,1):
+		numnorm=numnorm+theo(angle[l],delta,Ji,sigma)*intensity[l]
+		denumnorm=denumnorm+(theo(angle[l],delta,Ji,sigma))**2.
+	#if round(denumnorm,3) > -0.001 and round(denumnorm,3) < 0.001:
+		#ynorm=1.
+	#else:
+	ynorm=numnorm/denumnorm
+	return ynorm
 
-def chisq(delta,Ji):
+def chisq(delta,Ji,sigma):
 	chi=0.
 	for l in range(0,dim-1,1):
-		chi=chi+np.power(theo(angle[l],delta,Ji)-intensity[l],2.0)
+		chi=chi+np.power(theonormmint(delta,Ji,sigma)*theo(angle[l],delta,Ji,sigma)-intensity[l],2.0)
 	return chi
 
 def plotchi():
-	delta=np.arange(-100,100,0.01)
-	mixratio=np.rad2deg(np.arctan(delta))
+	#mixratio is angle for delta (in deg)
+	mixratio=np.arange(-89,89,0.1)
+	#delta in tan (degdel)
+	delta=(np.tan(np.deg2rad(mixratio)))
 	fig2,ax2=plt.subplots()
 	ax2.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
 	ax2.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
 	ax2.xaxis.set_minor_locator(tck.AutoMinorLocator())
-	ax2.plot(mixratio,chisq(delta,int(Jinitial[0])),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf))
-	ax2.plot(mixratio,chisq(delta,int(Jinitial[1])),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf))
-	ax2.plot(mixratio,chisq(delta,int(Jinitial[2])),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf))
+	if option == 1:
+		sigma=float(sys.argv[8])
+		ax2.plot(mixratio,chisq(delta,int(Jinitial[0]),sigma),color='r',label='Ji:'+str(int(Jinitial[0]))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(sigma))
+		ax2.plot(mixratio,chisq(delta,int(Jinitial[1]),sigma),color='b',label='Ji:'+str(int(Jinitial[1]))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(sigma))
+		ax2.plot(mixratio,chisq(delta,int(Jinitial[2]),sigma),color='g',label='Ji:'+str(int(Jinitial[2]))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(sigma))
+		print("Ji:", Jinitial[0],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[0]),sigma)==np.min(chisq(delta,int(Jinitial[0]),sigma)))[0][0]])
+		print("Ji:", Jinitial[1],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[1]),sigma)==np.min(chisq(delta,int(Jinitial[1]),sigma)))[0][0]])
+		print("Ji:", Jinitial[2],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[2]),sigma)==np.min(chisq(delta,int(Jinitial[2]),sigma)))[0][0]])
+	else:
+		Ji=np.float32(sys.argv[8])
+		ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(int(Ji))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(m0[0]))
+		ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(int(Ji))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(m0[1]))
+		ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(int(Ji))+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(m0[2]))
+		print("mi:", m0[0],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[0])==np.min(chisq(delta,Ji,m0[0])))[0][0]])
+		print("mi:", m0[1],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[1])==np.min(chisq(delta,Ji,m0[1])))[0][0]])
+		print("mi:", m0[2],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[2])==np.min(chisq(delta,Ji,m0[2])))[0][0]])
+	
 	ax2.legend()
+	#ax2.set_yscale("log")
 	ax2.set_xlabel(r'$arctan(\delta)$',style='normal',fontweight='bold')
 	ax2.set_ylabel('chisq',style='normal',fontweight='bold')
 	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
+	ax2.set_yscale('log')
 	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 
 def main():
 	loaddata()
-	loadparam()
+	if option == 1:
+		loadJi()
+	else:
+		loadm()
 	legendrefit()
 	plot()
-	print('J0:',Jinitial[0])
 	plotchi()
-	print('Jf:',Jf)
 	plt.show()
 
 if __name__ == "__main__":
