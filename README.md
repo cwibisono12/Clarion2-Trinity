@@ -66,6 +66,6 @@ Capabilities of visualization:
 
 Note that visualization program is far from perfection and is currently still under development.
 
-**Visualization[Scripted Version]**
+**Visualization[Scripting Version]**
 
 Another way to visualize the output files is by using several classes that are provided in the directory visualization/custome. In order to use the feature of classes listed there, knowledge about Python Object Oriented Programming is required. A user is also expected to know the Object oriented feature of Matplotlib such as figure and axes objects that are heavily used for plotting.
