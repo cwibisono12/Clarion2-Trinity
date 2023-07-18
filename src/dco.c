@@ -5,7 +5,6 @@
 #include "global.h"
 #include "dco.h"
 
-
 void dco(int gmult, int gaggvalid, struct gdetector *ge){
 int i,j,tdif;
 //Pure gg-matrix without any gate:
