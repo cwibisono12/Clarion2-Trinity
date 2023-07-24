@@ -7,6 +7,7 @@ import numpy as np
 from sympy.physics.quantum.cg import CG
 from sympy.physics.wigner import racah
 from sympy import *
+import QK #Fortran QK Subroutine wrapped by phyton NumPy
 import sys
 import os
 
@@ -41,3 +42,15 @@ def Rk(k,l0,l1,Ji,Jf):
 	d=racah(Ji,Ji,l0,l1,k,Jf).evalf()
 	return a*b*c*d
 
+
+#QK Coefficient: #Calculate QK Coefficient wrapped from Fortran Subroutine
+def Qkcoeff(k,E,R,D,T):
+	Qkc=QK.qk(E,R,D,T)
+	if k == 0:
+		return 1
+	if k == 2:
+		return Qkc[0]
+	if k == 4:
+		return Qkc[1]
+	if k == 10:
+		return 1

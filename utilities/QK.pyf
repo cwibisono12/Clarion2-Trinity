@@ -1,0 +1,19 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module QK ! in 
+    interface  ! in :QK
+        subroutine qk(e,qd2,qd4,r,d,t) ! in :QK:QK.f
+            real intent(in) :: e
+            real intent(out) :: qd2
+            real intent(out) :: qd4
+            real intent(in) :: r
+            real intent(in) :: d
+            real intent(in) :: t
+        end subroutine qk
+    end interface 
+end python module QK
+
+! This file was auto-generated with f2py (version:1.22.4).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e

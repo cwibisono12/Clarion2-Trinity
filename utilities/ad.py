@@ -19,12 +19,13 @@ import sys
 import os
 import adlib as ad
 import datetime as dt
-
+import time 
 plt.rcParams['font.family']='serif'
 plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
 
 
 option = int(sys.argv[7])
+qkfactor = int(sys.argv[9])
 
 def loaddata():
 	global angle,intensity,error,gamma,dim
@@ -83,6 +84,15 @@ def loadm():
 			i=i+1
 	FILEparam2.close()
 
+def loaddetparam():
+	global Radius,Distance,Thickness
+	print("Enter Radius (cm):\n")
+	Radius=float(input())
+	print("Enter Distance (cm):\n")
+	Distance=float(input())
+	print("Enter Thickness (cm):\n")
+	Thickness=float(input())
+
 def legendrefunc(x,A0,a2,a4):
 	P0=legpoly(np.cos(x),[1,0,0,0,0])
 	P2=legpoly(np.cos(x),[0,0,1,0,0])
@@ -135,21 +145,26 @@ def theo(x,delta,Ji,sigma):
 	R40=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
 	R41=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
 	R42=ad.Rk(4,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
-	Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
-	Y2=B2*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
-	Y4=B4*legpoly(np.cos(x),[0,0,0,0,1])*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
+	if qkfactor == 1:
+		Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
+		Y2=B2*ad.Qkcoeff(2,int(gamma),Radius,Distance,Thickness)*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
+		Y4=B4*ad.Qkcoeff(4,int(gamma),Radius,Distance,Thickness)*legpoly(np.cos(x),[0,0,0,0,1])*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
+	else:
+		Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
+		Y2=B2*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
+		Y4=B4*legpoly(np.cos(x),[0,0,0,0,1])*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
 	return Y0+Y2+Y4
 
 #Normalized Theoretical Intensity w.r.t Experimental Intensity such that Yth(theta)=Yexp(theta):
 def theonormmint(delta,Ji,sigma):
 	numnorm=0.
 	denumnorm=0.
+
 	for l in range(0,dim-1,1):
 		numnorm=numnorm+theo(angle[l],delta,Ji,sigma)*(intensity[l])/(error[l]**2.)
-		denumnorm=denumnorm+((theo(angle[l],delta,Ji,sigma))**2.)/(error[l]**2.)
-	#if round(denumnorm,3) > -0.001 and round(denumnorm,3) < 0.001:
-		#ynorm=1.
-	#else:
+		denumnorm=denumnorm+((theo(angle[l],delta,Ji,sigma))**2.)/(error[l]**2.)	
+	#if denumnorm > -0.0001 and denumnorm < 0.0001:
+	#	ynorm=1.
 	ynorm=numnorm/denumnorm
 	return ynorm
 
@@ -161,9 +176,9 @@ def chisq(delta,Ji,sigma):
 
 def plotchi():
 	#mixratio is angle for delta (in deg)
-	mixratio=np.arange(-89,89,0.1)
+	mixratio=np.arange(-89,89,0.1) #used to overcome the entire mixing ratio (-inf,inf)-->equal to arctan(mixratio)
 	#delta in tan (degdel)
-	delta=(np.tan(np.deg2rad(mixratio)))
+	delta=(np.tan(np.deg2rad(mixratio))) #the true value of mixing ratio would be tan(arctan(mixratio))
 	global mixratiomin, tandeltamin, chimin
 	mixratiomin=np.zeros(3)
 	tandeltamin=np.zeros(3)
@@ -182,9 +197,21 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Jinitial[l],sigma)==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(sigma,3)))
-		ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(sigma,3)))
-		ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(sigma,3)))
+		ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		if dim-1 == 4:
+			ax2.axhline(y=5.423,linestyle='-.',color='k')
+		if dim-1 == 5:
+			ax2.axhline(y=4.616,linestyle='-.',color='k')
+		if dim-1 == 6:
+			ax2.axhline(y=4.103,linestyle='-.',color='k')
+		if dim-1 == 7:
+			ax2.axhline(y=3.743,linestyle='-.',color='k')
+		if dim-1 == 8:
+			ax2.axhline(y=3.475,linestyle='-.',color='k')
+		if dim-1 == 9:
+			ax2.axhline(y=3.266,linestyle='-.',color='k')
 		#print("Ji:", Jinitial[0],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[0]),sigma)==np.min(chisq(delta,int(Jinitial[0]),sigma)))[0][0]])
 		#print("Ji:", Jinitial[1],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[1]),sigma)==np.min(chisq(delta,int(Jinitial[1]),sigma)))[0][0]])
 		#print("Ji:", Jinitial[2],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[2]),sigma)==np.min(chisq(delta,int(Jinitial[2]),sigma)))[0][0]])
@@ -200,15 +227,27 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Ji,m0[l])==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(m0[0],2)))
-		ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(m0[1],2)))
-		ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'m:'+' '+str(round(m0[2],2)))
+		ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
+		ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
+		ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
+		if dim-1 == 4:
+			ax2.axhline(y=5.423,linestyle='-.',color='k')
+		if dim-1 == 5:
+			ax2.axhline(y=4.616,linestyle='-.',color='k')
+		if dim-1 == 6:
+			ax2.axhline(y=4.103,linestyle='-.',color='k')
+		if dim-1 == 7:
+			ax2.axhline(y=3.743,linestyle='-.',color='k')
+		if dim-1 == 8:
+			ax2.axhline(y=3.475,linestyle='-.',color='k')
+		if dim-1 == 9:
+			ax2.axhline(y=3.266,linestyle='-.',color='k')
 		#print("mi:", m0[0],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[0])==np.min(chisq(delta,Ji,m0[0])))[0][0]])
 		#print("mi:", m0[1],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[1])==np.min(chisq(delta,Ji,m0[1])))[0][0]])
 		#print("mi:", m0[2],"delmin:",mixratio[np.where(chisq(delta,Ji,m0[2])==np.min(chisq(delta,Ji,m0[2])))[0][0]])
-		print("mi:", m0[0],"delmin:",mixratiomin[0],"tandeltamin:", tandeltamin[0])
-		print("mi:", m0[1],"delmin:",mixratiomin[1],"tandeltamin:", tandeltamin[1])
-		print("mi:", m0[2],"delmin:",mixratiomin[2],"tandeltamin:", tandeltamin[2])
+		print("sigma:", m0[0],"delmin:",mixratiomin[0],"tandeltamin:", tandeltamin[0])
+		print("sigma:", m0[1],"delmin:",mixratiomin[1],"tandeltamin:", tandeltamin[1])
+		print("sigma:", m0[2],"delmin:",mixratiomin[2],"tandeltamin:", tandeltamin[2])
 	
 	ax2.legend()
 	#ax2.set_yscale("log")
@@ -218,31 +257,70 @@ def plotchi():
 	ax2.set_yscale('log')
 	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 
+def plotad():
+	fig3,ax3=plt.subplots()
+	ax3.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+	ax3.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+	ax3.xaxis.set_minor_locator(tck.AutoMinorLocator())
+	angledeg=np.arange(0,181,0.01)
+	anglerad=np.deg2rad(angledeg)
+	if option == 1:
+		sigma=float(sys.argv[8])
+		ax3.plot(angledeg,theonormmint(tandeltamin[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		ax3.plot(angledeg,theonormmint(tandeltamin[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		ax3.plot(angledeg,theonormmint(tandeltamin[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
+	else:
+		Ji=float(sys.argv[8])
+		ax3.plot(angledeg,theonormmint(tandeltamin[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
+		ax3.plot(angledeg,theonormmint(tandeltamin[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
+		ax3.plot(angledeg,theonormmint(tandeltamin[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
+		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
+	ax3.legend()
+	#ax2.set_yscale("log")
+	ax3.set_xlabel(r'$\theta_{det} (deg)$',style='normal',fontweight='bold')
+	ax3.set_ylabel('Intensity',style='normal',fontweight='bold')
+	ax3.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
+	fig3.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+
+
 def writechiresult():
 	with open(str(gamma)+'_ad_'+str(option)+'.txt','a') as fresults:
 		fresults.write(str(dt.datetime.now())+'\n')
 		if option == 1:
-			fresults.write('m:'+' '+str(msigma)+'\n')
-			fresults.write('#Ji\t#deltamin\t#tandeltamin\t#chi\n')
+			fresults.write('Legendre Fit:\n')
+			fresults.write('A0\ta2\ta4\n')
+			fresults.write(str(round(popt[0],4))+'\t'+str(round(popt[1],4))+'\t'+str(round(popt[2],4))+'\n')
+			fresults.write('stdA0\tstda2\tstda4\n')
+			fresults.write(str(round(perr[0],4))+'\t'+str(round(perr[1],4))+'\t'+str(round(perr[2],4))+'\n')
+			fresults.write('sigma:'+' '+str(msigma)+'\n')
+			fresults.write('#Ji\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
 			for i in range(0,3,1):
 				fresults.write(str(Jinitial[i])+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
 		else:
 			fresults.write('Ji:'+' '+str(Jinit)+'\n')
-			fresults.write('#mi\t#deltamin\t#tandeltamin\t#chi\n')
+			fresults.write('#sigmai\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
 			for i in range(0,3,1):
 				fresults.write(str(round(m0[i],2))+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
 		fresults.write('===========================================\n')
 
 def main():
+	start=time.time()
 	loaddata()
 	if option == 1:
 		loadJi()
 	else:
 		loadm()
+	if qkfactor == 1:
+		loaddetparam()
+
 	legendrefit()
 	plot()
 	plotchi()
+	plotad()
 	writechiresult()
+	end=time.time()
+	print("The execution time:", (end-start), "s")
 	plt.show()
 
 if __name__ == "__main__":
