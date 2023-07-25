@@ -6,9 +6,12 @@
 #07/11/'23 v2 with chisquare vs mixing ratio
 
 #How to Use:
-#./ad [addata] [list of Ji/list of m] A0_initial a2_initial a4_initial Jf [option] Ji/m
+#./ad [addata] [list of Ji/list of sigma] A0_initial a2_initial a4_initial Jf [option] Ji/sigma [Qk factor]
 #option == 1 for vary Ji fix m
 #option == 2 for vary m fix Ji
+#Note about Qk factor
+#Qk factor == 1 for enabling qk factor into theoretical AD
+#Qk factor == 0 for disabling qk factor
 
 import numpy as np
 from scipy.optimize import curve_fit as cvt
@@ -287,6 +290,21 @@ def plotad():
 def writechiresult():
 	with open(str(gamma)+'_ad_'+str(option)+'.txt','a') as fresults:
 		fresults.write(str(dt.datetime.now())+'\n')
+
+		if qkfactor == 1:
+			fresults.write('Attenuation Factor:'+' '+ 'yes\n')
+			fresults.write('Radius:'+' '+str(Radius)+' '+'cm\n')
+			fresults.write('Distance:'+' '+str(Distance)+' '+'cm\n')
+			fresults.write('Thickness:'+' '+str(Thickness)+' '+'cm\n')
+		else:
+			fresults.write('Attenuation Factor:'+' '+'no\n')
+
+		fresults.write('Data:\n')
+		fresults.write('Gamma Energy:'+' '+str(gamma)+'\n')
+		fresults.write('Angle(Deg)'+'\t'+'Intensity'+'\t'+'Error'+'\n')
+		for i in range(0,dim-1,1):
+			fresults.write(str(round(np.rad2deg(angle[i]),2))+'\t'+str(round(intensity[i],3))+'\t'+str(round(error[i],3))+'\n')
+
 		if option == 1:
 			fresults.write('Legendre Fit:\n')
 			fresults.write('A0\ta2\ta4\n')
