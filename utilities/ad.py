@@ -127,7 +127,8 @@ def plot():
 	ax.set_ylabel('Intensity(normalized)',style='normal',fontweight='bold')
 	ax.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	fig.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
-	#plt.show()	
+	#fig.draw()
+	plt.show()	
 
 
 #Theoretical Intensity:
@@ -259,7 +260,25 @@ def plotchi():
 	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	ax2.set_yscale('log')
 	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	#fig2.canvas.draw()
+	plt.show()
 
+#Delta to plot theoretical intensity:
+def loaddelta():
+	global deltaoption,tandeltamod
+	tandeltamod = np.zeros(3)
+	print("Use global deltamin: Yes(1) No(0)\n")
+	deltaoption = int(input())
+	if deltaoption == 0:
+		print("Input arc tan delta min\n")
+		print("Enter delta for Ji1/sigmai1\n")
+		tandeltamod[0] = np.tan(np.deg2rad(float(input())))
+		print("Enter delta for Ji2/sigmai2\n")
+		tandeltamod[1] = np.tan(np.deg2rad(float(input())))
+		print("Enter delta for Ji3/sigmai3\n")
+		tandeltamod[2] = np.tan(np.deg2rad(float(input())))
+
+#Plot theoretical Angular Distribution Fit along with Data	
 def plotad():
 	fig3,ax3=plt.subplots()
 	ax3.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
@@ -269,23 +288,42 @@ def plotad():
 	anglerad=np.deg2rad(angledeg)
 	if option == 1:
 		sigma=float(sys.argv[8])
-		ax3.plot(angledeg,theonormmint(tandeltamin[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		ax3.plot(angledeg,theonormmint(tandeltamin[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		ax3.plot(angledeg,theonormmint(tandeltamin[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+
+		if deltaoption == 1: #plot theoAD with global minimum of delta
+			ax3.plot(angledeg,theonormmint(tandeltamin[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamin[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamin[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[2],3)))
+
+		if deltaoption == 0: #plot theoAD based on user's delta
+			ax3.plot(angledeg,theonormmint(tandeltamod[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[2],3)))
+	
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
+
 	else:
 		Ji=float(sys.argv[8])
-		ax3.plot(angledeg,theonormmint(tandeltamin[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
-		ax3.plot(angledeg,theonormmint(tandeltamin[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
-		ax3.plot(angledeg,theonormmint(tandeltamin[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
+		
+		if deltaoption == 1: #plot theoAD based on global minimum of delta
+			ax3.plot(angledeg,theonormmint(tandeltamin[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamin[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamin[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamin[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamin[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamin[2],3)))
+		
+		if deltaoption == 0: #plot theoAD based on user's delta
+			
+			ax3.plot(angledeg,theonormmint(tandeltamod[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamod[2],3)))
+		
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
+
 	ax3.legend()
 	#ax2.set_yscale("log")
 	ax3.set_xlabel(r'$\theta_{det} (deg)$',style='normal',fontweight='bold')
 	ax3.set_ylabel('Intensity',style='normal',fontweight='bold')
 	ax3.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	fig3.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
-
+	#fig3.canvas.draw()
 
 def writechiresult():
 	with open(str(gamma)+'_ad_'+str(option)+'.txt','a') as fresults:
@@ -334,7 +372,10 @@ def main():
 
 	legendrefit()
 	plot()
+	print("Generating Chi-Square Plot....\n")
 	plotchi()
+	loaddelta()
+	print("Generating Theoritical AD Plot...\n")
 	plotad()
 	writechiresult()
 	end=time.time()
