@@ -295,9 +295,9 @@ def plotad():
 			ax3.plot(angledeg,theonormmint(tandeltamin[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[2],3)))
 
 		if deltaoption == 0: #plot theoAD based on user's delta
-			ax3.plot(angledeg,theonormmint(tandeltamod[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[2],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[0],Jinitial[0],sigma)*theo(anglerad,tandeltamod[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[1],Jinitial[1],sigma)*theo(anglerad,tandeltamod[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[2],Jinitial[2],sigma)*theo(anglerad,tandeltamod[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[2],3)))
 	
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
 
@@ -311,9 +311,9 @@ def plotad():
 		
 		if deltaoption == 0: #plot theoAD based on user's delta
 			
-			ax3.plot(angledeg,theonormmint(tandeltamod[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamod[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamod[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamod[2],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[0],Ji,m0[0])*theo(anglerad,tandeltamod[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[1],Ji,m0[1])*theo(anglerad,tandeltamod[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,theonormmint(tandeltamod[2],Ji,m0[2])*theo(anglerad,tandeltamod[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamod[2],3)))
 		
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
 
