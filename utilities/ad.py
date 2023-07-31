@@ -31,7 +31,7 @@ option = int(sys.argv[7])
 qkfactor = int(sys.argv[9])
 
 def loaddata():
-	global angle,intensity,error,gamma,dim
+	global angle,intensity,error,gamma,dim,nuclei
 	FILE=open(sys.argv[1])
 	linefile=FILE.readlines()
 	dim=len(linefile)
@@ -50,7 +50,8 @@ def loaddata():
 		else:
 			liner2=line.split()	
 			gamma=liner2[0]
-			print('Gamma Energy (keV):',gamma)
+			nuclei=liner2[3]
+			print('Gamma Energy (keV):',gamma,'Nuclei:',nuclei)
 	FILE.close()
 
 def loadJi():
@@ -126,7 +127,7 @@ def plot():
 	ax.set_xlabel(r'$cos(\theta)$',style='normal',fontweight='bold')
 	ax.set_ylabel('Intensity(normalized)',style='normal',fontweight='bold')
 	ax.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
-	fig.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	fig.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig.draw()
 	plt.show()	
 
@@ -140,15 +141,39 @@ def theo(x,delta,Ji,sigma):
 	B0=ad.Bk(Ji,0,sigma)
 	B2=ad.Bk(Ji,2,sigma)
 	B4=ad.Bk(Ji,4,sigma)
-	R00=ad.Rk(0,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
-	R01=ad.Rk(0,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
-	R02=ad.Rk(0,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
-	R20=ad.Rk(2,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
-	R21=ad.Rk(2,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
-	R22=ad.Rk(2,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
-	R40=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf),Ji,Jf)
-	R41=ad.Rk(4,np.abs(Ji-Jf),np.abs(Ji-Jf)+1,Ji,Jf)
-	R42=ad.Rk(4,np.abs(Ji-Jf)+1,np.abs(Ji-Jf)+1,Ji,Jf)
+	if abs(round(Ji,1)-round(Jf,1)) > 0:
+		R00=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R01=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R02=ad.Rk(0,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+		R20=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R21=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R22=ad.Rk(2,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+		R40=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R42=ad.Rk(4,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+	
+	elif round(Ji,0) == 2 and round(Jf,0) == 0:
+		R00=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R01=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R02=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R20=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R21=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R22=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R40=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R42=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		
+	else:
+		R00=ad.Rk(0,1,1,Ji,Jf)
+		R01=ad.Rk(0,1,2,Ji,Jf)
+		R02=ad.Rk(0,2,2,Ji,Jf)
+		R20=ad.Rk(2,1,1,Ji,Jf)
+		R21=ad.Rk(2,1,2,Ji,Jf)
+		R22=ad.Rk(2,2,2,Ji,Jf)
+		R40=ad.Rk(4,1,1,Ji,Jf)
+		R41=ad.Rk(4,1,2,Ji,Jf)
+		R42=ad.Rk(4,2,2,Ji,Jf)
+	
 	if qkfactor == 1:
 		Y0=B0*legpoly(np.cos(x),[1,0,0,0,0])*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
 		Y2=B2*ad.Qkcoeff(2,int(gamma),Radius,Distance,Thickness)*legpoly(np.cos(x),[0,0,1,0,0])*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
@@ -169,6 +194,7 @@ def theonormmint(delta,Ji,sigma):
 		denumnorm=denumnorm+((theo(angle[l],delta,Ji,sigma))**2.)/(error[l]**2.)	
 	#if denumnorm > -0.0001 and denumnorm < 0.0001:
 	#	ynorm=1.
+	#else:
 	ynorm=numnorm/denumnorm
 	return ynorm
 
@@ -259,7 +285,7 @@ def plotchi():
 	ax2.set_ylabel('chisq',style='normal',fontweight='bold')
 	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	ax2.set_yscale('log')
-	fig2.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	fig2.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig2.canvas.draw()
 	plt.show()
 
@@ -322,7 +348,7 @@ def plotad():
 	ax3.set_xlabel(r'$\theta_{det} (deg)$',style='normal',fontweight='bold')
 	ax3.set_ylabel('Intensity',style='normal',fontweight='bold')
 	ax3.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
-	fig3.suptitle("32P Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	fig3.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig3.canvas.draw()
 
 def writechiresult():
