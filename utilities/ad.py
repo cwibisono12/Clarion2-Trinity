@@ -351,6 +351,83 @@ def plotad():
 	fig3.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig3.canvas.draw()
 
+def theoa2a4(Ji,delta,sigma):
+	B0=ad.Bk(Ji,0,sigma)
+	B2=ad.Bk(Ji,2,sigma)
+	B4=ad.Bk(Ji,4,sigma)
+	if abs(round(Ji,1)-round(Jf,1)) > 0:
+		R00=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R01=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R02=ad.Rk(0,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+		R20=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R21=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R22=ad.Rk(2,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+		R40=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
+		R42=ad.Rk(4,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
+	
+	elif round(Ji,0) == 2 and round(Jf,0) == 0:
+		R00=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R01=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R02=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R20=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R21=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R22=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R40=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R42=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		
+	else:
+		R00=ad.Rk(0,1,1,Ji,Jf)
+		R01=ad.Rk(0,1,2,Ji,Jf)
+		R02=ad.Rk(0,2,2,Ji,Jf)
+		R20=ad.Rk(2,1,1,Ji,Jf)
+		R21=ad.Rk(2,1,2,Ji,Jf)
+		R22=ad.Rk(2,2,2,Ji,Jf)
+		R40=ad.Rk(4,1,1,Ji,Jf)
+		R41=ad.Rk(4,1,2,Ji,Jf)
+		R42=ad.Rk(4,2,2,Ji,Jf)
+	
+	if qkfactor == 1:
+		a0th=B0*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
+		a2th=B2*ad.Qkcoeff(2,int(gamma),Radius,Distance,Thickness)*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
+		a4th=B4*ad.Qkcoeff(4,int(gamma),Radius,Distance,Thickness)*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
+
+	else:
+		a0th=B0*(R00+2.*R01*delta+R02*(delta**2.0))/(1.+(delta**2.))
+		a2th=B2*(R20+2.*R21*delta+R22*(delta**2.0))/(1.+(delta**2.))
+		a4th=B4*(R40+2.*R41*delta+R42*(delta**2.0))/(1.+(delta**2.))
+	
+	return a0th,a2th,a4th
+
+def evaltheoa2a4():
+	global a0theo,a2theo,a4theo
+	a0theo=np.zeros(3)
+	a2theo=np.zeros(3)
+	a4theo=np.zeros(3)
+	if option == 1:
+		if deltaoption == 1: #plot theoAD based on global minimum of delta:
+			for i in range(0,3,1):
+				a0theo[i],a2theo[i],a4theo[i]=theoa2a4(Jinitial[i],tandeltamin[i],msigma)
+		if deltaoption == 0:
+			for i in range(0,3,1):
+				a0theo[i],a2theo[i],a4theo[i]=theoa2a4(Jinitial[i],tandeltamod[i],msigma)
+	
+		print("Theoretical a0,a2,a4:\n")
+		for i in range(0,3,1):
+			print("Ji:", Jinitial[i],"a0th:", a0theo[i],"a2th:", a2theo[i],"a4th:", a4theo[i]) 
+	else:
+		if deltaoption == 1:
+			for i in range(0,3,1):
+				a0theo[i],a2theo[i],a4theo[i]=theoa2a4(Jinit,tandeltamin[i],m0[i])		
+		if deltaoption == 0:
+			for i in range(0,3,1):
+				a0theo[i],a2theo[i],a4theo[i]=theoa2a4(Jinit,tandeltamod[i],m0[i])
+		print("Theoretical a0,a2,a4:\n")
+		for i in range(0,3,1):
+			print("sigma:", m0[i],"a0th:", a0theo[i],"a2th:", a2theo[i],"a4th:", a4theo[i]) 
+
+
 def writechiresult():
 	with open(str(gamma)+'_ad_'+str(option)+'.txt','a') as fresults:
 		fresults.write(str(dt.datetime.now())+'\n')
@@ -376,10 +453,18 @@ def writechiresult():
 			fresults.write('stdA0\tstda2\tstda4\n')
 			fresults.write(str(round(perr[0],4))+'\t'+str(round(perr[1],4))+'\t'+str(round(perr[2],4))+'\n')
 			fresults.write('sigma:'+' '+str(msigma)+'\n')
+			fresults.write('Theoretical a0,a2,a4:\n')
+			fresults.write('Ji\ta0th\ta2th\ta4th\n')
+			for i in range(0,3,1):
+				fresults.write(str(Jinitial[i])+'\t'+str(round(a0theo[i],4))+'\t'+str(round(a2theo[i],4))+'\t'+str(round(a4theo[i],4))+'\n')
 			fresults.write('#Ji\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
 			for i in range(0,3,1):
 				fresults.write(str(Jinitial[i])+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
 		else:
+			fresults.write('Theoretical a0,a2,a4:\n')
+			fresults.write('mi\ta0th\ta2th\ta4th\n')
+			for i in range(0,3,1):
+				fresults.write(str(round(m0[i],2))+'\t'+str(round(a0theo[i],4))+'\t'+str(round(a2theo[i],4))+'\t'+str(round(a4theo[i],4))+'\n')
 			fresults.write('Ji:'+' '+str(Jinit)+'\n')
 			fresults.write('#sigmai\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
 			for i in range(0,3,1):
@@ -403,6 +488,8 @@ def main():
 	loaddelta()
 	print("Generating Theoritical AD Plot...\n")
 	plotad()
+	print("Calculating Theoretical a2 and a4...\n")
+	evaltheoa2a4()
 	writechiresult()
 	end=time.time()
 	print("The execution time:", (end-start), "s")
