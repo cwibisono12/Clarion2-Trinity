@@ -21,6 +21,7 @@ import matplotlib.ticker as tck
 import sys
 import os
 import adlib as ad
+import adui
 import datetime as dt
 import time 
 plt.rcParams['font.family']='serif'
@@ -121,7 +122,7 @@ def plot():
 	ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
 	ax.xaxis.set_minor_locator(tck.AutoMinorLocator())
 	ax.plot(np.cos(angle),intensity,'o',label='data')
-	ax.plot(np.cos(xtrf),legendrefunc(xtrf,*popt),label='fit: A0=%5.3f, a2=%5.3f, a4=%5.3f' % tuple(popt))
+	leg,=ax.plot(np.cos(xtrf),legendrefunc(xtrf,*popt),label='fit: A0=%5.3f, a2=%5.3f, a4=%5.3f' % tuple(popt))
 	#ax.plot(np.cos(xtrf),legendrefunc(xtrf,11.09,-0.392,0.233),'m',label='AD')
 	ax.legend()
 	ax.set_xlabel(r'$cos(\theta)$',style='normal',fontweight='bold')
@@ -129,6 +130,8 @@ def plot():
 	ax.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	fig.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig.draw()
+	line0=adui.adui(leg)
+	line0.connect()
 	plt.show()	
 
 
@@ -209,7 +212,7 @@ def plotchi():
 	mixratio=np.arange(-89,89,0.1) #used to overcome the entire mixing ratio (-inf,inf)-->equal to arctan(mixratio)
 	#delta in tan (degdel)
 	delta=(np.tan(np.deg2rad(mixratio))) #the true value of mixing ratio would be tan(arctan(mixratio))
-	global mixratiomin, tandeltamin, chimin
+	global mixratiomin, tandeltamin, chimin, chi1, chi2, chi3
 	mixratiomin=np.zeros(3)
 	tandeltamin=np.zeros(3)
 	chimin=np.zeros(3)
@@ -217,7 +220,7 @@ def plotchi():
 	fig2,ax2=plt.subplots()
 	ax2.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
 	ax2.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
-	ax2.xaxis.set_minor_locator(tck.AutoMinorLocator())
+	ax2.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 	if option == 1:
 		sigma=float(sys.argv[8])
 		global msigma
@@ -227,9 +230,9 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Jinitial[l],sigma)==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		chi1,=ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		chi2,=ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		chi3,=ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
 		if dim-1 == 4:
 			ax2.axhline(y=5.423,linestyle='-.',color='k')
 		if dim-1 == 5:
@@ -257,9 +260,9 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Ji,m0[l])==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
-		ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
-		ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
+		chi1,=ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
+		chi2,=ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
+		chi3,=ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
 		if dim-1 == 4:
 			ax2.axhline(y=5.423,linestyle='-.',color='k')
 		if dim-1 == 5:
@@ -287,7 +290,14 @@ def plotchi():
 	ax2.set_yscale('log')
 	fig2.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig2.canvas.draw()
+	line1=adui.adui(chi1)
+	line2=adui.adui(chi2)
+	line3=adui.adui(chi3)
+	line1.connect()
+	line2.connect()
+	line3.connect()
 	plt.show()
+
 
 #Delta to plot theoretical intensity:
 def loaddelta():
@@ -296,20 +306,28 @@ def loaddelta():
 	print("Use global deltamin: Yes(1) No(0)\n")
 	deltaoption = int(input())
 	if deltaoption == 0:
-		print("Input arc tan delta min\n")
-		print("Enter delta for Ji1/sigmai1\n")
-		tandeltamod[0] = np.tan(np.deg2rad(float(input())))
-		print("Enter delta for Ji2/sigmai2\n")
-		tandeltamod[1] = np.tan(np.deg2rad(float(input())))
-		print("Enter delta for Ji3/sigmai3\n")
-		tandeltamod[2] = np.tan(np.deg2rad(float(input())))
+		print("Manually Enter delta(?): Yes(1) No(0)\n")
+		enterdelta=int(input())
+		if enterdelta == 1:
+			print("Input arc tan delta min\n")
+			print("Enter delta for Ji1/sigmai1\n")
+			tandeltamod[0] = np.tan(np.deg2rad(float(input())))
+			print("Enter delta for Ji2/sigmai2\n")
+			tandeltamod[1] = np.tan(np.deg2rad(float(input())))
+			print("Enter delta for Ji3/sigmai3\n")
+			tandeltamod[2] = np.tan(np.deg2rad(float(input())))
+		else:
+			print("Rerun the program to generate chi-square and record the local minima for each plot\n")
+			exit()
+
+
 
 #Plot theoretical Angular Distribution Fit along with Data	
 def plotad():
 	fig3,ax3=plt.subplots()
 	ax3.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
 	ax3.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
-	ax3.xaxis.set_minor_locator(tck.AutoMinorLocator())
+	ax3.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 	angledeg=np.arange(0,181,0.01)
 	anglerad=np.deg2rad(angledeg)
 	if option == 1:
