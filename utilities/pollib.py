@@ -86,6 +86,10 @@ def Hk(k,L1,L2,delta,Ji,Jf):
 	A3=np.power(delta,2.0)*Fk(k,Jf,L2,L2,Ji)
 	Ak=(A1+A2+A3)/a4
 	Hkcoeff = 2.*ak/Ak
+	if Ak == 0 and ak == 0:
+		#Hkcoeff = -2*kappa(k,L1,L1)
+		Hkcoeff = -1./6.
+		#print('Fk:', Fk(k,Jf,L1,L1,Ji))
 	print('Hkcoef:\n')
 	print('k:', k,'L1:', L1,'L2:', L2,'kappa:', kappa(k,L1,L2),'Hk:', Hkcoeff,'ak:', ak, 'Ak:', Ak)
 	return Hkcoeff
@@ -97,6 +101,8 @@ def W(phi,theta,a2th,a4th,delta,Ji,Jf,mult):
 	T. Aoki et.al, Atomic data and Nuclear Data Tables 23,
 	349-404 (1979)
 	"""
+	#L1=int(abs(Ji-Jf))
+	#L2=L1+1
 	if abs(round(Ji,1)-round(Jf,1)) > 0:
 		L1 = int(abs(Ji-Jf))
 		L2 = L1 + 1
@@ -130,6 +136,7 @@ def polpredict(theta,a2th,a4th,delta,Ji,Jf,mult):
 	para=W(90,theta,a2th,a4th,delta,Ji,Jf,mult)
 	num=perp-para
 	denum=perp+para
+	#print('perp:', perp,'para:', para)
 	return num/denum
 
 
