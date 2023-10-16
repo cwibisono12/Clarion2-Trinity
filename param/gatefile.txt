@@ -1,0 +1,5 @@
+#	32P	#Lowgate	#Upgate	#LowBckg	#UpBckg	#GateName(must be aninteger)
+2	1	70	85	97	100	78
+2	1	810	839	784	790	832
+2	1	2403	2432	2464	2480	2418
+2	1	1531	1562	1566	1575	1555
