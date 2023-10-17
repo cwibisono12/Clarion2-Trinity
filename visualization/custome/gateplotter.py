@@ -10,13 +10,13 @@ import rebin as r
 class gggateplotter(p.clarion):
 	'''
 	Usage:
-	Custom Class to visualize a projection from gg matrix given the gamma matrix and gate file
+	Custome Class to visualize a projection from gg matrix given the gamma matrix and gate file
 	C. Wibisono
 	10/16/'23
 	How to Use:
 	1. Object Instantiation:
 		Let p be an object:
-		p=gggateplotter(ggmat,5000,5000,0,4999,0,4999,gammagatefile_
+		p=gggateplotter(ggmat,5000,5000,0,4999,0,4999,gammagatefile)
 	2. Displaying the Projected Spectra from gammagatefile:
 		p.plot(0,4999,1)
 	Ready to fit the peak
@@ -37,10 +37,9 @@ class gggateplotter(p.clarion):
 		5). xup----> upper x
 		6). ylow--->lower y
 		7). yup----> upper y
-		8). gatefile ---> gamma gate file consisting of the region for gating and the region for background
+		8). gatefile ---> gamma gate file consisting the region for gating and the region for background
 		'''
 		
-		self.gatefile=gatefile
 		p.clarion.__init__(self,infile,ydim,xdim,xlow,xup,ylow,yup)
 		self.ytrp=self.readparse()
 		self.gatefile=open(gatefile)
@@ -54,7 +53,7 @@ class gggateplotter(p.clarion):
 
 
 		self.gatenum=len(self.gate)
-		self.x=np.arange(0,ydim,1)
+		self.x=np.arange(0,xdim,1)
 
 	def plot(self,xlow,xup,rebinfactor):
 		'''
@@ -67,11 +66,10 @@ class gggateplotter(p.clarion):
 		'''
 		project=[]
 		projectrebin=[]
-		projectrebinr=[]
+		
 		for i in range(self.gatenum):
 			project.append(self.project(self.gate[i][0],self.gate[i][1],self.gate[i][2],self.gate[i][3],self.gate[i][4],self.gate[i][5],self.ytrp))
-			projectrebin.append(r.rebin(self.ydim,project[i],rebinfactor))
-			projectrebinr.append(projectrebin[i].rebin())
+			projectrebin.append(r.rebin(self.xdim,project[i],rebinfactor).rebin())
 
 		fig,ax=plt.subplots(self.gatenum,1)
 		fig.suptitle(str(self.nuclei[1])+' '+'Gamma Spectra'+'\n'+'Clarion2-Trinity')
@@ -82,9 +80,9 @@ class gggateplotter(p.clarion):
 			ax[j].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 					
 		lineplot=[]
-		colorlist=['r','g','b','m','c','k','r','g','b','m','c']
+		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
 		for k in range(0,self.gatenum,1):
-			lineplotind,=ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6]))
+			lineplotind,=ax[k].plot(self.x[xlow:xup],projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
 			lineplot.append(lineplotind)
 			#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
 			ax[k].legend()
