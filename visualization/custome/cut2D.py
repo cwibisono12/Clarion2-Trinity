@@ -23,6 +23,7 @@ class cut2D:
 		self.xcoords=[]
 		self.ycoords=[]
 		self.index=0
+		self.linelist=[]
 		if bangate !=None:
 			banfile=open(bangate)
 			lines=banfile.readlines()
@@ -46,23 +47,86 @@ class cut2D:
 		x,y=event.xdata,event.ydata
 		self.xcoords.append(x)
 		self.ycoords.append(y)
-		self.ax.plot(self.xcoords,self.ycoords,'ro-')
+		lineplot,=self.ax.plot(self.xcoords,self.ycoords,'ro-')
+		self.linelist.append(lineplot)
 		print(self.index,x,y)
 		self.ax.figure.canvas.draw()		
+
+	def onpress(self,event):
+		'''
+		Method's Description:
+		To clear the most recent drawed banana cuts.
+		On the axes for a given figure press the button d to delete the most recent 
+		banana cut that is just drawn.
+		'''
+		if event.inaxes != self.ax.axes:
+			return
+		if event.key != 'd':
+			return
+
+		del self.xcoords
+		del self.ycoords
+		self.xcoords=[]
+		self.ycoords=[]
+		self.index=0
+		for i in range(len(self.linelist)):
+			self.linelist.pop(0).remove()
+
+		del self.linelist
+		self.linelist=[]
+		self.ax.figure.canvas.draw()
+
+	def printbangate(self,event):
+		'''
+		Method's Description:
+		To print coordinates of drawed banana gates onto the screen.
+		On the axes for a given figure press the button y to print the most recent banana cuts coordinates.
+		'''
+		if event.inaxes != self.ax.axes:
+			return
+		if event.key != 'y':
+			return
+		print("Printing Drawed Banana Gates onto the screen:\n")
+		print("Input Banana ID:\n")
+		banid=input()
+		print(banid,len(self.xcoords),'#')
+		for i in range(len(self.xcoords)):
+			print(banid,len(self.xcoords),self.xcoords[i],self.ycoords[i])
+			
 
 	def cutfile(self,banid):
 		'''
 		Method's Description:
 		To view banana cut files onto a corresponding PID.
 		'''
-		coordsx=[]
-		coordsy=[]
+		self.coordsx=[]
+		self.coordsy=[]
+		self.lineban=[]
 		for i in range(len(self.lines)):
 			if int(self.lines[i][0]) == banid:
-				coordsx.append(float(self.lines[i][2]))
-				coordsy.append(float(self.lines[i][3]))
-				self.ax.plot(coordsx,coordsy,'b*-')
-							
+				self.coordsx.append(float(self.lines[i][2]))
+				self.coordsy.append(float(self.lines[i][3]))
+				lineplot,=self.ax.plot(self.coordsx,self.coordsy,'b*-')
+				self.lineban.append(lineplot)		
+		self.ax.figure.canvas.draw()
+		
+	def clrcutfile(self,event):
+		'''
+		Method's Description:
+		To clear the loaded banana cuts on the given axes on a given figure.
+		Press the button k to clear the loaded banana cuts.
+		'''
+		if event.inaxes !=self.ax.axes:
+			return
+		if event.key != 'k':
+			return
+
+		for i in range(len(self.lineban)):
+			self.lineban.pop(0).remove()
+		
+		del self.lineban
+		del self.coordsx
+		del self.coordsy
 		self.ax.figure.canvas.draw()
 
 	def connect(self):
@@ -71,9 +135,10 @@ class cut2D:
 		To connect instance onto Matplotlib User Interactive
 		'''
 		self.ax.figure.canvas.mpl_connect('button_press_event',self.onclick)
+		self.ax.figure.canvas.mpl_connect('key_press_event',self.onpress)
+		self.ax.figure.canvas.mpl_connect('key_press_event',self.printbangate)	
+		self.ax.figure.canvas.mpl_connect('key_press_event',self.clrcutfile)	
 
-
-	
 if __name__ == "__main__":
 	import numpy as np
 	import sys
