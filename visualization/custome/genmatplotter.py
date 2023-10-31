@@ -4,7 +4,7 @@ import numpy as np
 import projmod as p
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
-import fitact2mod as f
+import fitgui as f
 import rebin as r
 
 class genmatplotter:
