@@ -4,7 +4,7 @@ import numpy as np
 import projmod as p
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
-import fitgui as f
+import fitact2mod as f
 import rebin as r
 
 class genmatplotter:
@@ -28,9 +28,9 @@ class genmatplotter:
 		Constructor Description:
 		1).matfilelist ---> a file consisting of lists of prompt and non-prompt matrices followed by
 					dimensional information
-				    see:Clarion2-Trinity/param/matfile.txt as an example
+				    see:Clarion2-Trinity/param/matfile.txt or matfilemult.txt as examples.
 		2).gatefile ----> a file consisting of list of gates
-				    see:Clarion2-Trinity/param/gatefilead.txt as an example
+				    see:Clarion2-Trinity/param/gatefilead.txt as an examples.
 		'''
 		matfile=open(matfilelist)
 		matlinelist=matfile.readlines()
@@ -134,71 +134,152 @@ class genmatplotter:
 		if self.flagad == 1:
 			iterator=len(self.project)
 
-		fig,ax=plt.subplots(iterator,1)
-		fig.suptitle(title)
+		self.fig,self.ax=plt.subplots(iterator,1)
+		self.fig.suptitle(title)
 
-		labelad=['48.24','90','131.75','150']
-		labelnonad=[]
-
+		self.labelad=['48.24','90','131.75','150']
+		self.labelnonad=[]
+		self.iterator=iterator
 		for k1 in range(self.gatenum):
 			labk1=self.gate[k1][6]
 			for k2 in range(self.pmatlen):
-				labelnonad.append(labk1)
+				self.labelnonad.append(labk1+'-'+self.matlist[2*k2][8])
 
 		for m in range(iterator):
 			if iterator > 1:
-				ax[m].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
-				ax[m].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
-				ax[m].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
-				ax[m].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[m].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax[m].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax[m].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[m].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 			else:
-				ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
-				ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
-				ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
-				ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 	
 
-		lineplot=[]
-		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
+		self.lineplot=[]
+		self.colorlist=['r','g','b','c','k','m','r','g','b','c','k']
 		for n in range(iterator):
 			if self.flagad == 0:
 				if iterator > 1: #temp
-					lineplotind,=ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[n],label=labelnonad[n])
+					lineplotind,=self.ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelnonad[n])
 				else:
-					lineplotind,=ax.plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[n],label=labelnonad[n])
+					lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelnonad[n])
 
 			if self.flagad == 1:
-				lineplotind,=ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[n],label=labelad[n])
+				lineplotind,=self.ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelad[n])
 
-			lineplot.append(lineplotind)
+			self.lineplot.append(lineplotind)
 			if iterator > 1:
-				ax[n].legend()
-				ax[n].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
-				ax[n].set_ylim(bottom=0)
-				ax[n].set_xlim(xlow,xup)
+				self.ax[n].legend()
+				self.ax[n].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[n].set_ylim(bottom=0)
+				self.ax[n].set_xlim(xlow,xup)
 			else:
-				ax.legend()
-				ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
-				ax.set_ylim(bottom=0)
-				ax.set_xlim(xlow,xup)
+				self.ax.legend()
+				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylim(bottom=0)
+				self.ax.set_xlim(xlow,xup)
 
 		if self.flagad == 0:
 			if iterator > 1:
 				#ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
-				ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				self.ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
 			else:
-				ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
 
 		if self.flagad == 1:
-			ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+			self.ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
 
-		fitline=[]
+		self.fitline=[]
 		for s in range(iterator):
-			fitline.append(f.fitgui(lineplot[s]))
-			fitline[s].connect()
+			self.fitline.append(f.fitgui(self.lineplot[s]))
+			self.fitline[s].connect()
+		
+		self.fig.canvas.mpl_connect('key_press_event',self.update)
 
 		plt.show()
 	
+	def update(self,event):
+		'''
+		Method's Description:
+		To update the spectra based on given lower and upper limit of the x axis.
+		Press e to expand the region and enter the desired xlow and xup.
+		'''
+		if event.key != 'e':
+			return
+		
+		for i in range(len(self.lineplot)):
+			self.lineplot.pop(0).remove()
+		
+		del self.lineplot
+		self.lineplot=[]
+
+		print("Input xlow and xup\n")
+		xlow, xup=map(int,input().split())	
+		
+
+		for m in range(self.iterator):
+			if self.iterator > 1:
+				self.ax[m].clear()
+				self.ax[m].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax[m].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax[m].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[m].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+			else:
+				self.ax.clear()
+				self.ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+	
+
+		for n in range(self.iterator):
+			if self.flagad == 0:
+				if self.iterator > 1: #temp
+					lineplotind,=self.ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelnonad[n])
+				else:
+					lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelnonad[n])
+
+			if self.flagad == 1:
+				lineplotind,=self.ax[n].plot(self.x[xlow:xup],self.projectrebin[n][xlow:xup],linewidth=0.85,ls='steps-mid',color=self.colorlist[n],label=self.labelad[n])
+
+			self.lineplot.append(lineplotind)
+			if self.iterator > 1:
+				self.ax[n].legend()
+				self.ax[n].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[n].set_ylim(bottom=0)
+				self.ax[n].set_xlim(xlow,xup)
+			else:
+				self.ax.legend()
+				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylim(bottom=0)
+				self.ax.set_xlim(xlow,xup)
+
+		if self.flagad == 0:
+			if self.iterator > 1:
+				#ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				self.ax[self.iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+			else:
+				self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+
+		if self.flagad == 1:
+			self.ax[self.iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+		
+		del self.fitline
+		self.fitline=[]
+		for s in range(self.iterator):
+			self.fitline.append(f.fitgui(self.lineplot[s]))
+			self.fitline[s].connect()
+
+
+		self.fig.canvas.draw()
+		
+
+
+
+
 
 if __name__ == "__main__":
 	import sys
