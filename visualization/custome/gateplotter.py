@@ -4,7 +4,7 @@ import projmod as p
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as tck
-import fitgui as f
+import fitact2mod as f
 import rebin as r
 
 class gggateplotter(p.clarion):
@@ -54,6 +54,7 @@ class gggateplotter(p.clarion):
 
 		self.gatenum=len(self.gate)
 		self.x=np.arange(0,xdim,1)
+		self.gatefile.close()
 
 	def plot(self,xlow,xup,rebinfactor):
 		'''
@@ -65,41 +66,127 @@ class gggateplotter(p.clarion):
 		rebinfactor: the rebinfactor per keV
 		'''
 		project=[]
-		projectrebin=[]
+		self.projectrebin=[]
 		
 		for i in range(self.gatenum):
 			project.append(self.project(self.gate[i][0],self.gate[i][1],self.gate[i][2],self.gate[i][3],self.gate[i][4],self.gate[i][5],self.ytrp))
-			projectrebin.append(r.rebin(self.xdim,project[i],rebinfactor).rebin())
+			self.projectrebin.append(r.rebin(self.xdim,project[i],rebinfactor).rebin())
 
-		fig,ax=plt.subplots(self.gatenum,1)
-		fig.suptitle(str(self.nuclei[1])+' '+'Gamma Spectra'+'\n'+'Clarion2-Trinity')
+		self.fig,self.ax=plt.subplots(self.gatenum,1)
+		self.fig.suptitle(str(self.nuclei[1])+' '+'Gamma Spectra'+'\n'+'Clarion2-Trinity')
 		for j in range(self.gatenum):
-			ax[j].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
-			ax[j].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
-			ax[j].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
-			ax[j].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
-					
-		lineplot=[]
+			if self.gatenum > 1:
+				self.ax[j].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax[j].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax[j].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[j].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+			else:
+				self.ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+	
+		self.lineplot=[]
 		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
 		for k in range(0,self.gatenum,1):
-			lineplotind,=ax[k].plot(self.x[xlow:xup],projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
-			lineplot.append(lineplotind)
-			#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
-			ax[k].legend()
-			ax[k].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
-			ax[k].set_ylim(bottom=0)
-			ax[k].set_xlim(xlow,xup)
-
+			if self.gatenum > 1 :
+				lineplotind,=self.ax[k].plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot.append(lineplotind)
+				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
+				self.ax[k].legend()
+				self.ax[k].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[k].set_ylim(bottom=0)
+				self.ax[k].set_xlim(xlow,xup)
+			else:
+				lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot.append(lineplotind)
+				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
+				self.ax.legend()
+				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylim(bottom=0)
+				self.ax.set_xlim(xlow,xup)
 			
-		ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
-
+		if self.gatenum > 1:
+			self.ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+		else:
+			self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
 		
-		fitline=[]
+		self.fitline=[]
 		for m in range(0,self.gatenum,1):
-			fitline.append(f.fitgui(lineplot[m]))
-			fitline[m].connect()
-		
+			self.fitline.append(f.fitgui(self.lineplot[m]))
+			self.fitline[m].connect()
+
+		self.fig.canvas.mpl_connect('key_press_event',self.update)
 		plt.show()
+
+	def update(self,event):
+		'''
+		Usage:
+		To update plot region based on user's input xlow and xup.
+		Press e to expand the plot's region. Enter as follow:
+		xlow xup then hit enter/return.
+		Example:
+		1000 2000
+		The new plot's region will be drawn based on the limit provided above.
+		'''
+		if event.key != 'e':
+			return
+			
+		for i in range(len(self.lineplot)):
+			self.lineplot.pop(0).remove()
+
+		del self.lineplot
+		#figure.canvas.draw()
+		print("Input the new xlow and xup\n")
+		xlow, xup=map(int,input().split())
+	
+		self.lineplot=[]
+		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
+		for j in range(self.gatenum):
+			if self.gatenum > 1:
+				self.ax[j].clear()
+				self.ax[j].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax[j].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax[j].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[j].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+			else:
+				self.ax.clear()
+				self.ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+
+		for k in range(0,self.gatenum,1):
+			if self.gatenum > 1:
+				lineplotind,=self.ax[k].plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot.append(lineplotind)
+				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
+				self.ax[k].legend()
+				self.ax[k].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[k].set_ylim(bottom=0)
+				self.ax[k].set_xlim(xlow,xup)
+			else:
+				lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot.append(lineplotind)
+				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
+				self.ax.legend()
+				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylim(bottom=0)
+				self.ax.set_xlim(xlow,xup)
+	
+		if self.gatenum > 1:
+			self.ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+		else:
+			self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+			
+
+		del self.fitline
+		self.fitline=[]
+		for m in range(0,self.gatenum,1):
+			self.fitline.append(f.fitgui(self.lineplot[m]))
+			self.fitline[m].connect()
+		
+		self.fig.canvas.draw()
 
 
 if __name__ == '__main__':
