@@ -2,6 +2,51 @@
 #Intended for user(s) who are familiar with Python OOP
 #Directory contains Python classes that I made for the purpose of Histogram Projection and Fitting
 
-
-
 ---C.W 10/19/2022
+
+#Updates on How to Use: #C. W 11/02/2023
+
+Suppose that we preserve the structure of modules according to this repository. If we want to import modules from your current directory, first the system needs to recognize where the package is stored. While there are many ways to initialize the sys.path where the modules are stored, one way to do this without any additional efforts is to put the following in every python script where the modules in this directory are wanted to be included.
+
+
+Suppose that all modules in this Clarion2-Trinity/visualization/custome are wanted to be used in any python scripts that user wish to make. If a user store this directory in their home directory in which for example:
+
+/home/user_name/Clarion2-Trinity/visualization/custome/
+
+Then in the python script that utilizes Python's modules from this repository needs to have this following:
+
+###############################################################################
+import sys
+sys.path.insert(0,'home/user_name/Clarion2-Trinity/visualization/custome')
+
+###############################################################################
+
+Suppose that we want to import module called cut2D. Then, beside of 2 lines above, we can start importing the module by:
+
+################################################################################
+import sys
+sys.path.insert(0,'home/user_name/Clarion2-Trinity/visualization/custome')
+
+import cut2D as cut
+
+################################################################################
+
+An example for the use of the module above is below:
+
+################################################################################
+import sys
+sys.path.insert(0,'home/user_name/Clarion2-Trinity/visualization/custome')
+
+import cut2D as cut
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+fig, ax=plt.subplots()
+ax.plot(np.arange(0,4096,1),np.arange(0,4096,1))
+
+p=cut.cut2D(ax)
+p.connect()
+
+plt.show()
+################################################################################

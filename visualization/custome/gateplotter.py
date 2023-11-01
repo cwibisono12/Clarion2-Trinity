@@ -4,7 +4,7 @@ import projmod as p
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as tck
-import fitact2mod as f
+import fitgui as f
 import rebin as r
 
 class gggateplotter(p.clarion):
@@ -85,7 +85,8 @@ class gggateplotter(p.clarion):
 				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
 				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
-	
+		
+		self.rebinfactor=rebinfactor	
 		self.lineplot=[]
 		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
 		for k in range(0,self.gatenum,1):
@@ -162,7 +163,7 @@ class gggateplotter(p.clarion):
 				self.lineplot.append(lineplotind)
 				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
 				self.ax[k].legend()
-				self.ax[k].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[k].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax[k].set_ylim(bottom=0)
 				self.ax[k].set_xlim(xlow,xup)
 			else:
@@ -170,7 +171,7 @@ class gggateplotter(p.clarion):
 				self.lineplot.append(lineplotind)
 				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
 				self.ax.legend()
-				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax.set_ylim(bottom=0)
 				self.ax.set_xlim(xlow,xup)
 	

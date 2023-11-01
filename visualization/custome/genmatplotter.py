@@ -4,7 +4,7 @@ import numpy as np
 import projmod as p
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
-import fitact2mod as f
+import fitgui as f
 import rebin as r
 
 class genmatplotter:
@@ -93,6 +93,7 @@ class genmatplotter:
 			self.projectrebin.append(r.rebin(int(self.matlist[0][3]),self.project[n],rebinfactor).rebin())
 
 		self.pmatlen=len(pmat) #number of prompt matrices
+		self.rebinfactor = rebinfactor
 
 	def ad(self,rebinfactor):
 		'''
@@ -173,12 +174,12 @@ class genmatplotter:
 			self.lineplot.append(lineplotind)
 			if iterator > 1:
 				self.ax[n].legend()
-				self.ax[n].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[n].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax[n].set_ylim(bottom=0)
 				self.ax[n].set_xlim(xlow,xup)
 			else:
 				self.ax.legend()
-				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax.set_ylim(bottom=0)
 				self.ax.set_xlim(xlow,xup)
 
@@ -248,12 +249,12 @@ class genmatplotter:
 			self.lineplot.append(lineplotind)
 			if self.iterator > 1:
 				self.ax[n].legend()
-				self.ax[n].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[n].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax[n].set_ylim(bottom=0)
 				self.ax[n].set_xlim(xlow,xup)
 			else:
 				self.ax.legend()
-				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax.set_ylim(bottom=0)
 				self.ax.set_xlim(xlow,xup)
 
@@ -276,9 +277,6 @@ class genmatplotter:
 
 		self.fig.canvas.draw()
 		
-
-
-
 
 
 if __name__ == "__main__":
