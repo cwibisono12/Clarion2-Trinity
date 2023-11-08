@@ -47,7 +47,7 @@ class gggateplotter(p.clarion):
 		self.gate=[]
 		for line in gateline:
 			if line.find('#') == -1:
-				self.gate.append(list(map(int,line.split())))
+				self.gate.append(list(line.split()))
 			else:
 				self.nuclei=list(line.split())			
 
@@ -69,7 +69,7 @@ class gggateplotter(p.clarion):
 		self.projectrebin=[]
 		
 		for i in range(self.gatenum):
-			project.append(self.project(self.gate[i][0],self.gate[i][1],self.gate[i][2],self.gate[i][3],self.gate[i][4],self.gate[i][5],self.ytrp))
+			project.append(self.project(int(self.gate[i][0]),int(self.gate[i][1]),int(self.gate[i][2]),int(self.gate[i][3]),int(self.gate[i][4]),int(self.gate[i][5]),self.ytrp))
 			self.projectrebin.append(r.rebin(self.xdim,project[i],rebinfactor).rebin())
 
 		self.fig,self.ax=plt.subplots(self.gatenum,1)
@@ -118,6 +118,7 @@ class gggateplotter(p.clarion):
 			self.fitline[m].connect()
 
 		self.fig.canvas.mpl_connect('key_press_event',self.update)
+		self.fig.canvas.mpl_connect('key_press_event',self.modify)
 		plt.show()
 
 	def update(self,event):
@@ -137,7 +138,6 @@ class gggateplotter(p.clarion):
 			self.lineplot.pop(0).remove()
 
 		del self.lineplot
-		#figure.canvas.draw()
 		print("Input the new xlow and xup\n")
 		xlow, xup=map(int,input().split())
 	
@@ -161,7 +161,6 @@ class gggateplotter(p.clarion):
 			if self.gatenum > 1:
 				lineplotind,=self.ax[k].plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
 				self.lineplot.append(lineplotind)
-				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
 				self.ax[k].legend()
 				self.ax[k].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax[k].set_ylim(bottom=0)
@@ -169,7 +168,6 @@ class gggateplotter(p.clarion):
 			else:
 				lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
 				self.lineplot.append(lineplotind)
-				#lineplot.append(ax[k].plot(self.x[xlow:xup],projectrebinr[k][xlow:xup],linewidth=0.85,ls='steps-mid',color='r',label=str(self.gate[k][6])))
 				self.ax.legend()
 				self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
 				self.ax.set_ylim(bottom=0)
@@ -188,6 +186,83 @@ class gggateplotter(p.clarion):
 			self.fitline[m].connect()
 		
 		self.fig.canvas.draw()
+
+	def modify(self,event):
+		'''
+		Usage:
+		To update the projected region based on updated user's input gatefile
+		and axes.
+		Press 'l' to reload the gatefile and update the axes.
+		Follow the instruction from terminal window.
+		'''		
+		if event.key != 'l':
+			return
+
+		self.gatefile=open(gatefile)
+		gateline=self.gatefile.readlines()
+		self.gate=[]
+		for line in gateline:
+			if line.find('#') == -1:
+				self.gate.append(list(line.split()))
+			else:
+				self.nuclei=list(line.split())			
+		
+		self.gatenum=len(self.gate)
+		self.gatefile.close()
+		print("Enter xlow and xup:\n")
+		xlow,xup=map(int,input().split())
+		print("processing...\n")
+		print("Which Axes to Update:\n")
+		print("Enter axlow and axup:\n")
+		axlow,axup=map(int,input().split())
+
+
+		for i in range(axlow,axup+1,1):
+			project=self.project(int(self.gate[i][0]),int(self.gate[i][1]),int(self.gate[i][2]),int(self.gate[i][3]),int(self.gate[i][4]),int(self.gate[i][5]),self.ytrp)
+			self.projectrebin[i]=r.rebin(self.xdim,project,self.rebinfactor).rebin()
+
+		for j in range(axlow,axup+1,1):
+			if self.gatenum > 1:
+				self.ax[j].clear()
+				self.ax[j].tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax[j].tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax[j].xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax[j].yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+			else:
+				self.ax.clear()
+				self.ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+				self.ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+				self.ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+				self.ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+		
+		colorlist=['r','g','b','c','k','m','r','g','b','c','k']
+		for k in range(axlow,axup+1,1):
+			if self.gatenum > 1 :
+				lineplotind,=self.ax[k].plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot[k]=lineplotind
+				self.ax[k].legend()
+				self.ax[k].set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax[k].set_ylim(bottom=0)
+				self.ax[k].set_xlim(xlow,xup)
+			else:
+				lineplotind,=self.ax.plot(self.x[xlow:xup],self.projectrebin[k][xlow:xup],linewidth=0.85,ls='steps-mid',color=colorlist[k],label=str(self.gate[k][6])+' '+'keV'+' '+'gate')
+				self.lineplot[0]=lineplotind
+				self.ax.legend()
+				self.ax.set_ylabel('counts/'+str(rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				self.ax.set_ylim(bottom=0)
+				self.ax.set_xlim(xlow,xup)
+			
+		if self.gatenum > 1:
+			self.ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+		else:
+			self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+		
+		for m in range(axlow,axup+1,1):
+			self.fitline[m]=f.fitgui(self.lineplot[m])
+			self.fitline[m].connect()
+
+		self.fig.canvas.draw()
+		print("Finished Processing.\n")
 
 
 if __name__ == '__main__':
