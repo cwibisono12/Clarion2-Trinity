@@ -88,7 +88,8 @@ def W(phi,theta,delta,Ji,Jf,sigma,mult):
 	else:
 		phase = -1.
 	
-	a0=1.
+	a0=1.+(delta**2.)
+	#a0=1. //revised result from the algebra
 	B20=ad.Bk(Ji,2,sigma)
 	R20=ad.Rk(2,L1,L1,Ji,Jf)
 	R22=2.*ad.Rk(2,L1,L2,Ji,Jf)*delta
