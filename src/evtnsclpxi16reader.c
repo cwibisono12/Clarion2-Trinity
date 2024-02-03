@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include "global.h"
 #include "evtnscl.h"
-#include "nsclheader.h"
 
 
 
@@ -74,13 +73,16 @@ void evtreader(unsigned int sub[], struct subevent *subevt,int option, FILE *fpr
         subevt[ind].trwlen = subevt[ind].trlen / 2;
         subevt[ind].extra = (sub[3] & 0x80000000) >> 31;       
  
-         
+        
 	float temp;
 	temp=(float) subevt[ind].energy/2.;
 	subevt[ind].energy=(int) temp;
+	
+	
 	//if(subevt->trlen ==0){        
 	//printf("chn: %d crn: %d sln: %d id: %d hlen: %d elen: %d energy: %d trlen: %d ribhold: %d ribh: %d fragsize: %d flagb: %d\n",subevt->chn,subevt->crn,subevt->sln,subevt->id,subevt->hlen,subevt->elen,subevt->energy,subevt->trlen,rib_sizeold,rib_size,frag_size,flagb);
-	printf("chn: %d crn: %d sln: %d id: %d hlen: %d elen: %d ind: %d fragsize: %d temp: %d\n",subevt[ind].chn,subevt[ind].crn,subevt[ind].sln,subevt[ind].id, subevt[ind].hlen, subevt[ind].elen,ind,frag[ind].bsize,temporary);
+	//Comment as of 01/27 '24 C.W 
+	//printf("chn: %d crn: %d sln: %d id: %d hlen: %d elen: %d ind: %d fragsize: %d temp: %d\n",subevt[ind].chn,subevt[ind].crn,subevt[ind].sln,subevt[ind].id, subevt[ind].hlen, subevt[ind].elen,ind,frag[ind].bsize,temporary);
        	//secraw(subevt);
 	 //continue on if no trace, esum, or qsum
         if (subevt[ind].hlen==HEADER_LENGTH && subevt[ind].trwlen==0 ) {

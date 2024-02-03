@@ -4,7 +4,7 @@ import numpy as np
 import projmod as p
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
-import fitgui as f
+import fitact2mod as f
 import rebin as r
 
 class genmatplotter:
@@ -53,7 +53,11 @@ class genmatplotter:
 		
 		self.gatenum=len(self.gate)
 		#print(int(self.matlist[0][3]))
-		self.x=np.arange(0,int(self.matlist[0][3]),1)
+		if int(self.gate[0][0]) == 1:
+			self.x=np.arange(0,int(self.matlist[0][3]),1)
+		else:
+			self.x=np.arange(0,int(self.matlist[0][2]),1)
+		
 		self.project=[]
 		self.projectrebin=[]
 		self.flagad=0
@@ -90,7 +94,10 @@ class genmatplotter:
 				self.project.append(projclean)
 				#self.projectrebin.append(r.rebin(int(self.matlist[0][3]),self.project[k],rebinfactor).rebin())
 		for n in range(len(self.project)):
-			self.projectrebin.append(r.rebin(int(self.matlist[0][3]),self.project[n],rebinfactor).rebin())
+			if int(self.gate[0][0]) == 1:
+				self.projectrebin.append(r.rebin(int(self.matlist[0][3]),self.project[n],rebinfactor).rebin())
+			else:
+				self.projectrebin.append(r.rebin(int(self.matlist[0][2]),self.project[n],rebinfactor).rebin())
 
 		self.pmatlen=len(pmat) #number of prompt matrices
 		self.rebinfactor = rebinfactor
@@ -174,21 +181,36 @@ class genmatplotter:
 			self.lineplot.append(lineplotind)
 			if iterator > 1:
 				self.ax[n].legend()
-				self.ax[n].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				if int(self.gate[0][0]) == 1:
+					self.ax[n].set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				else:
+					self.ax[n].set_ylabel('counts/'+str(self.rebinfactor)+' '+'degree',style='normal',fontweight='bold')
+
 				self.ax[n].set_ylim(bottom=0)
 				self.ax[n].set_xlim(xlow,xup)
 			else:
 				self.ax.legend()
-				self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				if int(self.gate[0][0]) == 1:
+					self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'keV',style='normal',fontweight='bold')
+				else:
+					self.ax.set_ylabel('counts/'+str(self.rebinfactor)+' '+'degree',style='normal',fontweight='bold')
+				
 				self.ax.set_ylim(bottom=0)
 				self.ax.set_xlim(xlow,xup)
 
 		if self.flagad == 0:
 			if iterator > 1:
 				#ax[self.gatenum-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
-				self.ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				if int(self.gate[0][0]) == 1:
+					self.ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				else:
+					self.ax[iterator-1].set_xlabel(r'$\theta$ (degrees)',style='normal',fontweight='bold') 
 			else:
-				self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				if int(self.gate[0][0]) == 1:
+					self.ax.set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
+				else:
+					self.ax.set_xlabel(r'$theta$ (degrees)',style='normal',fontweight='bold')
+
 
 		if self.flagad == 1:
 			self.ax[iterator-1].set_xlabel('E$_{\gamma}$ (keV)',style='normal',fontweight='bold')
