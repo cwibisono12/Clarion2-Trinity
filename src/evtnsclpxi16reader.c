@@ -44,7 +44,7 @@ void evtreader(unsigned int sub[], struct subevent *subevt,int option, FILE *fpr
 	if( fread(&ribhsize,sizeof(int),1,fpr) !=1) break;
 	if( fread(&ribht,sizeof(long long int),1,fpr) !=1) break;
 	if( fread(&ribhsid,sizeof(int),1,fpr)!=1) break;
-	if( fread(&ribht,sizeof(int),1,fpr)!=1)break;
+	if( fread(&ribhbt,sizeof(int),1,fpr)!=1)break;
 	if(fread(&ribhbsize,sizeof(int),1,fpr)!=1) break;
 	int temporary=ribhbsize-4;
 	int ind=0;
