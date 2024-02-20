@@ -1,20 +1,6 @@
 #!/usr/bin/env python3
 from struct import *
 
-class gdetectorsum:
-	def __init__(self,detid,angleold,anglenew,energy,etrue,validp,validnp,time,xmult,xid,xevalid):
-		self.detid=detid
-		self.angleold=angleold
-		self.anglenew=anglenew
-		self.energy=energy
-		self.etrue=etrue
-		self.validp=validp
-		self.validnp=validnp
-		self.time=time
-		self.xmult=xmult
-		self.xid=xid
-		self.xevalid=xevalid
-	
 
 def matfile(filename,*,dimx=4096,dimy=4096):
 	'''
@@ -33,6 +19,45 @@ def matfile(filename,*,dimx=4096,dimy=4096):
 					print("i: ",i,"j: ",j,"val: ",temp)
 
 
+def matwrite(filename,*,dimy,dimx,arr,overwrite):
+	'''
+	Matrix writer
+	C. Wibisono
+	02/18 '24
+	Usage:
+	To write and or update a matrix into a file.
+	Function Arguments
+	Filename : file to write/update
+	dimy: int, y dimension
+	dimx: int, x dimension
+	arr: int[dimy][dimx], two dimensional array
+	overwrite: int : 1 (to overwrite) or 0 (to append)
+	'''
+	if overwrite == 1:
+		with open(filename,mode='wb') as f:
+			for i in range(0,dimy,1):
+				for j in range(0,dimx,1):
+					temp=arr[i][j]
+					f.write(pack("@i",temp))
+
+			print("Completed\n")
+	else:
+		with open(filename,mode='rb') as f:
+			for i in range(0,dimy,1):
+				for j in range(0,dimx,1):
+					buff=f.read(4)
+					temp,=unpack("@i",buff)
+					arr[i][j]=arr[i][j]+temp
+			print("Complete updating the matrix")
+			print("Writing updated matrix")
+		with open(filename,mode='wb') as f:
+			for i in range(0,dimy,1):
+				for j in range(0,dimx,1):
+					temp=arr[i][j]
+					f.write(pack("@i",temp))
+
+			print("Completed\n")
+			
 
 def ev5file(filename):
 	'''
@@ -61,8 +86,7 @@ def ev5file(filename):
 			if buff4 == b'':
 				break
 			Ex,=unpack("@h",buff4)
-			ge=[]
-			#print("p: ",gaggvalidp,"a: ",gaggvalida,"gmult: ",gmult)
+			
 			for i in range(0,gmult,1):
 				xid=[]
 				xevalid=[]
@@ -93,13 +117,11 @@ def ev5file(filename):
 				xevalid.append(temp2c)
 				xevalid.append(temp2d)
 				
-				ge.append(gdetectorsum(gid,gaold,ganew,gae,gaetrue,gavalidp,gavalidnp,gatime,gaxmult,xid,xevalid))
 				print("p: ",int(gaggvalidp),"a: ",int(gaggvalida),"gmult: ",int(gmult),"xmult: ",gaxmult,temp1a,temp1b,temp1c,temp1d,temp2a,temp2b,temp2c,temp2d)
 				del xid
 				del xevalid
 					
 					
-			del ge
 
 
 def pxi16file(filename):
@@ -346,8 +368,10 @@ def nsclpxi16file(filename):
 
 
 if __name__ == "__main__":
+	'''
+	Below is an example how to use this module.
+	The example below demonstrates how to read the raw file coming from NSCL/FRIB DAQ.
+	'''
 	import sys
 	filename=sys.argv[1]
-	pxi16file(filename)
-	#nsclpxi16file(filename)
-	#ev5file(filename)
+	nsclpxi16file(filename)
