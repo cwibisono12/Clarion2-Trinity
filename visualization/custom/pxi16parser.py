@@ -2,7 +2,6 @@
 from struct import *
 from dataclasses import dataclass
 
-
 @dataclass
 class pxi16:
 	chn: int
@@ -23,136 +22,162 @@ class pxi16:
 	#qsum: list[int]
 	#tr: list[int]
 
-def pxi16file(fpr):
+
+def pxi16evread(fpr,*,timebuild=190):
 	'''
 	Original Pixie16 Data Format
 	C. Wibisono
 	02/16 '24	
 	Usage:
-	To parse the .evt file coming from original pixie16 data structure per detector hit. 
-	Function Argument:
+	To parse the .evt file coming from original pixie16 data structure and build one-event. File needs to be time sorted before using this function.
+	Function Argument(s):
 	fpr: file pointer object
+	timebuild: time event window in the unit of 100 MHz (10 ns).
 	Return value: (either -1, or pxi16data type (see pxi16 dataclasses above)
 	-1: end of file
-	pxi16data: pixie16 data type object
+	pxi16data[sevtmult]: pixie16 data type object. The number of dimension for pxi16data object denotes the number of detector hits within an event.
 	'''
-	buff1=fpr.read(4)
-	if buff1 == b'':
-		return -1 #break from the iteration over channel
-	p=Struct("@i")
-	buff1int,=p.unpack(buff1)
-	chn =int(buff1int & 0xF)
-	sln=int((buff1int & 0xF0) >> 4)
-	crn=int((buff1int & 0XF00) >> 8)
-	hlen=int((buff1int & 0x1F000) >> 12)
-	elen=int((buff1int & 0x7FFE0000) >> 17)
-	fcode=int((buff1int & 0x80000000) >> 31)
-	buff2=fpr.read(4)
-	buff3=fpr.read(4)
-	buff2int,=p.unpack(buff2)
-	buff3int,=p.unpack(buff3)
-	time=int(((buff3int & 0xFFFF) << 32) + buff2int)			
-	ctime=int((buff3int & 0x7FFF0000) >> 16)
-	ctimef=int((buff3int & 0x80000000) >> 31)
-	buff4=fpr.read(4)
-	buff4int,=p.unpack(buff4)
-	tempenergy=int (buff4int & 0xFFFF)
-	tempen=float(tempenergy/2.)
-	energy=int(tempen)
-	trlen=int ((buff4int & 0x7FFF0000) >> 16)
-	trwlen=int(trlen/2.)  
-	extra=int((buff4int & 0x80000000) >> 31)
-	iddet=crn*13*16+(sln-2)*16+chn	
-	if hlen == 4 and trwlen == 0:
-		ans=pxi16(chn,sln,crn,iddet,hlen,elen,fcode,time,ctime,ctimef,energy,trlen,trwlen,extra)
-		return ans  #continue iteration over channel
-	#f.seek(-16,1)
-	esum=[]
-	qsum=[]
-	if hlen == 8 or hlen == 16:
-		for i in range(0,4,1):
-			buff=fpr.read(4)
-			temp,=p.unpack(buff)
-			esum.append(temp)
-		if hlen == 16:
-			for j in range(0,8,1):
+	evtime=-1
+	tdiff=-1
+	pxi16obj=[]
+	p=Struct("@I")
+	while(1):
+		buff1=fpr.read(4)
+		if buff1 == b'':
+			return -1 #break from the iteration over channel
+		buff1int,=p.unpack(buff1)
+		chn =buff1int & 0xF
+		sln=(buff1int & 0xF0) >> 4
+		crn=(buff1int & 0XF00) >> 8
+		hlen=(buff1int & 0x1F000) >> 12
+		elen=(buff1int & 0x7FFE0000) >> 17
+		fcode=(buff1int & 0x80000000) >> 31
+		buff2=fpr.read(4)
+		buff3=fpr.read(4)
+		buff2int,=p.unpack(buff2)
+		buff3int,=p.unpack(buff3)
+		time=((buff3int & 0xFFFF) << 32) + (buff2int)	
+		ctime=(buff3int & 0x7FFF0000) >> 16
+		ctimef=(buff3int & 0x80000000) >> 31
+		buff4=fpr.read(4)
+		buff4int,=p.unpack(buff4)
+		tempenergy= buff4int & 0xFFFF
+		tempen=float(tempenergy/2.)
+		energy=int(tempen)
+		trlen= (buff4int & 0x7FFF0000) >> 16
+		trwlen=int(trlen/2.)  
+		extra= (buff4int & 0x80000000) >> 31
+		iddet=crn*13*16+(sln-2)*16+chn	
+		
+		if evtime == -1:
+			evtime = time
+			tdiff = 0
+		else:
+			tdiff = time - evtime
+			if tdiff < 0:
+				print("file is not time sorted.\n")
+				return -1
+		
+		#rewind the event if it exceeds the time window
+		if tdiff > timebuild:
+			fpr.seek(-16,1)
+			break
+
+		if hlen == 4 and trwlen == 0:
+			temp=pxi16(chn,sln,crn,iddet,hlen,elen,fcode,time,ctime,ctimef,energy,trlen,trwlen,extra)
+			pxi16obj.append(temp)
+			continue  #continue iteration over channel
+	
+		#f.seek(-16,1)
+		esum=[]
+		qsum=[]
+		if hlen == 8 or hlen == 16:
+			for i in range(0,4,1):
 				buff=fpr.read(4)
-				temp,=p.unpack(buff)	
+				temp,=p.unpack(buff)
+				esum.append(temp)
+			if hlen == 16:
+				for j in range(0,8,1):
+					buff=fpr.read(4)
+					temp,=p.unpack(buff)	
+					qsum.append(temp)
+
+		if hlen == 12:
+			for i in range(0,8,1):
+				buff=fpr.read(4)
+				temp,=p.unpack(buff)
 				qsum.append(temp)
 
-	if hlen == 12:
-		for i in range(0,8,1):
+
+		tr=[]
+		for i in range(hlen,elen,1):
 			buff=fpr.read(4)
-			temp,=p.unpack(buff)
-			qsum.append(temp)
-
-		ans=pxi16(chn,sln,crn,iddet,hlen,elen,fcode,time,ctime,ctimef,energy,trlen,trwlen,extra)
-		return ans
-
-	tr=[]
-	for i in range(hlen,elen,1):
-		buff=fpr.read(4)
-		buffint,=p.unpack(buff)				
-		if trwlen !=0:
-			temp1=int(buffint & 0x3FFF)
-			temp2=int((buffint >> 16) & 0x3FFF)
-			tr.append(temp1)
-			tr.append(temp2)
+			buffint,=p.unpack(buff)				
+		
+			if trwlen !=0:
+				temp1=int(buffint & 0x3FFF)
+				temp2=int((buffint >> 16) & 0x3FFF)
+				tr.append(temp1)
+				tr.append(temp2)
 			
 			
-	if hlen == 4 and trwlen !=0:
-		temp1=0
-		for i in range(0,31,1):
-			temp1=temp1+tr[i]
-		qsum.append(temp1)	
-		temp2=0
-		for i in range(31,60,1):
-			temp2=temp2+tr[i]
-		qsum.append(temp2)
-		temp3=0
-		for i in range(60,75,1):
-			temp3=temp3+tr[i]
-		qsum.append(temp3)
-		temp4=0
-		for i in range(75,95,1):
-			temp4=temp4+tr[i]
-		qsum.append(temp4)
-		temp5=0
-		for i in range(95,105,1):
-			temp5=temp5+tr[i]
-		qsum.append(temp5)
-		temp6=0
-		for i in range(105,160,1):
-			temp6=temp6+tr[i]
-		qsum.append(temp6)
-		temp7=0
-		for i in range(160,175,1):
-			temp7=temp7+tr[i]
-		qsum.append(temp7)
-		temp8=0
-		for i in range(175,200,1):
-			temp8=temp8+tr[i]
-		qsum.append(temp8)
+		if hlen == 4 and trwlen !=0:
+			temp1=0
+			for i in range(0,31,1):
+				temp1=temp1+tr[i]
+			qsum.append(temp1)	
+			temp2=0
+			for i in range(31,60,1):
+				temp2=temp2+tr[i]
+			qsum.append(temp2)
+			temp3=0
+			for i in range(60,75,1):
+				temp3=temp3+tr[i]
+			qsum.append(temp3)
+			temp4=0
+			for i in range(75,95,1):
+				temp4=temp4+tr[i]
+			qsum.append(temp4)
+			temp5=0
+			for i in range(95,105,1):
+				temp5=temp5+tr[i]
+			qsum.append(temp5)
+			temp6=0
+			for i in range(105,160,1):
+				temp6=temp6+tr[i]
+			qsum.append(temp6)
+			temp7=0
+			for i in range(160,175,1):
+				temp7=temp7+tr[i]
+			qsum.append(temp7)
+			temp8=0
+			for i in range(175,200,1):
+				temp8=temp8+tr[i]
+			qsum.append(temp8)
 
-		print("chn:",chn,"sln:",sln,"crn:",crn,"hlen:",hlen,"elen:",elen,"energy:",energy)
-		ans=pxi16(chn,sln,crn,iddet,hlen,elen,fcode,time,ctime,ctimef,energy,trlen,trwlen,extra)
-		return ans 
+		
+		temp=pxi16(chn,sln,crn,iddet,hlen,elen,fcode,time,ctime,ctimef,energy,trlen,trwlen,extra)
+		pxi16obj.append(temp)
 
-def nsclpxi16file(fpr):
+	return pxi16obj
+
+
+def nsclpxi16evread(fpr):
 	'''
 	NSCL/FRIB Pixie16 Data Format
 	C. Wibisono
 	02/16 '24
 	Usage:
-	To parse the .evt file coming from NSCL/FRIB DAQ. This function parser would return pxi16data 		object per event.
+	To parse the .evt file coming from NSCL/FRIB DAQ. This function parser would return pxi16data object per event.
 	Function Argument(s):
 	fpr: file pointer object
 	Return value: either -1, 0 or pxi16 data type
 	-1: end of file
 	0: skip for non-physics ring
-	pxi16dataobj[sevtmult]: list of pxi16data object. The dimension would denote number of hits fo		r each event.
+	pxi16dataobj[sevtmult]: list of pxi16data object. The dimension would denote number of hits for each event.
 	'''
 	p=Struct("@i")
+	q=Struct("@I")
 	buffring=fpr.read(4)
 	if buffring == b'':
 		return -1
@@ -196,28 +221,28 @@ def nsclpxi16file(fpr):
 		buff1=fpr.read(4)
 		if buff1 == b'':
 			return -1
-		buff1int,=p.unpack(buff1)
-		chn =int(buff1int & 0xF)
-		sln=int((buff1int & 0xF0) >> 4)
-		crn=int((buff1int & 0XF00) >> 8)
-		hlen=int((buff1int & 0x1F000) >> 12)
-		elen=int((buff1int & 0x7FFE0000) >> 17)
-		fcode=int((buff1int & 0x80000000) >> 31)
+		buff1int,=q.unpack(buff1)
+		chn =buff1int & 0xF
+		sln=(buff1int & 0xF0) >> 4
+		crn=(buff1int & 0XF00) >> 8
+		hlen=(buff1int & 0x1F000) >> 12
+		elen=(buff1int & 0x7FFE0000) >> 17
+		fcode=(buff1int & 0x80000000) >> 31
 		buff2=fpr.read(4)
 		buff3=fpr.read(4)
-		buff2int,=p.unpack(buff2)
-		buff3int,=p.unpack(buff3)
-		time=int(((buff3int & 0xFFFF) << 32) + buff2int)			
-		ctime=int((buff3int & 0x7FFF0000) >> 16)
-		ctimef=int((buff3int & 0x80000000) >> 31)
+		buff2int,=q.unpack(buff2)
+		buff3int,=q.unpack(buff3)
+		time=((buff3int & 0xFFFF) << 32) + buff2int			
+		ctime=(buff3int & 0x7FFF0000) >> 16
+		ctimef= (buff3int & 0x80000000) >> 31
 		buff4=fpr.read(4)
-		buff4int,=p.unpack(buff4)
-		tempenergy=int (buff4int & 0xFFFF)
+		buff4int,=q.unpack(buff4)
+		tempenergy= buff4int & 0xFFFF
 		tempen=float(tempenergy/2.)
 		energy=int(tempen)
-		trlen=int ((buff4int & 0x7FFF0000) >> 16)
+		trlen=(buff4int & 0x7FFF0000) >> 16
 		trwlen=int(trlen/2.)  
-		extra=int((buff4int & 0x80000000) >> 31)
+		extra=(buff4int & 0x80000000) >> 31
 		iddet=crn*13*16+(sln-2)*16+chn	
 			
 		if hlen == 4 and trwlen == 0:
@@ -232,29 +257,29 @@ def nsclpxi16file(fpr):
 		if hlen == 8 or hlen == 16:
 			for i in range(0,4,1):
 				buff=fpr.read(4)
-				temp,=p.unpack(buff)
+				temp,=q.unpack(buff)
 				esum.append(temp)
 			if hlen == 16:
 				for j in range(0,8,1):
 					buff=fpr.read(4)
-					temp,=p.unpack(buff)	
+					temp,=q.unpack(buff)	
 					qsum.append(temp)
 
 		if hlen == 12:
 			for i in range(0,8,1):
 				buff=fpr.read(4)
-				temp,=p.unpack(buff)
+				temp,=q.unpack(buff)
 				qsum.append(temp)
 
 			
 		tr=[]
 		for i in range(hlen,elen,1):
 			buff=fpr.read(4)
-			buffint,=p.unpack(buff)
+			buffint,=q.unpack(buff)
 				
 			if trwlen !=0:
-				temp1=int(buffint & 0x3FFF)
-				temp2=int((buffint >> 16) & 0x3FFF)
+				temp1=buffint & 0x3FFF
+				temp2=(buffint >> 16) & 0x3FFF
 				tr.append(temp1)
 				tr.append(temp2)
 			
@@ -317,7 +342,7 @@ if __name__ == "__main__":
 	#open the raw data
 	with open(filename,mode='rb') as f:
 		while(1):
-			temp=nsclpxi16file(f)
+			temp=nsclpxi16evread(f)
 			if temp == -1:
 				break
 			elif temp == 0:

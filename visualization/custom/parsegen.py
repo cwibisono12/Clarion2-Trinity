@@ -137,26 +137,27 @@ def pxi16file(filename):
 			buff1=f.read(4)
 			if buff1 == b'':
 				break
-			buff1int,=unpack("@i",buff1)
-			chn =int(buff1int & 0xF)
-			sln=int((buff1int & 0xF0) >> 4)
-			crn=int((buff1int & 0XF00) >> 8)
-			hlen=int((buff1int & 0x1F000) >> 12)
-			elen=int((buff1int & 0x7FFE0000) >> 17)
-			fcode=int((buff1int & 0x80000000) >> 31)
+			buff1int,=unpack("@I",buff1)
+			chn =buff1int & 0xF
+			sln=(buff1int & 0xF0) >> 4
+			crn=(buff1int & 0XF00) >> 8
+			hlen=(buff1int & 0x1F000) >> 12
+			elen=(buff1int & 0x7FFE0000) >> 17
+			fcode=(buff1int & 0x80000000) >> 31
 			buff2=f.read(4)
 			buff3=f.read(4)
-			buff2int,=unpack("@i",buff2)
-			buff3int,=unpack("@i",buff3)
-			time=int(((buff3int & 0xFFFF) << 32) + buff2int)			
-			ctime=int((buff3int & 0x7FFF0000) >> 16)
-			ctimef=int((buff3int & 0x80000000) >> 31)
+			buff2int,=unpack("@I",buff2)
+			buff3int,=unpack("@I",buff3)
+			temp=(buff3int & 0xFFFF) << 32
+			time= temp + buff2int		
+			ctime=(buff3int & 0x7FFF0000) >> 16
+			ctimef=(buff3int & 0x80000000) >> 31
 			buff4=f.read(4)
-			buff4int,=unpack("@i",buff4)
-			energy=int (buff4int & 0xFFFF)
-			trlen=int ((buff4int & 0x7FFF0000) >> 16)
+			buff4int,=unpack("@I",buff4)
+			energy=buff4int & 0xFFFF
+			trlen=(buff4int & 0x7FFF0000) >> 16
 			trwlen=int(trlen/2.)  
-			extra=int((buff4int & 0x80000000) >> 31)
+			extra=(buff4int & 0x80000000) >> 31
 			
 			if hlen == 4 and trwlen == 0:
 				continue
@@ -166,25 +167,25 @@ def pxi16file(filename):
 			if hlen == 8 or hlen == 16:
 				for i in range(0,4,1):
 					buff=f.read(4)
-					esum.append(unpack("@i",buff))
+					esum.append(unpack("@I",buff))
 				if hlen == 16:
 					for j in range(0,8,1):
 						buff=f.read(4)	
-						qsum.append(unpack("@i",buff))
+						qsum.append(unpack("@I",buff))
 
 			if hlen == 12:
 				for i in range(0,8,1):
 					buff=f.read(4)
-					qsum.append(unpack("@i",buff))
+					qsum.append(unpack("@I",buff))
 
 			
 			tr=[]
 			for i in range(hlen,elen,1):
 				buff=f.read(4)
-				buffint,=unpack("@i",buff)				
+				buffint,=unpack("@I",buff)				
 				if trwlen !=0:
-					temp1=int(buffint & 0x3FFF)
-					temp2=int((buffint >> 16) & 0x3FFF)
+					temp1=buffint & 0x3FFF
+					temp2=(buffint >> 16) & 0x3FFF
 					tr.append(temp1)
 					tr.append(temp2)
 			
@@ -223,7 +224,7 @@ def pxi16file(filename):
 					temp8=temp8+tr[i]
 				qsum.append(temp8)
 
-			print("chn:",chn,"sln:",sln,"crn:",crn,"hlen:",hlen,"elen:",elen,"energy:",energy)
+			print("chn:",chn,"sln:",sln,"crn:",crn,"hlen:",hlen,"elen:",elen,"time:",time,"buff2:",buff2int,"temp:",temp)
 
 
 def nsclpxi16file(filename):
@@ -277,26 +278,26 @@ def nsclpxi16file(filename):
 				buff1=f.read(4)
 				if buff1 == b'':
 					break
-				buff1int,=unpack("@i",buff1)
-				chn =int(buff1int & 0xF)
-				sln=int((buff1int & 0xF0) >> 4)
-				crn=int((buff1int & 0XF00) >> 8)
-				hlen=int((buff1int & 0x1F000) >> 12)
-				elen=int((buff1int & 0x7FFE0000) >> 17)
-				fcode=int((buff1int & 0x80000000) >> 31)
+				buff1int,=unpack("@I",buff1)
+				chn =buff1int & 0xF
+				sln=(buff1int & 0xF0) >> 4
+				crn=(buff1int & 0XF00) >> 8
+				hlen=(buff1int & 0x1F000) >> 12
+				elen=(buff1int & 0x7FFE0000) >> 17
+				fcode=(buff1int & 0x80000000) >> 31
 				buff2=f.read(4)
 				buff3=f.read(4)
-				buff2int,=unpack("@i",buff2)
-				buff3int,=unpack("@i",buff3)
-				time=int(((buff3int & 0xFFFF) << 32) + buff2int)			
-				ctime=int((buff3int & 0x7FFF0000) >> 16)
-				ctimef=int((buff3int & 0x80000000) >> 31)
+				buff2int,=unpack("@I",buff2)
+				buff3int,=unpack("@I",buff3)
+				time=((buff3int & 0xFFFF) << 32) + buff2int			
+				ctime=(buff3int & 0x7FFF0000) >> 16
+				ctimef=(buff3int & 0x80000000) >> 31
 				buff4=f.read(4)
-				buff4int,=unpack("@i",buff4)
-				energy=int (buff4int & 0xFFFF)
-				trlen=int ((buff4int & 0x7FFF0000) >> 16)
+				buff4int,=unpack("@I",buff4)
+				energy=buff4int & 0xFFFF
+				trlen=(buff4int & 0x7FFF0000) >> 16
 				trwlen=int(trlen/2.)  
-				extra=int((buff4int & 0x80000000) >> 31)
+				extra=(buff4int & 0x80000000) >> 31
 			
 				if hlen == 4 and trwlen == 0:
 					continue
@@ -306,25 +307,25 @@ def nsclpxi16file(filename):
 				if hlen == 8 or hlen == 16:
 					for i in range(0,4,1):
 						buff=f.read(4)
-						esum.append(unpack("@i",buff))
+						esum.append(unpack("@I",buff))
 				if hlen == 16:
 					for j in range(0,8,1):
 						buff=f.read(4)	
-						qsum.append(unpack("@i",buff))
+						qsum.append(unpack("@I",buff))
 
 				if hlen == 12:
 					for i in range(0,8,1):
 						buff=f.read(4)
-						qsum.append(unpack("@i",buff))
+						qsum.append(unpack("@I",buff))
 
 			
 				tr=[]
 				for i in range(hlen,elen,1):
 					buff=f.read(4)
-					buffint,=unpack("@i",buff)				
+					buffint,=unpack("@I",buff)				
 					if trwlen !=0:
-						temp1=int(buffint & 0x3FFF)
-						temp2=int((buffint >> 16) & 0x3FFF)
+						temp1=buffint & 0x3FFF
+						temp2=(buffint >> 16) & 0x3FFF
 						tr.append(temp1)
 						tr.append(temp2)
 			
@@ -374,4 +375,4 @@ if __name__ == "__main__":
 	'''
 	import sys
 	filename=sys.argv[1]
-	nsclpxi16file(filename)
+	pxi16file(filename)
