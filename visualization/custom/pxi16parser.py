@@ -33,8 +33,8 @@ def pxi16evread(fpr,*,timebuild=190):
 	Function Argument(s):
 	fpr: file pointer object
 	timebuild: time event window in the unit of 100 MHz (10 ns).
-	Return value: (either -1, or pxi16data type (see pxi16 dataclasses above)
-	-1: end of file
+	Return value: -1 or pxi16data type (see pxi16 dataclasses above)
+	-1: error indicating that the file is not time sorted
 	pxi16data[sevtmult]: pixie16 data type object. The number of dimension for pxi16data object denotes the number of detector hits within an event.
 	'''
 	evtime=-1
@@ -44,7 +44,7 @@ def pxi16evread(fpr,*,timebuild=190):
 	while(1):
 		buff1=fpr.read(4)
 		if buff1 == b'':
-			return -1 #break from the iteration over channel
+			break #break from the iteration over channel
 		buff1int,=p.unpack(buff1)
 		chn =buff1int & 0xF
 		sln=(buff1int & 0xF0) >> 4
@@ -115,8 +115,8 @@ def pxi16evread(fpr,*,timebuild=190):
 			buffint,=p.unpack(buff)				
 		
 			if trwlen !=0:
-				temp1=int(buffint & 0x3FFF)
-				temp2=int((buffint >> 16) & 0x3FFF)
+				temp1=buffint & 0x3FFF
+				temp2=(buffint >> 16) & 0x3FFF
 				tr.append(temp1)
 				tr.append(temp2)
 			
@@ -216,11 +216,11 @@ def nsclpxi16evread(fpr):
 		bsize,=p.unpack(buffbsize)
 		buffdevice=fpr.read(4)
 		if buffdevice == b'':
-			return -1
+			break
 		temporary=temporary-(48+2*bsize)
 		buff1=fpr.read(4)
 		if buff1 == b'':
-			return -1
+			break
 		buff1int,=q.unpack(buff1)
 		chn =buff1int & 0xF
 		sln=(buff1int & 0xF0) >> 4
