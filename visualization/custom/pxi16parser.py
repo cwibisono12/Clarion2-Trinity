@@ -33,8 +33,9 @@ def pxi16evread(fpr,*,timebuild=190):
 	Function Argument(s):
 	fpr: file pointer object
 	timebuild: time event window in the unit of 100 MHz (10 ns).
-	Return value: -1 or pxi16data type (see pxi16 dataclasses above)
+	Return value: -1, 0  or pxi16data type (see pxi16 dataclasses above)
 	-1: error indicating that the file is not time sorted
+	0: end of file
 	pxi16data[sevtmult]: pixie16 data type object. The number of dimension for pxi16data object denotes the number of detector hits within an event.
 	'''
 	evtime=-1
@@ -44,7 +45,8 @@ def pxi16evread(fpr,*,timebuild=190):
 	while(1):
 		buff1=fpr.read(4)
 		if buff1 == b'':
-			break #break from the iteration over channel
+			return 0
+			#break #break from the iteration over channel
 		buff1int,=p.unpack(buff1)
 		chn =buff1int & 0xF
 		sln=(buff1int & 0xF0) >> 4
@@ -58,6 +60,9 @@ def pxi16evread(fpr,*,timebuild=190):
 		buff3int,=p.unpack(buff3)
 		time=((buff3int & 0xFFFF) << 32) + (buff2int)	
 		ctime=(buff3int & 0x7FFF0000) >> 16
+				
+		#ctime=(buff3int & 0xFFFF0000) >> 16
+		
 		ctimef=(buff3int & 0x80000000) >> 31
 		buff4=fpr.read(4)
 		buff4int,=p.unpack(buff4)
@@ -233,7 +238,23 @@ def nsclpxi16evread(fpr):
 		buff2int,=q.unpack(buff2)
 		buff3int,=q.unpack(buff3)
 		time=((buff3int & 0xFFFF) << 32) + buff2int			
-		ctime=(buff3int & 0x7FFF0000) >> 16
+		#ctime=(buff3int & 0x7FFF0000) >> 16
+		cfd_forced= (buff3int & 0x80000000) >> 31
+		cfd_source= (buff3int & 0x40000000) >> 30
+		cfdtimetemp = (buff3int & 0x3FFF0000) >> 16
+		cfdtimetemp2 = cfdtimetemp & 0x3FFF
+		#cfdtimetemp2 = cfdtimetemp & 0x7FFF
+		if cfd_forced == 0:
+			if cfd_source == 1:
+				#time = time*2 - 1+ cfdtimetemp2/(2*16384)
+				ctime = cfdtimetemp2/16384 - 1
+			else:
+				#time = time*2 + cfdtimetemp2/(2*16384)
+				ctime = cfdtimetemp2/16384 
+		else:
+			ctime = 0
+			#time = time
+		
 		ctimef= (buff3int & 0x80000000) >> 31
 		buff4=fpr.read(4)
 		buff4int,=q.unpack(buff4)
@@ -350,7 +371,7 @@ if __name__ == "__main__":
 			else:
 				sevtmult=len(temp) #event multiplicity
 				for i in range(0,sevtmult,1):
-					print("sevtmult:",sevtmult,"crn:",temp[i].crn,"sln:",temp[i].sln,"chn:",temp[i].chn,temp[i].iddet)
+					print("sevtmult:",sevtmult,"crn:",temp[i].crn,"sln:",temp[i].sln,"chn:",temp[i].chn,"id:",temp[i].iddet,"hlen:",temp[i].hlen,"elen:",temp[i].elen,"trlen:",temp[i].trlen)
 					if temp[i].energy >=0 and temp[i].energy < 8192:
 						idenmat[temp[i].iddet][temp[i].energy]=idenmat[temp[i].iddet][temp[i].energy]+1
 					
