@@ -4,7 +4,7 @@ import numpy as np
 import projmod as p
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
-import fitact2mod as f
+import fitgui as f
 import rebin as r
 
 class genmatplotter:
@@ -22,6 +22,8 @@ class genmatplotter:
 	'''	
 	plt.rcParams['font.family']='serif'
 	plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
+	plt.rcParams['figure.dpi'] = 150
+	#plt.rcParams['figure.figsize'] = (6,6)	
 
 	def __init__(self,matfilelist,gatefile):
 		'''
@@ -167,7 +169,7 @@ class genmatplotter:
 	
 
 		self.lineplot=[]
-		self.colorlist=['r','g','b','c','k','m','r','g','b','c','k']
+		self.colorlist=['r','b','g','c','k','m','r','b','g','c','k']
 		for n in range(iterator):
 			if self.flagad == 0:
 				if iterator > 1: #temp
@@ -221,7 +223,7 @@ class genmatplotter:
 			self.fitline[s].connect()
 		
 		self.fig.canvas.mpl_connect('key_press_event',self.update)
-
+		self.fig.canvas.mpl_connect('key_press_event',self.savefigure)
 		plt.show()
 	
 	def update(self,event):
@@ -299,6 +301,16 @@ class genmatplotter:
 
 		self.fig.canvas.draw()
 		
+
+	def savefigure(self,event):
+		'''
+		Usage:
+		To save the current figure.
+		'''
+		if event.key != 'x':
+			return
+		plt.get_current_fig_manager()
+		plt.savefig(fname=self.nuclei[1]+'.pdf',dpi='figure')
 
 
 if __name__ == "__main__":

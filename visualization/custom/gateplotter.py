@@ -25,7 +25,7 @@ class gggateplotter(p.clarion):
 
 	plt.rcParams['font.family']='serif'
 	plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']	
-
+	plt.rcParams['figure.dpi'] = 200
 
 	def __init__(self,infile,ydim,xdim,xlow,xup,ylow,yup,gatefile):
 		'''	
@@ -119,6 +119,7 @@ class gggateplotter(p.clarion):
 
 		self.fig.canvas.mpl_connect('key_press_event',self.update)
 		self.fig.canvas.mpl_connect('key_press_event',self.modify)
+		self.fig.canvas.mpl_connect('key_press_event',self.savefigure)
 		plt.show()
 
 	def update(self,event):
@@ -263,6 +264,16 @@ class gggateplotter(p.clarion):
 
 		self.fig.canvas.draw()
 		print("Finished Processing.\n")
+
+	def savefigure(self,event):
+		'''
+		Usage:
+		to save the current figure.	
+		'''
+		if event.key != 'x':
+			return
+		plt.get_current_fig_manager()
+		plt.savefig(fname=self.nuclei[1]+'.pdf',dpi='figure')
 
 
 if __name__ == '__main__':
