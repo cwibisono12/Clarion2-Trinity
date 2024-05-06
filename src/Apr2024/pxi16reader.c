@@ -111,7 +111,8 @@ int toreader(unsigned int sub[], struct subevent *subevt, FILE *fpr){
         //subevt[sevtmult].time = subevt[sevtmult].time + (long long int)tempf;    
 
         //Calibrate energy and time
-        tempf = ((float)subevt[sevtmult].energy*ecal[subevt[sevtmult].id][1] + ecal[subevt[sevtmult].id][0])/new_gain;// + RAND;       
+        //Apr23 '24 prefactor 0.5 to accomodate 2024 setting
+        tempf = ((float)0.5*subevt[sevtmult].energy*ecal[subevt[sevtmult].id][1] + ecal[subevt[sevtmult].id][0])/new_gain;// + RAND;       
         subevt[sevtmult].energy = (int)tempf; 
         //subevt[sevtmult].time += (long long int)tcal[subevt[sevtmult].id][0];       
 	

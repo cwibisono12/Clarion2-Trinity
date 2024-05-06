@@ -81,8 +81,8 @@ extern int p_a_gamm[][8192];
 extern int gamm[][8192];
 
 //GAGG-GAMMA
-extern int gagg_gamma_tdiff_ring2[][4096];
-extern int gagg_gamma_tdiff_ring4[][4096];
+//extern int gagg_gamma_tdiff_ring2[][4096];
+//extern int gagg_gamma_tdiff_ring4[][4096];
 extern int gagg_gamma_tdiff2[][5000];
 extern int gated_gamma[][5000];
 extern int gated_gammatrue[][5000];

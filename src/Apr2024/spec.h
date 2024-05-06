@@ -69,9 +69,9 @@
 
 #define Gamma "gamm.spn2"
 
-#define GAGG_GAMMA_TDIFF_RING2 "gagg_gamma_tdiff_ring2.spn"
+//#define GAGG_GAMMA_TDIFF_RING2 "gagg_gamma_tdiff_ring2.spn"
 
-#define GAGG_GAMMA_TDIFF_RING4 "gagg_gamma_tdiff_ring4.spn"
+//#define GAGG_GAMMA_TDIFF_RING4 "gagg_gamma_tdiff_ring4.spn"
 
 #define GAGG_GAMMA_TDIFF2 "gagg_gamma_tdiff2.spn2"
 

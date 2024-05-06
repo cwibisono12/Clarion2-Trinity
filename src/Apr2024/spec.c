@@ -74,13 +74,13 @@ int gamm[1][8192]={0};
 
 
 //GAGG-GAMMA
-int gagg_gamma_tdiff_ring2[4096][4096];
-int gagg_gamma_tdiff_ring4[4096][4096];
+//int gagg_gamma_tdiff_ring2[4096][4096];
+//int gagg_gamma_tdiff_ring4[4096][4096];
 int gagg_gamma_tdiff2[5000][5000];
-int gated_gamma[1][5000];
-int gated_gammatrue[1][5000];
-int gated_gamma_np[1][5000];
-int gated_gamma_nptrue[1][5000];
+int gated_gamma[16][5000];
+int gated_gammatrue[16][5000];
+int gated_gamma_np[16][5000];
+int gated_gamma_nptrue[16][5000];
 int e_lit2[MAX_SI][4096];
 int e_lit4[MAX_SI][4096];
 int theta_res2[MAX_SI][4096];
