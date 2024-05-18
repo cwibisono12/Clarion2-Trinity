@@ -29,8 +29,36 @@ def matfile(filename,*,dimx=4096,dimy=4096):
 				buff=f.read(4)
 				temp,=p.unpack(buff)
 				arr[i][j] = temp
-				if temp != 0:
-					print("i: ",i,"j: ",j,"val: ",temp)
+
+	return arr
+
+def matfile8(filename,*,dimx=4096,dimy=4096):
+	'''
+	Matrix file for long long int (8 bytes)
+	C. Wibisono
+	05/17 '24
+	Parameter(s):
+	Filename: file pointer object
+	dimx = x dimension
+	dimy = y dimension
+	
+	Return:
+	arr: ndimensional array with shape (dimy,dimx)
+	Usage:
+	To parse the matrix file.
+	'''
+	
+	p=Struct("@q")
+	arr=np.ndarray(shape=(dimy,dimx),dtype=np.int64)
+	for i in range(dimy):
+		for j in range(dimx):
+			arr[i][j] = 0
+	with open(filename,mode='rb') as f:
+		for i in range(0,dimy,1):
+			for j in range(0,dimx,1):
+				buff=f.read(8)
+				temp,=p.unpack(buff)
+				arr[i][j] = temp
 
 	return arr
 
