@@ -167,6 +167,80 @@ def pxi16evread(fpr,*,timebuild=190):
 	return pxi16obj
 
 
+def ev5read(f):
+        '''
+        .ev5 file format
+        C. Wibisono
+        02/14 '24
+        Usage:
+        To parse the .ev5 file.
+	Parameter(s):
+	f: file pointer object
+	Return:
+	List [ID, Ge (dict)]
+        '''
+        p=Struct("@b")
+        q=Struct("@h")
+        buff1=f.read(1)
+        if buff1 == b'':
+                return -1
+        gaggvalidp,=p.unpack(buff1)
+        buff2=f.read(1)
+        if buff2 == b'':
+                return -1
+        gaggvalida,=p.unpack(buff2)
+        buff3=f.read(1)
+        if buff3 == b'':
+                return -1
+        gmult,=p.unpack(buff3)
+        buff4=f.read(2)
+        if buff4 == b'':
+                return -1
+        Ex,=q.unpack(buff4)
+
+        ID = [gaggvalidp, gaggvalida, gmult, Ex]
+        Ge = {}
+        for i in range(0,gmult,1):
+                xid=[]
+                xevalid=[]
+                gid,=q.unpack(f.read(2)) #Clover ID
+                gaold,=q.unpack(f.read(2)) #Old Angle
+                ganew,=q.unpack(f.read(2)) #New Angle
+                gae,=q.unpack(f.read(2)) #Energy 
+                gaetrue,=q.unpack(f.read(2)) #Edopp
+                gavalidp,=p.unpack(f.read(1)) #validp
+                gavalidnp,=p.unpack(f.read(1)) #validnp
+                gatime,=q.unpack(f.read(2)) #xmult
+                gaxmult,=p.unpack(f.read(1))
+                Ge[str(gid)] = [gaold, ganew, gae, gaetrue, gavalidp, gavalidnp, gatime, gaxmult]
+                temp1a,=p.unpack(f.read(1)) #xid
+                temp1b,=p.unpack(f.read(1))
+                temp1c,=p.unpack(f.read(1))
+                temp1d,=p.unpack(f.read(1))
+                f.read(1)
+                temp2a,=q.unpack(f.read(2)) #xevalid
+                temp2b,=q.unpack(f.read(2))
+                temp2c,=q.unpack(f.read(2))
+                temp2d,=q.unpack(f.read(2))
+                xid.append(temp1a)
+                xid.append(temp1b)
+                xid.append(temp1c)
+                xid.append(temp1d)
+                xevalid.append(temp2a)
+                xevalid.append(temp2b)
+                xevalid.append(temp2c)
+                xevalid.append(temp2d)
+                Ge[str(gid)].append(xid)
+                Ge[str(gid)].append(xevalid)
+                #print("p: ",int(gaggvalidp),"a: ",int(gaggvalida),"gmult: ",int(gmult),"xmult: ",gaxmult,temp1a,temp1b,temp1c,temp1d,temp2a,temp2b,temp2c,temp2d)
+                del xid
+                del xevalid
+
+
+        return [ID, Ge]
+
+
+
 def nsclpxi16evread(fpr):
 	'''
 	NSCL/FRIB Pixie16 Data Format

@@ -102,6 +102,8 @@ def matwrite(filename,*,dimy,dimx,arr,overwrite):
 			print("Completed\n")
 			
 
+
+
 def ev5file(filename):
 	'''
 	.ev5 file format
@@ -110,47 +112,49 @@ def ev5file(filename):
 	Usage:
 	To parse the .ev5 file.
 	'''
+	p=Struct("@b")
+	q=Struct("@h")
 	with open(filename,mode='rb') as f:
 		while(1):
 		#for i in range(0,10,1):
 			buff1=f.read(1)
 			if buff1 == b'':
 				break
-			gaggvalidp,=unpack("@b",buff1)
+			gaggvalidp,=p.unpack(buff1)
 			buff2=f.read(1)
 			if buff2 == b'':
 				break
-			gaggvalida,=unpack("@b",buff2)
+			gaggvalida,=p.unpack(buff2)
 			buff3=f.read(1)
 			if buff3 == b'':
 				break
-			gmult,=unpack("@b",buff3)
+			gmult,=p.unpack(buff3)
 			buff4=f.read(2)
 			if buff4 == b'':
 				break
-			Ex,=unpack("@h",buff4)
+			Ex,=q.unpack(buff4)
 			
 			for i in range(0,gmult,1):
 				xid=[]
 				xevalid=[]
-				gid,=unpack("@h",f.read(2))
-				gaold,=unpack("@h",f.read(2))
-				ganew,=unpack("@h",f.read(2))
-				gae,=unpack("@h",f.read(2))
-				gaetrue,=unpack("@h",f.read(2))
-				gavalidp,=unpack("@b",f.read(1))
-				gavalidnp,=unpack("@b",f.read(1))
-				gatime,=unpack("@h",f.read(2))
-				gaxmult,=unpack("@b",f.read(1))
-				temp1a,=unpack("@b",f.read(1))
-				temp1b,=unpack("@b",f.read(1))
-				temp1c,=unpack("@b",f.read(1))
-				temp1d,=unpack("@b",f.read(1))
+				gid,=q.unpack(f.read(2))
+				gaold,=q.unpack(f.read(2))
+				ganew,=q.unpack(f.read(2))
+				gae,=q.unpack(f.read(2))
+				gaetrue,=q.unpack(f.read(2))
+				gavalidp,=p.unpack(f.read(1))
+				gavalidnp,=p.unpack(f.read(1))
+				gatime,=q.unpack(f.read(2))
+				gaxmult,=p.unpack(f.read(1))
+				temp1a,=p.unpack(f.read(1))
+				temp1b,=p.unpack(f.read(1))
+				temp1c,=p.unpack(f.read(1))
+				temp1d,=p.unpack(f.read(1))
 				f.read(1)
-				temp2a,=unpack("@h",f.read(2))
-				temp2b,=unpack("@h",f.read(2))
-				temp2c,=unpack("@h",f.read(2))
-				temp2d,=unpack("@h",f.read(2))
+				temp2a,=q.unpack(f.read(2))
+				temp2b,=q.unpack(f.read(2))
+				temp2c,=q.unpack(f.read(2))
+				temp2d,=q.unpack(f.read(2))
 				xid.append(temp1a)
 				xid.append(temp1b)
 				xid.append(temp1c)
