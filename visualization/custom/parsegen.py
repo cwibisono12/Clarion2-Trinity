@@ -129,11 +129,15 @@ def ev5file(filename):
 			if buff3 == b'':
 				break
 			gmult,=p.unpack(buff3)
-			buff4=f.read(2)
-			if buff4 == b'':
-				break
-			Ex,=q.unpack(buff4)
-			
+
+			if gaggvalidp != 0 or gaggvalida != 0:
+				buff4=f.read(2)
+				if buff4 == b'':
+					break
+				Ex,=q.unpack(buff4)
+			else:
+				pass
+
 			for i in range(0,gmult,1):
 				xid=[]
 				xevalid=[]
@@ -422,4 +426,4 @@ if __name__ == "__main__":
 	'''
 	import sys
 	filename=sys.argv[1]
-	pxi16file(filename)
+	nsclpxi16file(filename)
