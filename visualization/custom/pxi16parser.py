@@ -193,17 +193,17 @@ def ev5read(f):
         if buff3 == b'':
                 return -1
         gmult,=p.unpack(buff3)
+	
+        if gaggvalidp != 0 or gaggvalida !=0:
+                buff4=f.read(2)
+                if buff4 == b'':
+                        return -1
+                    
+                Ex,=q.unpack(buff4)
+                ID = [gaggvalidp, gaggvalida, gmult, Ex]
 
-        if gaggvalidp != 0 or gaggvalida != 0:
-		buff4=f.read(2)
-        	if buff4 == b'':
-                	return -1
-        	
-		Ex,=q.unpack(buff4)
-        	ID = [gaggvalidp, gaggvalida, gmult, Ex]
-
-	else:
-        	ID = [gaggvalidp, gaggvalida, gmult]
+        else:
+                ID = [gaggvalidp, gaggvalida, gmult]
 		
 
         Ge = {}
