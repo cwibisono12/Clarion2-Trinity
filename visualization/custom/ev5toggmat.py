@@ -4,13 +4,14 @@ import pxi16parser as p
 from parsegen import matwrite
 import numpy as np
 
-def ev5toggmat(fpr,*,dimy=5000,dimx=5000):
+def ev5toggmat(fpr,*,dimy=5000,dimx=5000,overwrite=0):
 	'''
 	Function to Generate ggmatrix from ev5 file
 	Parameter(s):
 	fpr: ev5 file pointer object
 	dimy: y dimension
 	dimx: x dimension
+	overwrite: overwrite flag 1 (to overwrite) or 0 (to append)
 	'''
 	#Prompt:
 	ggmatp=np.ndarray(shape=(dimy,dimx),dtype=np.int32)
@@ -64,7 +65,7 @@ def ev5toggmat(fpr,*,dimy=5000,dimx=5000):
 										ggmatp_dd[temp[1][i][3]][temp[1][j][3]]=ggmatp_dd[temp[1][i][3]][temp[1][j][3]] + 1
 
 
-								if (tdiff >= 1840 and tdiff <=1872) or (tdiff >= 2130 and tdiff <-2162) :
+								if (tdiff >= 1840 and tdiff <=1872) or (tdiff >= 2130 and tdiff <=2162) :
 									if (temp[1][i][2] >= 0 and temp[1][i][2] < 5000) and (temp[1][j][2] >=0 and temp[1][j][2] <5000):
 										ggmatnp[temp[1][i][2]][temp[1][j][2]]=ggmatnp[temp[1][i][2]][temp[1][j][2]] + 1	
 									if (temp[1][i][3] >= 0 and temp[1][i][3] <5000) and (temp[1][j][2] >=0 and temp[1][j][2] <5000):
@@ -74,16 +75,17 @@ def ev5toggmat(fpr,*,dimy=5000,dimx=5000):
 
 
 
-	matwrite("ggmat_tdiff.spn2",dimy=dimy,dimx=dimx,arr=ggmat_tdiff,overwrite=1)
-	matwrite("ggmatp.spn2",dimy=dimy,dimx=dimx,arr=ggmatp,overwrite=1)
-	matwrite("ggmatp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_nd,overwrite=1)
-	matwrite("ggmatp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_dd,overwrite=1)
-	matwrite("ggmatnp.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp,overwrite=1)
-	matwrite("ggmatnp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_nd,overwrite=1)
-	matwrite("ggmatnp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_dd,overwrite=1)
+	matwrite("ggmat_tdiff.spn2",dimy=dimy,dimx=dimx,arr=ggmat_tdiff,overwrite=overwrite)
+	matwrite("ggmatp.spn2",dimy=dimy,dimx=dimx,arr=ggmatp,overwrite=overwrite)
+	matwrite("ggmatp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_nd,overwrite=overwrite)
+	matwrite("ggmatp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_dd,overwrite=overwrite)
+	matwrite("ggmatnp.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp,overwrite=overwrite)
+	matwrite("ggmatnp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_nd,overwrite=overwrite)
+	matwrite("ggmatnp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_dd,overwrite=overwrite)
 
 
 if __name__ == "__main__":
 	import sys
 	fileev5=sys.argv[1]
-	ev5toggmat(fileev5,dimy=5000,dimx=5000)
+	overwrite=int(sys.argv[2])
+	ev5toggmat(fileev5,dimy=5000,dimx=5000,overwrite=overwrite)
