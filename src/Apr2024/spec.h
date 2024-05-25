@@ -92,3 +92,11 @@
 #define THETA_RES4 "theta_res4.spn2"
 
 #define GAGGHIST "gagghist.spn"
+
+#define GATED_GAMMARING "gated_gammaRing.spn2"
+
+#define GATED_GAMMARINGTRUE "gated_gammaRingtrue.spn2"
+
+#define GATED_GAMMARING_NP "gated_gammaRing_np.spn2"
+
+#define GATED_GAMMARING_NPTRUE "gated_gammaRing_nptrue.spn2"

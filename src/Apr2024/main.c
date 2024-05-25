@@ -1054,6 +1054,11 @@ if (gaggvalid > 0 && gmult > 0){
     write_data4(GATED_GAMMA_NP, *gated_gamma_np, 16, 5000, overwrite);
     write_data4(GATED_GAMMA_NPTRUE, *gated_gamma_nptrue, 16, 5000, overwrite);
 
+    write_data4(GATED_GAMMARING,*gated_gammaRing,66,5000,overwrite);
+    write_data4(GATED_GAMMARINGTRUE,*gated_gammaRingtrue,66,5000,overwrite);
+    write_data4(GATED_GAMMARING_NP,*gated_gammaRing_np,66,5000,overwrite);
+    write_data4(GATED_GAMMARING_NPTRUE,*gated_gammaRing_nptrue,66,5000,overwrite);
+
 /*
   for (int i=0; i<26; ++i) {
     char name[128];

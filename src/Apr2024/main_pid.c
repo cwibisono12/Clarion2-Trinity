@@ -6,6 +6,8 @@
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
+//#include <time.h>
+
 #include "global.h"
 #include "param.h"
 #include "spec.h"
@@ -408,18 +410,18 @@ int main(int argc, char **argv) {
 	    calid=0; caloffset=0; calgain=0;
         for(i=0; i<LINE_LENGTH; i++){
             if(line[i]=='#'){
-                if(PRINT_CAL)printf("%s", line);
+//                if(PRINT_CAL)printf("%s", line);
                 break;
             }
             else if(line[i]>=0){
                 if (firstcal==0) {
                     sscanf(line,"%f\n", &new_gain);    
-	                if(PRINT_CAL) printf("%f\n", new_gain);                                       
+//	                if(PRINT_CAL) printf("%f\n", new_gain);                                       
                     firstcal=1;
                     break;
                 }    
 	            sscanf(line,"%d\t%f\t%f\n", &calid, &caloffset, &calgain);
-	            if(PRINT_CAL) printf("%d\t%.4f\t%.4f\n", calid, caloffset, calgain);
+//	            if(PRINT_CAL) printf("%d\t%.4f\t%.4f\n", calid, caloffset, calgain);
 		        if(calid >=0 && calid < MAX_ID) {
                     ecal[calid][0] = caloffset;
                     ecal[calid][1] = calgain;
@@ -438,7 +440,7 @@ int main(int argc, char **argv) {
 			    }
             }
 	        else if(line[i]=='\n'){
-                if(PRINT_CAL) printf("\n");
+  //              if(PRINT_CAL) printf("\n");
                 break;
             }
             else {
@@ -475,12 +477,12 @@ int main(int argc, char **argv) {
 	    mapid=0; dettype=0; thetai=0; phii=0; theta=0; phi=0; theta1=0; phi1=0; theta2=0; phi2=0; 
         for(i=0; i<LINE_LENGTH; i++){
             if(line[i]=='#'){
-                if(PRINT_MAP)printf("%s", line);
+              //  if(PRINT_MAP)printf("%s", line);
                 break;
             }
             else if(line[i]>=0){   
 	            sscanf(line,"%d\t%c\t%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", &mapid, &dettype, &detid, &detidi,&beta, &theta, &phi, &thetai, &phii, &theta1, &phi1, &theta2, &phi2);
-	            if(PRINT_MAP) printf("%d\t%c\t%d\t%d\t%f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", mapid, dettype, detid, detidi, beta, theta, phi, thetai, phii, theta1, phi1, theta2, phi2);
+	      //      if(PRINT_MAP) printf("%d\t%c\t%d\t%d\t%f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", mapid, dettype, detid, detidi, beta, theta, phi, thetai, phii, theta1, phi1, theta2, phi2);
 		        if(mapid >=0 && mapid < MAX_ID) {
                     map2type[mapid] = dettype;
                     map2det[mapid] = detid;
@@ -503,7 +505,7 @@ int main(int argc, char **argv) {
 			    }
             }
 	        else if(line[i]=='\n'){
-                if(PRINT_MAP) printf("\n");
+              //  if(PRINT_MAP) printf("\n");
                 break;
             }
             else {
@@ -630,157 +632,157 @@ while (fgets(line,LINE_LENGTH,fprbangate) !=NULL){
     if (gaggid == GID[0] && gaggnmpts == GNMPTS[0]){
         polyX21[g1]=banx;
         polyY21[g1]=bany;
-      printf("%f %f\n",polyX21[g1],polyY21[g1]); 
+     // printf("%f %f\n",polyX21[g1],polyY21[g1]); 
        g1++;
         }
     if (gaggid == GID[1] && gaggnmpts == GNMPTS[1]){
         polyX22[g2]=banx;
         polyY22[g2]=bany;
-      printf("%f %f\n",polyX22[g2],polyY22[g2]); 
+     // printf("%f %f\n",polyX22[g2],polyY22[g2]); 
        g2++;
          }
     if (gaggid == GID[2] && gaggnmpts == GNMPTS[2]){
         polyX23[g3]=banx;
         polyY23[g3]=bany;
-       printf("%f %f\n",polyX23[g3],polyY23[g3]);
+      // printf("%f %f\n",polyX23[g3],polyY23[g3]);
         g3++;
           }
     if (gaggid == GID[3] && gaggnmpts == GNMPTS[3]){
         polyX24[g4]=banx;
         polyY24[g4]=bany;
-        printf("%f %f\n",polyX24[g4],polyY24[g4]);
+       // printf("%f %f\n",polyX24[g4],polyY24[g4]);
         g4++;
           }
     if (gaggid == GID[4] && gaggnmpts == GNMPTS[4]){
         polyX25[g5]=banx;
         polyY25[g5]=bany;
-        printf("%f %f\n",polyX25[g5],polyY25[g5]);
+       // printf("%f %f\n",polyX25[g5],polyY25[g5]);
         g5++;
           }
     if (gaggid == GID[5] && gaggnmpts == GNMPTS[5]){
         polyX26[g6]=banx;
         polyY26[g6]=bany;
-        printf("%f %f\n",polyX26[g6],polyY26[g6]);
+       // printf("%f %f\n",polyX26[g6],polyY26[g6]);
         g6++;
           }
     if (gaggid == GID[6] && gaggnmpts == GNMPTS[6]){
         polyX27[g7]=banx;
         polyY27[g7]=bany;
-        printf("%f %f\n",polyX27[g7],polyY27[g7]);
+       // printf("%f %f\n",polyX27[g7],polyY27[g7]);
         g7++;
           }
     if (gaggid == GID[7] && gaggnmpts == GNMPTS[7]){
         polyX28[g8]=banx;
         polyY28[g8]=bany;
-        printf("%f %f\n",polyX28[g8],polyY28[g8]);
+       // printf("%f %f\n",polyX28[g8],polyY28[g8]);
         g8++;
           }
     if (gaggid == GID[8] && gaggnmpts == GNMPTS[8]){
         polyX29[g9]=banx;
         polyY29[g9]=bany;
-        printf("%f %f\n",polyX29[g9],polyY29[g9]);
+      //  printf("%f %f\n",polyX29[g9],polyY29[g9]);
         g9++;
           }
     if (gaggid == GID[9] && gaggnmpts == GNMPTS[9]){
         polyX210[g10]=banx;
         polyY210[g10]=bany;
-        printf("%f %f\n",polyX210[g10],polyY210[g10]);
+      //  printf("%f %f\n",polyX210[g10],polyY210[g10]);
         g10++;
           }
     if (gaggid == GID[10] && gaggnmpts == GNMPTS[10]){
         polyX41[g11]=banx;
         polyY41[g11]=bany;
-        printf("%f %f\n",polyX41[g11],polyY41[g11]);
+       // printf("%f %f\n",polyX41[g11],polyY41[g11]);
         g11++;
           }
     if (gaggid == GID[11] && gaggnmpts == GNMPTS[11]){
         polyX42[g12]=banx;
         polyY42[g12]=bany;
-        printf("%f %f\n",polyX42[g12],polyY42[g12]);
+       // printf("%f %f\n",polyX42[g12],polyY42[g12]);
         g12++;
           }
     if (gaggid == GID[12] && gaggnmpts == GNMPTS[12]){
         polyX43[g13]=banx;
         polyY43[g13]=bany;
-        printf("%f %f\n",polyX43[g13],polyY43[g13]);
+       // printf("%f %f\n",polyX43[g13],polyY43[g13]);
         g13++;
           }
     if (gaggid == GID[13] && gaggnmpts == GNMPTS[13]){
         polyX44[g14]=banx;
         polyY44[g14]=bany;
-        printf("%f %f\n",polyX44[g14],polyY44[g14]);
+       // printf("%f %f\n",polyX44[g14],polyY44[g14]);
         g14++;
           }
     if (gaggid == GID[14] && gaggnmpts == GNMPTS[14]){
         polyX45[g15]=banx;
         polyY45[g15]=bany;
-        printf("%f %f\n",polyX45[g15],polyY45[g15]);
+       // printf("%f %f\n",polyX45[g15],polyY45[g15]);
         g15++;
           }
     if (gaggid == GID[15] && gaggnmpts == GNMPTS[15]){
         polyX46[g16]=banx;
         polyY46[g16]=bany;
-        printf("%f %f\n",polyX46[g16],polyY46[g16]);
+       // printf("%f %f\n",polyX46[g16],polyY46[g16]);
         g16++;
           }
     if (gaggid == GID[16] && gaggnmpts == GNMPTS[16]){
         polyX47[g17]=banx;
         polyY47[g17]=bany;
-        printf("%f %f\n",polyX47[g17],polyY47[g17]);
+       // printf("%f %f\n",polyX47[g17],polyY47[g17]);
         g17++;
           }
     if (gaggid == GID[17] && gaggnmpts == GNMPTS[17]){
         polyX48[g18]=banx;
         polyY48[g18]=bany;
-        printf("%f %f\n",polyX48[g18],polyY48[g18]);
+       // printf("%f %f\n",polyX48[g18],polyY48[g18]);
         g18++;
           }
     if (gaggid == GID[18] && gaggnmpts == GNMPTS[18]){
         polyX49[g19]=banx;
         polyY49[g19]=bany;
-        printf("%f %f\n",polyX49[g19],polyY49[g19]);
+       // printf("%f %f\n",polyX49[g19],polyY49[g19]);
         g19++;
           }
     if (gaggid == GID[19] && gaggnmpts == GNMPTS[19]){
         polyX410[g20]=banx;
         polyY410[g20]=bany;
-        printf("%f %f\n",polyX410[g20],polyY410[g20]);
+       // printf("%f %f\n",polyX410[g20],polyY410[g20]);
         g20++;
           }
     if (gaggid == GID[20] && gaggnmpts == GNMPTS[20]){
         polyX411[g21]=banx;
         polyY411[g21]=bany;
-        printf("%f %f\n",polyX411[g21],polyY411[g21]);
+       // printf("%f %f\n",polyX411[g21],polyY411[g21]);
         g21++;
           }
     if (gaggid == GID[21] && gaggnmpts == GNMPTS[21]){
         polyX412[g22]=banx;
         polyY412[g22]=bany;
-        printf("%f %f\n",polyX412[g22],polyY412[g22]);
+       // printf("%f %f\n",polyX412[g22],polyY412[g22]);
         g22++;
           }          
     if (gaggid == GID[22] && gaggnmpts == GNMPTS[22]){
         polyX413[g23]=banx;
         polyY413[g23]=bany;
-        printf("%f %f\n",polyX413[g23],polyY413[g23]);
+       // printf("%f %f\n",polyX413[g23],polyY413[g23]);
         g23++;
           }
     if (gaggid == GID[23] && gaggnmpts == GNMPTS[23]){
         polyX414[g24]=banx;
         polyY414[g24]=bany;
-        printf("%f %f\n",polyX414[g24],polyY414[g24]);
+       // printf("%f %f\n",polyX414[g24],polyY414[g24]);
         g24++;
           }
     if (gaggid == GID[24] && gaggnmpts == GNMPTS[24]){
         polyX415[g25]=banx;
         polyY415[g25]=bany;
-        printf("%f %f\n",polyX415[g25],polyY415[g25]);
+       // printf("%f %f\n",polyX415[g25],polyY415[g25]);
         g25++;
           }
     if (gaggid == GID[25] && gaggnmpts == GNMPTS[25]){
         polyX416[g26]=banx;
         polyY416[g26]=bany;
-        printf("%f %f\n",polyX416[g26],polyY416[g26]);
+      //  printf("%f %f\n",polyX416[g26],polyY416[g26]);
         g26++;
           }
      }
@@ -959,7 +961,8 @@ if (gaggvalid > 0 && gmult > 0){
   // WRITE SPECTRA //
   ///////////////////
   printf("\n\n\n\nWriting Spectra to Disk ...\n");
-     
+ // clock_t timeinit;
+ // timeinit =clock();
   //Event Spectra   
   /*
   write_data4(HIT, *hit, 4096, 2, overwrite);
@@ -1137,7 +1140,9 @@ if (gaggvalid > 0 && gmult > 0){
  */
   fclose(fpr);
   fclose(debugfile);
-  
+ // timeinit =  clock() -timeinit;
+ // double time_taken = ((double) timeinit)/CLOCKS_PER_SEC;
+ // printf("Time it takes to write spectra %f seconds\n",time_taken);
   return 0;
 }
 

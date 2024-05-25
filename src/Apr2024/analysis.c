@@ -34,13 +34,17 @@ if (gaggvalid == 1  && gmult > 0){
          if ((ge[gem].energy > 0 && ge[gem].energy < 5000) && (tdiffgemgam >=1960 && tdiffgemgam <=2002)){
 	  gated_gamma[ge[gem].id][ge[gem].energy]++; 
           gated_gammatrue[ge[gem].id][(int)ge[gem].etrue]++;
+	  gated_gammaRing[si[gaggi].id][ge[gem].energy]++;
+	  gated_gammaRingtrue[si[gaggi].id][(int)ge[gem].etrue]++;
 	  ge[gem].validp = 1;
 }
 //Non-Prompt gamma:
        //   if ((ge[gem].energy > 0 && ge[gem].energy < 4096) &&( (tdiffgemgam > 2010 && tdiffgemgam < 2049))){
          if ((ge[gem].energy > 0 && ge[gem].energy < 5000) &&( (tdiffgemgam >= 1891 && tdiffgemgam <=1912) || (tdiffgemgam >= 2050 && tdiffgemgam <= 2071) )){
 	  gated_gamma_np[ge[gem].id][ge[gem].energy]++;
-	  gated_gamma_nptrue[ge[gem].id][(int)ge[gem].etrue]++;   
+	  gated_gamma_nptrue[ge[gem].id][(int)ge[gem].etrue]++;  
+	  gated_gammaRing_np[si[gaggi].id][ge[gem].energy]++;
+	  gated_gammaRing_nptrue[si[gaggi].id][(int)ge[gem].etrue]++; 
           ge[gem].validnp = 1;
             }                           
                             //  }

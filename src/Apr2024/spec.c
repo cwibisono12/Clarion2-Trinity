@@ -87,3 +87,7 @@ int theta_res2[MAX_SI][4096];
 int theta_res4[MAX_SI][4096];
 int gagghist[1][4096];
 
+int gated_gammaRing[MAX_SI][5000];
+int gated_gammaRingtrue[MAX_SI][5000];
+int gated_gammaRing_np[MAX_SI][5000];
+int gated_gammaRing_nptrue[MAX_SI][5000];

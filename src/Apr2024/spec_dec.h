@@ -94,4 +94,8 @@ extern int theta_res2[][4096];
 extern int theta_res4[][4096];
 extern int gagghist[][4096];
 
+extern int gated_gammaRing[][5000];
+extern int gated_gammaRingtrue[][5000];
+extern int gated_gammaRing_np[][5000];
+extern int gated_gammaRing_nptrue[][5000];
 
