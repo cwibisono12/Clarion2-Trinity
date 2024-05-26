@@ -3,6 +3,7 @@
 import pxi16parser as p
 from parsegen import matwrite
 import numpy as np
+from threading import Thread
 
 def ev5toggmat(fpr,*,dimy=5000,dimx=5000,overwrite=0):
 	'''
@@ -75,14 +76,34 @@ def ev5toggmat(fpr,*,dimy=5000,dimx=5000,overwrite=0):
 
 
 
-	matwrite("ggmat_tdiff.spn2",dimy=dimy,dimx=dimx,arr=ggmat_tdiff,overwrite=overwrite)
-	matwrite("ggmatp.spn2",dimy=dimy,dimx=dimx,arr=ggmatp,overwrite=overwrite)
-	matwrite("ggmatp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_nd,overwrite=overwrite)
-	matwrite("ggmatp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatp_dd,overwrite=overwrite)
-	matwrite("ggmatnp.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp,overwrite=overwrite)
-	matwrite("ggmatnp_nd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_nd,overwrite=overwrite)
-	matwrite("ggmatnp_dd.spn2",dimy=dimy,dimx=dimx,arr=ggmatnp_dd,overwrite=overwrite)
 
+	t1= Thread(target=matwrite,args=("ggmat_tdiff.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmat_tdiff,'overwrite':overwrite})
+	t2= Thread(target=matwrite,args=("ggmatp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatp,'overwrite':overwrite})
+	t3= Thread(target=matwrite,args=("ggmatp_nd.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatp_nd,'overwrite':overwrite})
+	t4= Thread(target=matwrite,args=("ggmatp_dd.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatp_dd,'overwrite':overwrite})
+	
+	t2b= Thread(target=matwrite,args=("ggmatnp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatnp,'overwrite':overwrite})
+	t3b= Thread(target=matwrite,args=("ggmatnp_nd.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatnp_nd,'overwrite':overwrite})
+	t4b= Thread(target=matwrite,args=("ggmatnp_dd.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':ggmatnp_dd,'overwrite':overwrite})
+	
+	t1.start()
+	t2.start()
+	t3.start()
+	t4.start()
+	
+	t2b.start()
+	t3b.start()
+	t4b.start()
+	
+	t1.join()
+	t2.join()
+	t3.join()
+	t4.join()
+
+	t2b.join()
+	t3b.join()
+	t4b.join()
+	
 
 if __name__ == "__main__":
 	import sys
