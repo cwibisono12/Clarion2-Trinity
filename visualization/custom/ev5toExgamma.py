@@ -40,6 +40,7 @@ def ev5toExgamma(fpr,*,dimy=2500,dimx=8192,overwrite=0):
 				break
 			else:
 				if (temp[0][0] == 2 and temp[0][1] == 0) and (temp[0][3] > 0 and temp[0][3] <= 2500): #2p-gated
+					temp[0][3] = temp[0][3] - 180 #to include energy loss thorugh the target
 					for i in temp[1].keys():
 						if (temp[1][i][2] >=0 and temp[1][i][2] < 8192) and (temp[1][i][4] == 1):
 							p2_Exgammap[temp[0][3]][temp[1][i][2]] = p2_Exgammap[temp[0][3]][temp[1][i][2]] + 1
@@ -47,6 +48,7 @@ def ev5toExgamma(fpr,*,dimy=2500,dimx=8192,overwrite=0):
 							p2_Exgammap_dopp[temp[0][3]][temp[1][i][3]]=p2_Exgammap_dopp[temp[0][3]][temp[1][i][3]] + 1
 
 				if (temp[0][0] == 1 and temp[0][1] == 1) and (temp[0][3] > 0 and temp[0][3] <= 2500): #1p-1agated
+					temp[0][3] = temp[0][3] - 180
 					for i in temp[1].keys():
 						if (temp[1][i][2] >=0 and temp[1][i][2] <8192) and (temp[1][i][4] == 1):
 							pa_Exgammap[temp[0][3]][temp[1][i][2]] = pa_Exgammap[temp[0][3]][temp[1][i][2]]+1
