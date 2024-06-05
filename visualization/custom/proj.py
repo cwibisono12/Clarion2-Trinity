@@ -45,7 +45,8 @@ class clarion:
 				for i in range(0,int(self.xdim),1):
 					for j in range(int(backleft),int(backright)+1,1):
 						xprojb[i]=xprojb[i]+ytrp[j,i]
-					xprojbs[i]=(widthgate/(widthgate+widthbackg))*xproj[i]-(widthbackg/(widthgate+widthbackg))*xprojb[i]
+					#xprojbs[i]=(widthgate/(widthgate+widthbackg))*xproj[i]-(widthbackg/(widthgate+widthbackg))*xprojb[i]
+					xprojbs[i]=round((widthgate/(widthgate+widthbackg))*xproj[i])-round((widthbackg/(widthgate+widthbackg))*xprojb[i])
 				return xprojbs
 		
 	
@@ -60,7 +61,8 @@ class clarion:
 					for i in range(int(backleft),int(backright)+1,1):
 						yprojb[j]=yprojb[j]+ytrp[j,i]
 		
-					yprojbs[j]=(widthgate/(widthgate+widthbackg))*yproj[j]-(widthbackg/(widthgate+widthbackg))*yprojb[j]
+					#yprojbs[j]=(widthgate/(widthgate+widthbackg))*yproj[j]-(widthbackg/(widthgate+widthbackg))*yprojb[j]
+					yprojbs[j]=round((widthgate/(widthgate+widthbackg))*yproj[j])-round((widthbackg/(widthgate+widthbackg))*yprojb[j])
 				return yprojbs
 	
 
