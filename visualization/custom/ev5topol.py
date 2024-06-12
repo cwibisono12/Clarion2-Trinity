@@ -168,4 +168,4 @@ if __name__ == "__main__":
 	fileev5 = sys.argv[1]
 	overwrite = int(sys.argv[2])
 
-	ev5topol(fileev5,dimy=16,dimx=8192,overwrite=overwrite)
+	ev5topol(fileev5,dimy=2,dimx=8192,overwrite=overwrite)
