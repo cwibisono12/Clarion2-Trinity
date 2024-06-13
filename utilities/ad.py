@@ -26,7 +26,8 @@ import datetime as dt
 import time 
 plt.rcParams['font.family']='serif'
 plt.rcParams['font.serif']=['Times New Roman']+plt.rcParams['font.serif']
-
+plt.rcParams['figure.dpi'] = 150
+plt.rcParams['figure.figsize']=(6,6)
 
 option = int(sys.argv[7])
 qkfactor = int(sys.argv[9])
@@ -155,16 +156,16 @@ def theo(x,delta,Ji,sigma):
 		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf)+1,Ji,Jf)
 		R42=ad.Rk(4,abs(Ji-Jf)+1,abs(Ji-Jf)+1,Ji,Jf)
 	
-	elif round(Ji,0) == 2 and round(Jf,0) == 0:
+	elif (round(Ji,0) == 2 or round(Ji,0) == 4 or round(Ji,0) == 1 or round(Ji,0) == 3) and round(Jf,0) == 0:
 		R00=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R01=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R02=ad.Rk(0,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R01=0
+		R02=0
 		R20=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R21=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R22=ad.Rk(2,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R21=0
+		R22=0
 		R40=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R41=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
-		R42=ad.Rk(4,abs(Ji-Jf),abs(Ji-Jf),Ji,Jf)
+		R41=0
+		R42=0
 		
 	else:
 		R00=ad.Rk(0,1,1,Ji,Jf)
@@ -191,7 +192,6 @@ def theo(x,delta,Ji,sigma):
 def theonormmint(delta,Ji,sigma):
 	numnorm=0.
 	denumnorm=0.
-
 	for l in range(0,dim-1,1):
 		numnorm=numnorm+theo(angle[l],delta,Ji,sigma)*(intensity[l])/(error[l]**2.)
 		denumnorm=denumnorm+((theo(angle[l],delta,Ji,sigma))**2.)/(error[l]**2.)	
@@ -203,13 +203,14 @@ def theonormmint(delta,Ji,sigma):
 
 def chisq(delta,Ji,sigma):
 	chi=0. #dim-2 is the number of data points -1
+	normalize=theonormmint(delta,Ji,sigma)
 	for l in range(0,dim-1,1):
-		chi=chi+(np.power(theonormmint(delta,Ji,sigma)*theo(angle[l],delta,Ji,sigma)-intensity[l],2.0))/((dim-2)*(error[l]**2.))
+		chi=chi+(np.power(normalize*theo(angle[l],delta,Ji,sigma)-intensity[l],2.0))/((dim-2)*(error[l]**2.))
 	return chi
 
 def plotchi():
 	#mixratio is angle for delta (in deg)
-	mixratio=np.arange(-89,89,0.1) #used to overcome the entire mixing ratio (-inf,inf)-->equal to arctan(mixratio)
+	mixratio=np.arange(-89,90,2.0) #used to overcome the entire mixing ratio (-inf,inf)-->equal to arctan(mixratio)
 	#delta in tan (degdel)
 	delta=(np.tan(np.deg2rad(mixratio))) #the true value of mixing ratio would be tan(arctan(mixratio))
 	global mixratiomin, tandeltamin, chimin, chi1, chi2, chi3
@@ -230,9 +231,9 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Jinitial[l],sigma)==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		chi1,=ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		chi2,=ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
-		chi3,=ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(sigma,3)))
+		chi1,=ax2.plot(mixratio,chisq(delta,Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(sigma,3)))
+		chi2,=ax2.plot(mixratio,chisq(delta,Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(sigma,3)))
+		chi3,=ax2.plot(mixratio,chisq(delta,Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(sigma,3)))
 		if dim-1 == 4:
 			ax2.axhline(y=5.423,linestyle='-.',color='k')
 		if dim-1 == 5:
@@ -245,6 +246,15 @@ def plotchi():
 			ax2.axhline(y=3.475,linestyle='-.',color='k')
 		if dim-1 == 9:
 			ax2.axhline(y=3.266,linestyle='-.',color='k')
+		if dim-1 == 14:
+			ax2.axhline(y=23.685,linestyle='-.',color='k')
+		if dim-1 == 16:
+			ax2.axhline(y=26.296,linestyle='-.',color='k')
+		if dim-1 == 20:
+			ax2.axhline(y=31.41,linestyle='-.',color='k')
+		if dim-1 == 21:
+			ax2.axhline(y=32.671,linestyle='-.',color='k')
+			
 		#print("Ji:", Jinitial[0],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[0]),sigma)==np.min(chisq(delta,int(Jinitial[0]),sigma)))[0][0]])
 		#print("Ji:", Jinitial[1],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[1]),sigma)==np.min(chisq(delta,int(Jinitial[1]),sigma)))[0][0]])
 		#print("Ji:", Jinitial[2],"delmin:",mixratio[np.where(chisq(delta,int(Jinitial[2]),sigma)==np.min(chisq(delta,int(Jinitial[2]),sigma)))[0][0]])
@@ -260,9 +270,9 @@ def plotchi():
 			indchimin[l]=np.where(chisq(delta,Ji,m0[l])==chimin[l])[0][0]
 			mixratiomin[l]=mixratio[int(indchimin[l])]
 			tandeltamin[l]=delta[int(indchimin[l])]
-		chi1,=ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2)))
-		chi2,=ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2)))
-		chi3,=ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2)))
+		chi1,=ax2.plot(mixratio,chisq(delta,Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(m0[0],2)))
+		chi2,=ax2.plot(mixratio,chisq(delta,Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(m0[1],2)))
+		chi3,=ax2.plot(mixratio,chisq(delta,Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'$\sigma$:'+' '+str(round(m0[2],2)))
 		if dim-1 == 4:
 			ax2.axhline(y=5.423,linestyle='-.',color='k')
 		if dim-1 == 5:
@@ -284,8 +294,9 @@ def plotchi():
 	
 	ax2.legend()
 	#ax2.set_yscale("log")
-	ax2.set_xlabel(r'$arctan(\delta)$',style='normal',fontweight='bold')
-	ax2.set_ylabel('chisq',style='normal',fontweight='bold')
+	ax2.set_xlim(-89,89)
+	ax2.set_xlabel(r'$tan^{-1}(\delta)$',style='normal',fontweight='bold')
+	ax2.set_ylabel(r'$\chi^{2}$',style='normal',fontweight='bold')
 	ax2.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
 	ax2.set_yscale('log')
 	fig2.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
@@ -298,6 +309,27 @@ def plotchi():
 	line3.connect()
 	plt.show()
 
+
+def printnormalize():
+	sigma=float(sys.argv[8])
+	print("Enter delta\n")
+	delta=float(input())
+	normalize1=theonormmint(delta,Jinitial[0],sigma)
+	normalize2=theonormmint(delta,Jinitial[1],sigma)
+	normalize3=theonormmint(delta,Jinitial[2],sigma)
+	wth1=0.
+	wth2=0.
+	wth3=0.
+	wexp=0.
+	for i in range(0,dim-1,1):
+		wth1=wth1+normalize1*theo(angle[i],delta,Jinitial[0],sigma)
+		wth2=wth2+normalize2*theo(angle[i],delta,Jinitial[1],sigma)
+		wth3=wth3+normalize3*theo(angle[i],delta,Jinitial[2],sigma)
+		wexp=wexp+intensity[i]
+	print("Wexp:",wexp)
+	print("Wth1:",wth1)
+	print("Wth2:",wth2)
+	print("Wth3:",wth3)
 
 #Delta to plot theoretical intensity:
 def loaddelta():
@@ -334,14 +366,20 @@ def plotad():
 		sigma=float(sys.argv[8])
 
 		if deltaoption == 1: #plot theoAD with global minimum of delta
-			ax3.plot(angledeg,theonormmint(tandeltamin[0],Jinitial[0],sigma)*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamin[1],Jinitial[1],sigma)*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamin[2],Jinitial[2],sigma)*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamin[2],3)))
+			norm1=theonormmint(tandeltamin[0],Jinitial[0],sigma)
+			norm2=theonormmint(tandeltamin[1],Jinitial[1],sigma)
+			norm3=theonormmint(tandeltamin[2],Jinitial[2],sigma)
+			ax3.plot(angledeg,norm1*theo(anglerad,tandeltamin[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamin[0],3)))
+			ax3.plot(angledeg,norm2*theo(anglerad,tandeltamin[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamin[1],3)))
+			ax3.plot(angledeg,norm3*theo(anglerad,tandeltamin[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamin[2],3)))
 
 		if deltaoption == 0: #plot theoAD based on user's delta
-			ax3.plot(angledeg,theonormmint(tandeltamod[0],Jinitial[0],sigma)*theo(anglerad,tandeltamod[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[1],Jinitial[1],sigma)*theo(anglerad,tandeltamod[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[2],Jinitial[2],sigma)*theo(anglerad,tandeltamod[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'delta:'+' '+str(round(tandeltamod[2],3)))
+			norm1=theonormmint(tandeltamod[0],Jinitial[0],sigma)
+			norm2=theonormmint(tandeltamod[1],Jinitial[1],sigma)
+			norm3=theonormmint(tandeltamod[2],Jinitial[2],sigma)
+			ax3.plot(angledeg,norm1*theo(anglerad,tandeltamod[0],Jinitial[0],sigma),color='r',label='Ji:'+str(Jinitial[0])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,norm2*theo(anglerad,tandeltamod[1],Jinitial[1],sigma),color='b',label='Ji:'+str(Jinitial[1])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,norm3*theo(anglerad,tandeltamod[2],Jinitial[2],sigma),color='g',label='Ji:'+str(Jinitial[2])+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\delta$'+':'+' '+str(round(tandeltamod[2],3)))
 	
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
 
@@ -349,24 +387,31 @@ def plotad():
 		Ji=float(sys.argv[8])
 		
 		if deltaoption == 1: #plot theoAD based on global minimum of delta
-			ax3.plot(angledeg,theonormmint(tandeltamin[0],Ji,m0[0])*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamin[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamin[1],Ji,m0[1])*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamin[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamin[2],Ji,m0[2])*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamin[2],3)))
+			norm1=theonormmint(tandeltamin[0],Ji,m0[0])
+			norm2=theonormmint(tandeltamin[1],Ji,m0[1])
+			norm3=theonormmint(tandeltamin[2],Ji,m0[2])
+			ax3.plot(angledeg,norm1*theo(anglerad,tandeltamin[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$:'+' '+str(round(m0[0],2))+' '+r'$\delta$'+':'+str(round(tandeltamin[0],3)))
+			ax3.plot(angledeg,norm2*theo(anglerad,tandeltamin[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$:'+' '+str(round(m0[1],2))+' '+r'$\delta$'+':'+str(round(tandeltamin[1],3)))
+			ax3.plot(angledeg,norm3*theo(anglerad,tandeltamin[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$:'+' '+str(round(m0[2],2))+' '+r'$\delta$'+':'+str(round(tandeltamin[2],3)))
 		
 		if deltaoption == 0: #plot theoAD based on user's delta
+			norm1=theonormmint(tandeltamod[0],Ji,m0[0])
+			norm2=theonormmint(tandeltamod[1],Ji,m0[1])
+			norm3=theonormmint(tandeltamod[2],Ji,m0[2])
 			
-			ax3.plot(angledeg,theonormmint(tandeltamod[0],Ji,m0[0])*theo(anglerad,tandeltamod[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[0],2))+' '+'delta:'+str(round(tandeltamod[0],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[1],Ji,m0[1])*theo(anglerad,tandeltamod[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[1],2))+' '+'delta:'+str(round(tandeltamod[1],3)))
-			ax3.plot(angledeg,theonormmint(tandeltamod[2],Ji,m0[2])*theo(anglerad,tandeltamod[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+'sigma:'+' '+str(round(m0[2],2))+' '+'delta:'+str(round(tandeltamod[2],3)))
+			ax3.plot(angledeg,norm1*theo(anglerad,tandeltamod[0],Ji,m0[0]),color='r',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$'+':'+' '+str(round(m0[0],2))+' '+r'$\delta$'+':'+str(round(tandeltamod[0],3)))
+			ax3.plot(angledeg,norm2*theo(anglerad,tandeltamod[1],Ji,m0[1]),color='b',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$'+':'+' '+str(round(m0[1],2))+' '+r'$\delta$'+':'+str(round(tandeltamod[1],3)))
+			ax3.plot(angledeg,norm3*theo(anglerad,tandeltamod[2],Ji,m0[2]),color='g',label='Ji:'+str(Ji)+' '+'--->'+' '+'Jf:'+str(Jf)+' '+r'$\sigma$'+':'+' '+str(round(m0[2],2))+' '+r'$\delta$'+':'+str(round(tandeltamod[2],3)))
 		
 		ax3.errorbar(np.rad2deg(angle),intensity,yerr=error,fmt='o',linewidth=2,capsize=6,label='data')
 
 	ax3.legend()
 	#ax2.set_yscale("log")
-	ax3.set_xlabel(r'$\theta_{det} (deg)$',style='normal',fontweight='bold')
-	ax3.set_ylabel('Intensity',style='normal',fontweight='bold')
+	ax3.set_xlim(0,180)
+	ax3.set_xlabel(r'$\theta_{det} (deg)$',style='normal',fontsize='large',fontweight='bold')
+	ax3.set_ylabel(r'$W(\theta)$',style='normal',fontsize='large',fontweight='bold')
 	ax3.set_title('Gamma Energy:'+' '+str(gamma)+' '+'keV')
-	fig3.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
+	#fig3.suptitle(str(nuclei)+" "+"Angular Distribution\nClarion2-Trinity\nO16+O18 at 30 MeV")
 	#fig3.canvas.draw()
 
 def theoa2a4(Ji,delta,sigma):
@@ -463,30 +508,41 @@ def writechiresult():
 		fresults.write('Angle(Deg)'+'\t'+'Intensity'+'\t'+'Error'+'\n')
 		for i in range(0,dim-1,1):
 			fresults.write(str(round(np.rad2deg(angle[i]),2))+'\t'+str(round(intensity[i],3))+'\t'+str(round(error[i],3))+'\n')
+		fresults.write('Legendre Fit:\n')
+		fresults.write('A0\ta2\ta4\n')
+		fresults.write(str(round(popt[0],4))+'\t'+str(round(popt[1],4))+'\t'+str(round(popt[2],4))+'\n')
+		fresults.write('stdA0\tstda2\tstda4\n')
+		fresults.write(str(round(perr[0],4))+'\t'+str(round(perr[1],4))+'\t'+str(round(perr[2],4))+'\n')
 
 		if option == 1:
-			fresults.write('Legendre Fit:\n')
-			fresults.write('A0\ta2\ta4\n')
-			fresults.write(str(round(popt[0],4))+'\t'+str(round(popt[1],4))+'\t'+str(round(popt[2],4))+'\n')
-			fresults.write('stdA0\tstda2\tstda4\n')
-			fresults.write(str(round(perr[0],4))+'\t'+str(round(perr[1],4))+'\t'+str(round(perr[2],4))+'\n')
 			fresults.write('sigma:'+' '+str(msigma)+'\n')
 			fresults.write('Theoretical a0,a2,a4:\n')
 			fresults.write('Ji\ta0th\ta2th\ta4th\n')
 			for i in range(0,3,1):
 				fresults.write(str(Jinitial[i])+'\t'+str(round(a0theo[i],4))+'\t'+str(round(a2theo[i],4))+'\t'+str(round(a4theo[i],4))+'\n')
-			fresults.write('#Ji\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
-			for i in range(0,3,1):
-				fresults.write(str(Jinitial[i])+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
+			if deltaoption == 1:
+				fresults.write('#Ji\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
+				for i in range(0,3,1):
+					fresults.write(str(Jinitial[i])+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
+			if deltaoption == 0:
+				fresults.write('#Ji\t#arctan(deltamin)\t#tanarctan(deltamin)\n')
+				for i in range(0,3,1):
+					fresults.write(str(Jinitial[i])+'\t'+str(round(np.rad2deg(np.arctan(tandeltamod[i])),4))+'\t'+str(round(tandeltamod[i],4))+'\n')
+				
 		else:
+			fresults.write('Ji:'+' '+str(Jinit)+'\n')
 			fresults.write('Theoretical a0,a2,a4:\n')
 			fresults.write('mi\ta0th\ta2th\ta4th\n')
 			for i in range(0,3,1):
 				fresults.write(str(round(m0[i],2))+'\t'+str(round(a0theo[i],4))+'\t'+str(round(a2theo[i],4))+'\t'+str(round(a4theo[i],4))+'\n')
-			fresults.write('Ji:'+' '+str(Jinit)+'\n')
-			fresults.write('#sigmai\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
-			for i in range(0,3,1):
-				fresults.write(str(round(m0[i],2))+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
+			if deltaoption == 1:
+				fresults.write('#sigmai\t#arctan(deltamin)\t#tanarctan(deltamin)\t#chi\n')
+				for i in range(0,3,1):
+					fresults.write(str(round(m0[i],2))+'\t'+str(round(mixratiomin[i],4))+'\t'+str(round(tandeltamin[i],4))+'\t'+str(round(chimin[i],4))+'\n')
+			if deltaoption == 0:
+				fresults.write('#sigmai\t#arctan(deltamin)\t#tanarctan(deltamin)\n')
+				for i in range(0,3,1):
+					fresults.write(str(round(m0[i],2))+'\t'+str(round(np.rad2deg(np.arctan(tandeltamod[i])),4))+'\t'+str(round(tandeltamod[i],4))+'\n')
 		fresults.write('===========================================\n')
 
 def main():
@@ -503,6 +559,7 @@ def main():
 	plot()
 	print("Generating Chi-Square Plot....\n")
 	plotchi()
+	#printnormalize() #02/12/2024
 	loaddelta()
 	print("Generating Theoritical AD Plot...\n")
 	plotad()

@@ -37,6 +37,11 @@ def kappa(k,L1,L2):
 			result=-1./4.
 		if L1 == 3 and L2 == 3:
 			result=1./3.
+		if L1 == 3 and L2 == 4:
+			result = -1./3.
+		if L1 == 4 and L2 == 4:
+			result = 5./17.
+
 	if k == 3:
 		if L1 == 1 and L2 == 2:
 			result=-1./6.
@@ -48,6 +53,10 @@ def kappa(k,L1,L2):
 			result=1./4.
 		if L1 == 3 and L2 == 3:
 			result=0.
+		if L1 == 3 and L2 == 4:
+			result = 0.133333
+		if L1 == 4 and L2 == 4:
+			result = 0
 	if k == 4:
 		if L1 == 1 and L2 == 3:
 			result=-1./12.	
@@ -57,12 +66,16 @@ def kappa(k,L1,L2):
 			result=-1./60.
 		if L1 == 3 and L2 == 3:
 			result=1./3.
+		if L1 == 3 and L2 == 4:
+			result = -0.022222222
+		if L1 == 4 and L2 == 4:
+			result = 0.1111111111
 	if k == 5:
 		if L1 == 2 and L2 == 3:
 			result=-1./20.
 		if L1 == 3 and L2 == 3:
 			result=0.
-	if k == 8:
+	if k == 6:
 		if L1 == 3 and L2 == 3:
 			result=-1./30.
 	return result
