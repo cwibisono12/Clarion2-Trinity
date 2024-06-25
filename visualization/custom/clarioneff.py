@@ -82,7 +82,7 @@ def getcoeff(fdata, fout):
 	ax.set_xlabel(r'E$_{\gamma}$ (keV)',fontweight='bold')
 	ax.set_ylabel(r'$\epsilon_{eff}$ (arb)',fontweight='bold')
 	ax.text(1500,2.0,'$\epsilon_{eff} = e^{A+B\log(E)+C(\log(E))^{2}}$')
-	ax.set_xlim(100,2500)
+	ax.set_xlim(100,4500)
 	plt.show()
 
 def clarioneff(fparam, energy):
