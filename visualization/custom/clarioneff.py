@@ -68,7 +68,7 @@ def getcoeff(fdata, fout):
 	ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 	ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 
-	xcoords=np.arange(100,2500,1)
+	xcoords=np.arange(100,4500,1)
 	ax.plot(xcoords,efffunc(xcoords,*poptRing1),linewidth=0.85,color='b',label='48.24$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing1))
 	ax.plot(xcoords,efffunc(xcoords,*poptRing2),linewidth=0.85,color='k',label='90$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing2))
 	ax.plot(xcoords,efffunc(xcoords,*poptRing3),linewidth=0.85,color='g',label='131.75$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing3))
