@@ -14,6 +14,79 @@ def efffunc(energy,A,B,C):
 	for Clover Detectors'''
 	return np.exp(A+B*np.log(energy)+C*np.power(np.log(energy),2.))
 
+def getcoeff_total(fdata, fout, norma, normb):
+	'''Function to Generate Coefficients of Relative Efficiency 
+	for the entire Arrays of HPGe Clover detectors.
+	Parameter(s):
+	fdata: file input pointer object consisting of energy and counts.
+		see param/effdata_Aug2024.txt as an example
+	fout: file output for printing parameter results.
+	norma: normalization factor applied to the first source.
+	normb: normalization factor applied to the second souce.
+	'''
+	
+	data = {}
+
+	with open(fdata, mode='r') as f:
+		lines = f.readlines()
+		for line in lines:
+			if line.find('#') == -1:
+				temp = list(line.split())
+				source = temp[0]
+				if source in data.keys():
+					data[source][0].append(float(temp[1])) #energy
+					data[source][1].append(float(temp[2])) #relative eff
+				else:
+					data[source] = [[float(temp[1])],[float(temp[2])]]
+				
+	fig,ax=plt.subplots()
+	ax.tick_params(direction='in',axis='both',which='major',bottom='True',left='True',top='True',right='True',length=9,width=0.75)
+	ax.tick_params(direction='in',axis='both',which='minor',bottom='True',left='True',top='True',right='True',length=6,width=0.75)
+	ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+	ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
+	xdata = []
+	ydata = []
+	for name in data.keys():
+		if name == '56Co':
+			colorname = 'r+'
+			dim = len(data[name][1])
+			for k in range(dim):
+				data[name][1][k] = data[name][1][k]*normb
+				xdata.append(data[name][0][k])
+				ydata.append(data[name][1][k])
+		else:
+			colorname = 'bo'
+			dim = len(data[name][1])
+			for k in range(dim):
+				data[name][1][k] = data[name][1][k]*norma
+				xdata.append(data[name][0][k])
+				ydata.append(data[name][1][k])
+
+		ax.plot(data[name][0],data[name][1],colorname,label=name)
+	
+	
+	
+	popt, pcov = cvt(efffunc, xdata, ydata)
+	
+	with open(fout, mode = 'w') as f2:
+		f2.write('#'+'Relative Eff'+'\t'+'A'+'\t'+'B'+'\t'+'C'+'\n')
+		f2.write('all'+'\t'+str(popt[0])+'\t'+str(popt[1])+'\t'+str(popt[2])+'\n')
+
+	print('Fit Result: ')
+	print('popt:',*popt)
+
+
+	xcoords=np.arange(100,4500,1)
+	ax.plot(xcoords,efffunc(xcoords,*popt),linewidth=0.85,color='b',label='fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(popt))
+	
+	ax.legend()
+	ax.set_xlabel(r'E$_{\gamma}$ (keV)',fontweight='bold')
+	ax.set_ylabel(r'$\epsilon_{eff}$ (arb)',fontweight='bold')
+	ax.text(1500,1.0,'$\epsilon_{eff} = e^{A+B\log(E)+C(\log(E))^{2}}$')
+	ax.set_xlim(100,4500)
+	plt.show()
+
+
 def getcoeff(fdata, fout):
 	'''Function to Generate Coefficients of Relative Efficiency 
 	for each Ring for Clover Detector
@@ -68,7 +141,7 @@ def getcoeff(fdata, fout):
 	ax.xaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 	ax.yaxis.set_minor_locator(tck.AutoMinorLocator(n=5))
 
-	xcoords=np.arange(100,4500,1)
+	xcoords=np.arange(100,2500,1)
 	ax.plot(xcoords,efffunc(xcoords,*poptRing1),linewidth=0.85,color='b',label='48.24$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing1))
 	ax.plot(xcoords,efffunc(xcoords,*poptRing2),linewidth=0.85,color='k',label='90$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing2))
 	ax.plot(xcoords,efffunc(xcoords,*poptRing3),linewidth=0.85,color='g',label='131.75$^{0}$, fit: A=%5.3f, B=%5.3f, C=%5.3f' % tuple(poptRing3))
@@ -82,8 +155,9 @@ def getcoeff(fdata, fout):
 	ax.set_xlabel(r'E$_{\gamma}$ (keV)',fontweight='bold')
 	ax.set_ylabel(r'$\epsilon_{eff}$ (arb)',fontweight='bold')
 	ax.text(1500,2.0,'$\epsilon_{eff} = e^{A+B\log(E)+C(\log(E))^{2}}$')
-	ax.set_xlim(100,4500)
+	ax.set_xlim(100,2500)
 	plt.show()
+
 
 def clarioneff(fparam, energy):
 	'''Function to deduce the relative efficiency given the energy for each Ring of Clover array
@@ -112,4 +186,7 @@ if __name__ == "__main__":
 	import sys
 	filein = sys.argv[1]
 	fileout = sys.argv[2]
-	getcoeff(filein,fileout)
+	#norma = float(sys.argv[2])
+	#normb = float(sys.argv[3])
+	eff = getcoeff_total(filein,fileout,  1.0, 0.34)
+	#print(eff)
