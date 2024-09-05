@@ -178,8 +178,18 @@ struct sidetector
    float thetarest; //thetaresidual in degree
 }; 
 
+struct pxi16event{
+int hlen;
+int elen;
+int iddet;
+int arr[MAX_SUB_LENGTH];
+};
+
+
 
 int toreader(unsigned int sub[], struct subevent *subevt, FILE *fpr);
+
+int tofilter(unsigned int sub[], struct subevent *subevt, FILE *fpr, struct pxi16event *pxi16evt);
 
 void detmaps(int sevtmult, struct subevent *subevt, struct gdetector *ge, struct sidetector *si);
 
