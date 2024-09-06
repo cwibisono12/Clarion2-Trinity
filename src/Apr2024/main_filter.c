@@ -32,7 +32,7 @@ sevtmult = tofilter(sub,subevt,fin,pxi16evt);
 	for(i=0;i<sevtmult;i++){
 		j = pxi16evt[i].elen;
 		for(k=0;k<j;k++){
-		fwrite(&pxi16evt[i].arr[k], sizeof(int), 1, fout);
+		fwrite(&pxi16evt[i].arr[k], sizeof(unsigned int), 1, fout);
 		}
 	}
 

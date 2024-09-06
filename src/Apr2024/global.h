@@ -182,7 +182,7 @@ struct pxi16event{
 int hlen;
 int elen;
 int iddet;
-int arr[MAX_SUB_LENGTH];
+unsigned int arr[MAX_SUB_LENGTH];
 };
 
 
