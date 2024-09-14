@@ -7,7 +7,7 @@ from threading import Thread
 
 def ev5toad(fpr,*,dimy=16,dimx=8192,overwrite=0):
 	'''
-	Function to Generate Angular Distribution Spectra from ev5 file
+	Function to Generate Angular Distribution Spectra from ev5 file gated on particle.
 	Parameter(s):
 	fpr: ev5 file pointer object
 	dimy: y dimension

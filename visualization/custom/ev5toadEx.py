@@ -7,7 +7,7 @@ from threading import Thread
 
 def ev5toad(fpr,*,dimy=16,dimx=8192,overwrite=0):
 	'''
-	Function to Generate Angular Distribution Spectra from ev5 file
+	Function to Generate Angular Distribution Spectra from ev5 file gated on particle and Ex energy.
 	Parameter(s):
 	fpr: ev5 file pointer object
 	dimy: y dimension
@@ -56,7 +56,9 @@ def ev5toad(fpr,*,dimy=16,dimx=8192,overwrite=0):
 			if temp == -1:
 				break
 			else:
-				if (temp[0][0] == 2 and temp[0][1] == 0) and (temp[0][3] < 400): #2p-gated
+				#if (temp[0][0] == 2 and temp[0][1] == 0) and (temp[0][3] >= 280 and temp[0][3] <= 455): #2p-gated
+				#if (temp[0][0] == 2 and temp[0][1] == 0) and (temp[0][3] >= 680 and temp[0][3] <= 880): #2p-gated
+				if (temp[0][0] == 2 and temp[0][1] == 0) and (temp[0][3] >= 505 and temp[0][3] <= 655): #2p-gated
 					for i in temp[1].keys():
 						if (temp[1][i][2] >=0 and temp[1][i][2] <8192) and (temp[1][i][4] == 1):
 							p2_angularp[int(i)][temp[1][i][2]]=p2_angularp[int(i)][temp[1][i][2]]+1
@@ -67,7 +69,7 @@ def ev5toad(fpr,*,dimy=16,dimx=8192,overwrite=0):
 						if (temp[1][i][3] >=0 and temp[1][i][3] <8192) and (temp[1][i][5] == 1):
 							p2_angularnp_dopp[int(i)][temp[1][i][3]]=p2_angularnp_dopp[int(i)][temp[1][i][3]]+1
 
-				if temp[0][0] == 1 and temp[0][1] == 1 and (temp[0][3] < 400): #1p-1agated
+				if temp[0][0] == 1 and temp[0][1] == 1 and (temp[0][3] >= 280 and temp[0][3] <=455): #1p-1agated
 					for i in temp[1].keys():
 						if (temp[1][i][2] >=0 and temp[1][i][2] <8192) and (temp[1][i][4] == 1):
 							pa_angularp[int(i)][temp[1][i][2]]=pa_angularp[int(i)][temp[1][i][2]]+1
@@ -81,33 +83,33 @@ def ev5toad(fpr,*,dimy=16,dimx=8192,overwrite=0):
 			
 	t1 = Thread(target=matwrite,args=("p2_angularp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':p2_angularp,'overwrite':overwrite})
 	t2 = Thread(target=matwrite,args=("p2_angularp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':p2_angularp_dopp,'overwrite':overwrite})
-	t3 = Thread(target=matwrite,args=("pa_angularp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularp,'overwrite':overwrite})
-	t4 = Thread(target=matwrite,args=("pa_angularp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularp_dopp,'overwrite':overwrite})
+	#t3 = Thread(target=matwrite,args=("pa_angularp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularp,'overwrite':overwrite})
+	#t4 = Thread(target=matwrite,args=("pa_angularp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularp_dopp,'overwrite':overwrite})
 	
 	t1b = Thread(target=matwrite,args=("p2_angularnp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':p2_angularnp,'overwrite':overwrite})
 	t2b = Thread(target=matwrite,args=("p2_angularnp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':p2_angularnp_dopp,'overwrite':overwrite})
-	t3b = Thread(target=matwrite,args=("pa_angularnp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularnp,'overwrite':overwrite})
-	t4b = Thread(target=matwrite,args=("pa_angularnp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularnp_dopp,'overwrite':overwrite})
+	#t3b = Thread(target=matwrite,args=("pa_angularnp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularnp,'overwrite':overwrite})
+	#t4b = Thread(target=matwrite,args=("pa_angularnp_dopp.spn2",),kwargs={'dimy':dimy,'dimx':dimx,'arr':pa_angularnp_dopp,'overwrite':overwrite})
 	
 	t1.start()
 	t2.start()
-	t3.start()
-	t4.start()
+	#t3.start()
+	#t4.start()
 
 	t1b.start()
 	t2b.start()
-	t3b.start()
-	t4b.start()
+	#t3b.start()
+	#t4b.start()
 
 	t1.join()
 	t2.join()
-	t3.join()
-	t4.join()
+	#t3.join()
+	#t4.join()
 
 	t1b.join()
 	t2b.join()
-	t3b.join()
-	t4b.join()
+	#t3b.join()
+	#t4b.join()
 
 
 if __name__ == "__main__":

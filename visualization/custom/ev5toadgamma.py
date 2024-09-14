@@ -7,7 +7,7 @@ from threading import Thread
 
 def ev5toadg(fpr,xlow,xup,xlowbkg,xupbkg,*,dimy=16,dimx=8192,overwrite=0):
 	'''
-	Function to Generate Angular Distribution Spectra from ev5 file gated on gamma.
+	Function to Generate Angular Distribution Spectra from ev5 file gated on particle and gamma.
 	Parameter(s):
 	fpr: ev5 file pointer object
 	xlow: int lower limit of gamma gate
