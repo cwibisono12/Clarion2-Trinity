@@ -43,7 +43,8 @@ class adui:
 			self.index = 0
 		self.line.figure.canvas.draw()
 		self.index = self.index + 1
-		q = np.where(self.xline == round(event.xdata,1))[0][0]
+		#q = np.where(self.xline == round(event.xdata,1))[0][0]
+		q = np.argmin(np.abs(self.xline - round(event.xdata,2)))
 		print('index:',self.index,'xdata:',event.xdata,'ydata:',event.ydata,'x:',self.xline[q],'y:',self.yline[q])
 		#print('index:',self.index,'xdata:',event.xdata,'ydata:',event.ydata)
 		if self.index == 1:
@@ -69,7 +70,8 @@ class adui:
 			newx[j]=self.xline[self.indlowlim+j]
 			newy[j]=self.yline[self.indlowlim+j]
 		#Finding the local minima index:
-		indlocminima=np.where(newy == np.min(newy))[0][0]
+		#indlocminima=np.where(newy == np.min(newy))[0][0]
+		indlocminima=np.argmin(np.abs(newy - np.min(newy)))
 		#The x value asscociates with the local minima:
 		xmin=newx[indlocminima]
 		print("Local Minima Associated with the Interval\n")
